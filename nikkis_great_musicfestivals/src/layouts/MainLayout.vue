@@ -118,6 +118,18 @@
 
       <router-view style="position:relative; z-index:1;" />
       <FooterScene :night="$q.dark.isActive" />
+
+      <!-- Site footer bar -->
+      <div class="site-footer">
+        <span class="site-footer-copy">© 2026 Nikki's Great Music Festivals</span>
+        <div class="site-footer-links">
+          <router-link to="/support" class="site-footer-link">Support the Mission</router-link>
+          <span class="site-footer-sep">·</span>
+          <router-link to="/news" class="site-footer-link">News</router-link>
+          <span class="site-footer-sep">·</span>
+          <router-link to="/admin" class="site-footer-link site-footer-link--admin">Admin</router-link>
+        </div>
+      </div>
     </q-page-container>
 
   </q-layout>
@@ -331,5 +343,32 @@ async function subscribeNav() {
 @keyframes lbg-drift {
   from { transform: rotate(0deg) scale(1.05); }
   to   { transform: rotate(360deg) scale(1.05); }
+}
+
+/* ══ SITE FOOTER BAR ═════════════════════════════════════════════ */
+.site-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+  padding: 12px 24px;
+  background: rgba(0,0,0,0.18);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  position: relative; z-index: 1;
+}
+.site-footer-copy {
+  font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 0.5px;
+}
+.site-footer-links {
+  display: flex; align-items: center; gap: 8px;
+}
+.site-footer-sep { color: rgba(255,255,255,0.15); font-size: 11px; }
+.site-footer-link {
+  font-size: 11px; color: rgba(255,255,255,0.3);
+  text-decoration: none; letter-spacing: 0.5px;
+  transition: color 0.2s;
+  &:hover { color: rgba(255,255,255,0.7); }
+  &--admin {
+    color: rgba(77,182,172,0.45);
+    &:hover { color: #4db6ac; }
+  }
 }
 </style>
