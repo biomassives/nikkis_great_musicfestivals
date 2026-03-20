@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-lg">
     <div class="row items-center q-mb-xl">
-      <q-btn flat icon="arrow_back" :to="'/admin'" class="q-mr-md" />
+      <q-btn flat icon="arrow_back" :to="'/admin/maps'" class="q-mr-md" />
       <div>
         <div class="text-h5 text-teal-3">{{ region?.name ?? 'Loading...' }}</div>
         <div class="text-caption text-grey-5">Map point editor</div>

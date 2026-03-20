@@ -146,3 +146,68 @@ insert into gallery_photos (category, url, caption, display_order) values
   ('cuteness','https://picsum.photos/seed/cute3/800/600',  'Camp morning vibes',                3),
   ('cuteness','https://picsum.photos/seed/cute4/800/600',  'Sunset hammock crew',               4)
 on conflict do nothing;
+
+-- ===========================================
+-- News Articles
+-- ===========================================
+create table if not exists news_articles (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null,
+  date        text,                    -- display string e.g. "July 12, 2026"
+  icon        text default 'star',     -- material icon name
+  color       text default 'amber',    -- quasar color
+  body        text,
+  tags        text[] default '{}',
+  image_url   text,
+  published   boolean default true,
+  created_at  timestamptz default now()
+);
+alter table news_articles enable row level security;
+create policy "Public read news"  on news_articles for select using (published = true);
+create policy "Auth write news"   on news_articles for all   using (auth.role() = 'authenticated');
+
+-- Seed sample news articles
+insert into news_articles (title, date, icon, color, body, tags, published) values
+  ('Red Rocks — Billy Strings Night 1', 'July 12, 2026', 'star', 'amber',
+   'An absolutely transcendent night at Red Rocks. Billy opened with a 25-minute "Meet Me at the Creek" that had the whole amphitheater on their feet by the second verse. The canyon walls bounced the sound into something otherworldly.',
+   ARRAY['Billy Strings','Red Rocks','Mountain West'], true),
+  ('Planet Bluegrass — Rocky Mtn Folks Festival', 'July 18, 2026', 'music_note', 'deep-orange',
+   'Leftover Salmon headlined the Saturday night on the main stage and played a nearly three-hour set. Vince Herman told stories between every song. The kind of show you tell your grandkids about.',
+   ARRAY['Leftover Salmon','Planet Bluegrass','Colorado'], true),
+  ('Bonnaroo — The Farm, Tennessee', 'June 14, 2026', 'festival', 'purple',
+   'The Infamous Stringdusters closed out the Which Stage on Friday night. Silver Sky into Fork in the Road — the field went absolutely still, then erupted. Festival season officially opened.',
+   ARRAY['Stringdusters','Bonnaroo','Southeast'], true)
+on conflict do nothing;
+
+-- ===========================================
+-- Merch Items
+-- ===========================================
+create table if not exists merch_items (
+  id            uuid primary key default gen_random_uuid(),
+  category      text check (category in ('art','photos','other')) not null,
+  name          text not null,
+  description   text,
+  price         text,             -- display string e.g. "$45"
+  image_url     text,
+  badge         text,             -- "New", "Limited", "Fan Fave", etc.
+  sold_out      boolean default false,
+  display_order int default 0,
+  created_at    timestamptz default now()
+);
+alter table merch_items enable row level security;
+create policy "Public read merch" on merch_items for select using (true);
+create policy "Auth write merch"  on merch_items for all   using (auth.role() = 'authenticated');
+
+-- Seed sample merch items
+insert into merch_items (category, name, description, price, image_url, badge, sold_out, display_order) values
+  ('art',    'Mountain Mandala — Original',  'Ink and watercolour on 140lb cold-press. 9"×9". Signed, unframed.',              '$180', 'https://picsum.photos/seed/art1/400/400',   'Original', false, 1),
+  ('art',    'Stage Glow — Print',           'Giclee print of oil pastel stage-light study. 8"×10". Archival paper.',           '$45',  'https://picsum.photos/seed/art2/400/400',   null,       false, 2),
+  ('art',    'Desert Road Triptych',         'Set of three 5"×7" prints. Signed edition of 50.',                               '$75',  'https://picsum.photos/seed/art3/400/400',   'Limited',  false, 3),
+  ('art',    'Festival Camp — Acrylic',      'Small acrylic on wood panel. 6"×6". One of a kind.',                             '$120', 'https://picsum.photos/seed/art4/400/400',   null,       true,  4),
+  ('photos', 'Billy Strings — Stage Right',  '12"×16" fine art print, fuji crystal archive paper, ready to frame.',            '$65',  'https://picsum.photos/seed/photo1/400/400', 'Fan Fave', false, 1),
+  ('photos', 'Sunrise Over the Field',       'Early morning campground mist. 11"×14" lustre print.',                           '$55',  'https://picsum.photos/seed/photo2/400/400', null,       false, 2),
+  ('photos', 'Crowd Hands — Panoramic',      'Wide-angle crowd shot during a full-field singalong. 20"×8".',                   '$80',  'https://picsum.photos/seed/photo3/400/400', 'Limited',  false, 3),
+  ('other',  'Enamel Festival Pin Set',      '4-pin set with frog, mandala, mountain, and music note designs.',                '$28',  'https://picsum.photos/seed/other1/400/400', 'Bestseller',false,1),
+  ('other',  'Hand-dyed Bandana',            'Tie-dye cotton bandana in festival-purple and gold. One per dye.',               '$22',  'https://picsum.photos/seed/other2/400/400', null,       false, 2),
+  ('other',  'Nikki''s Great Festivals Tote','Heavy cotton tote with screen-printed frog logo. 15"×17". Natural.',             '$30',  'https://picsum.photos/seed/other4/400/400', 'New',      false, 3)
+on conflict do nothing;

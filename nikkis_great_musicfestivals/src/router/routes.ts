@@ -20,11 +20,14 @@ const routes: RouteRecordRaw[] = [
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
     children: [
-      { path: 'login', component: () => import('pages/admin/AdminLoginPage.vue') },
-      { path: '',              component: () => import('pages/admin/AdminMapsPage.vue'),       meta: { requiresAuth: true } },
-      { path: 'maps/:regionId',component: () => import('pages/admin/AdminMapEditorPage.vue'),  meta: { requiresAuth: true } },
-      { path: 'gallery',       component: () => import('pages/admin/AdminGalleryPage.vue'),     meta: { requiresAuth: true } },
-      { path: 'newsletter',    component: () => import('pages/admin/AdminNewsletterPage.vue'),  meta: { requiresAuth: true } },
+      { path: 'login',           component: () => import('pages/admin/AdminLoginPage.vue') },
+      { path: '',                component: () => import('pages/admin/AdminDashboardPage.vue'), meta: { requiresAuth: true } },
+      { path: 'maps',            component: () => import('pages/admin/AdminMapsPage.vue'),       meta: { requiresAuth: true } },
+      { path: 'maps/:regionId',  component: () => import('pages/admin/AdminMapEditorPage.vue'),  meta: { requiresAuth: true } },
+      { path: 'gallery',         component: () => import('pages/admin/AdminGalleryPage.vue'),     meta: { requiresAuth: true } },
+      { path: 'newsletter',      component: () => import('pages/admin/AdminNewsletterPage.vue'),  meta: { requiresAuth: true } },
+      { path: 'news',            component: () => import('pages/admin/AdminNewsPage.vue'),        meta: { requiresAuth: true } },
+      { path: 'merch',           component: () => import('pages/admin/AdminMerchPage.vue'),       meta: { requiresAuth: true } },
     ],
     beforeEnter: async (_to, _from, next) => {
       const meta = _to.meta as { requiresAuth?: boolean };

@@ -43,3 +43,29 @@ export interface MapPoint {
   description: string | null
   image_url: string | null
 }
+
+export interface NewsArticle {
+  id: string
+  title: string
+  date: string | null
+  icon: string
+  color: string
+  body: string | null
+  tags: string[]
+  image_url: string | null
+  published: boolean
+  created_at: string
+}
+
+export interface MerchItem {
+  id: string
+  category: 'art' | 'photos' | 'other'
+  name: string
+  description: string | null
+  price: string | null
+  image_url: string | null
+  badge: string | null
+  sold_out: boolean
+  display_order: number
+  created_at: string
+}

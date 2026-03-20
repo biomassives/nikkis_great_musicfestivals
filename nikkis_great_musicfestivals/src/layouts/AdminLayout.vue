@@ -2,14 +2,26 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated class="admin-header">
       <q-toolbar>
-        <q-icon name="music_note" size="24px" class="q-mr-sm" />
-        <q-toolbar-title class="text-weight-light ls-1">
-          NIKKI'S FESTIVALS <span class="text-weight-bold text-caption q-ml-sm admin-badge">ADMIN</span>
+        <q-icon name="music_note" size="22px" class="q-mr-xs" />
+        <q-toolbar-title class="text-weight-light ls-1 gt-xs">
+          NIKKI'S <span class="text-weight-bold text-caption q-ml-sm admin-badge">ADMIN</span>
         </q-toolbar-title>
-        <!-- Section nav -->
-        <q-btn flat dense :to="'/admin'"            exact label="Maps"       icon="explore"      class="q-mx-xs admin-nav-btn" />
-        <q-btn flat dense :to="'/admin/gallery'"          label="Gallery"     icon="photo_library" class="q-mx-xs admin-nav-btn" />
-        <q-btn flat dense :to="'/admin/newsletter'"       label="Newsletter"  icon="mark_email_unread" class="q-mx-xs admin-nav-btn" />
+
+        <q-btn flat dense :to="'/admin'"            exact icon="dashboard"         label="Dashboard"  class="q-mx-xs admin-nav-btn gt-sm" />
+        <q-btn flat dense :to="'/admin/maps'"             icon="explore"           label="Maps"       class="q-mx-xs admin-nav-btn gt-sm" />
+        <q-btn flat dense :to="'/admin/gallery'"          icon="photo_library"     label="Gallery"    class="q-mx-xs admin-nav-btn gt-sm" />
+        <q-btn flat dense :to="'/admin/newsletter'"       icon="mark_email_unread" label="Newsletter" class="q-mx-xs admin-nav-btn gt-sm" />
+        <q-btn flat dense :to="'/admin/news'"             icon="newspaper"         label="News"       class="q-mx-xs admin-nav-btn gt-sm" />
+        <q-btn flat dense :to="'/admin/merch'"            icon="style"             label="Merch"      class="q-mx-xs admin-nav-btn gt-sm" />
+
+        <!-- Mobile: just icons -->
+        <q-btn flat round dense :to="'/admin'"       exact icon="dashboard"         size="sm" class="q-mx-xs lt-md" title="Dashboard" />
+        <q-btn flat round dense :to="'/admin/maps'"       icon="explore"           size="sm" class="q-mx-xs lt-md" title="Maps" />
+        <q-btn flat round dense :to="'/admin/gallery'"    icon="photo_library"     size="sm" class="q-mx-xs lt-md" title="Gallery" />
+        <q-btn flat round dense :to="'/admin/newsletter'" icon="mark_email_unread" size="sm" class="q-mx-xs lt-md" title="Newsletter" />
+        <q-btn flat round dense :to="'/admin/news'"       icon="newspaper"         size="sm" class="q-mx-xs lt-md" title="News" />
+        <q-btn flat round dense :to="'/admin/merch'"      icon="style"             size="sm" class="q-mx-xs lt-md" title="Merch" />
+
         <q-separator vertical inset dark class="q-mx-sm" />
         <q-btn flat round icon="open_in_new" :to="'/'" title="View site" size="sm" />
         <q-btn v-if="session" flat round icon="logout" title="Sign out" @click="signOut" size="sm" />
@@ -49,17 +61,13 @@ async function signOut() {
   border-bottom: 2px solid #4db6ac;
 }
 .admin-badge {
-  background: #4db6ac;
-  color: #1a1a2e;
-  padding: 2px 8px;
-  border-radius: 4px;
-  letter-spacing: 2px;
+  background: #4db6ac; color: #1a1a2e;
+  padding: 2px 8px; border-radius: 4px; letter-spacing: 2px;
 }
-.admin-bg {
-  background: #0f0f1a;
-  min-height: 100vh;
-  color: #e0f2f1;
-}
+.admin-bg { background: #0f0f1a; min-height: 100vh; color: #e0f2f1; }
 .ls-1 { letter-spacing: 1px; }
-.admin-nav-btn { font-size: 11px; letter-spacing: 1px; opacity: 0.75; &.router-link-active { opacity: 1; border-bottom: 2px solid #4db6ac; } }
+.admin-nav-btn {
+  font-size: 11px; letter-spacing: 1px; opacity: 0.7;
+  &.router-link-active { opacity: 1; border-bottom: 2px solid #4db6ac; }
+}
 </style>
