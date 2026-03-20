@@ -1,5 +1,4 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { supabase } from 'src/lib/supabase';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -20,22 +19,15 @@ const routes: RouteRecordRaw[] = [
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
     children: [
-      { path: 'login',           component: () => import('pages/admin/AdminLoginPage.vue') },
-      { path: '',                component: () => import('pages/admin/AdminDashboardPage.vue'), meta: { requiresAuth: true } },
-      { path: 'maps',            component: () => import('pages/admin/AdminMapsPage.vue'),       meta: { requiresAuth: true } },
-      { path: 'maps/:regionId',  component: () => import('pages/admin/AdminMapEditorPage.vue'),  meta: { requiresAuth: true } },
-      { path: 'gallery',         component: () => import('pages/admin/AdminGalleryPage.vue'),     meta: { requiresAuth: true } },
-      { path: 'newsletter',      component: () => import('pages/admin/AdminNewsletterPage.vue'),  meta: { requiresAuth: true } },
-      { path: 'news',            component: () => import('pages/admin/AdminNewsPage.vue'),        meta: { requiresAuth: true } },
-      { path: 'merch',           component: () => import('pages/admin/AdminMerchPage.vue'),       meta: { requiresAuth: true } },
+      { path: 'login',          component: () => import('pages/admin/AdminLoginPage.vue') },
+      { path: '',               component: () => import('pages/admin/AdminDashboardPage.vue') },
+      { path: 'maps',           component: () => import('pages/admin/AdminMapsPage.vue') },
+      { path: 'maps/:regionId', component: () => import('pages/admin/AdminMapEditorPage.vue') },
+      { path: 'gallery',        component: () => import('pages/admin/AdminGalleryPage.vue') },
+      { path: 'newsletter',     component: () => import('pages/admin/AdminNewsletterPage.vue') },
+      { path: 'news',           component: () => import('pages/admin/AdminNewsPage.vue') },
+      { path: 'merch',          component: () => import('pages/admin/AdminMerchPage.vue') },
     ],
-    beforeEnter: async (_to, _from, next) => {
-      const meta = _to.meta as { requiresAuth?: boolean };
-      if (!meta.requiresAuth) return next();
-      const { data } = await supabase.auth.getSession();
-      if (data.session) return next();
-      next('/admin/login');
-    },
   },
 
   {

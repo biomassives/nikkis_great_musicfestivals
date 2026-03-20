@@ -1,6 +1,18 @@
 <template>
   <q-page class="q-pa-lg">
 
+    <!-- Not-logged-in banner -->
+    <q-banner v-if="!session" rounded class="login-banner q-mb-lg">
+      <template #avatar>
+        <q-icon name="lock_open" color="amber-4" size="24px" />
+      </template>
+      <span class="text-weight-medium">Viewing in read-only mode.</span>
+      <span class="text-grey-4 q-ml-xs">Log in to create and edit content.</span>
+      <template #action>
+        <q-btn flat color="amber-4" label="Log In" :to="'/admin/login'" />
+      </template>
+    </q-banner>
+
     <!-- Welcome -->
     <div class="row items-center q-mb-xl">
       <div>
@@ -72,8 +84,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
+import type { Session } from '@supabase/supabase-js'
 
-const loading   = ref(true)
+const loading    = ref(true)
+const session    = ref<Session | null>(null)
 const recentSubs = ref<{ email: string; created_at: string }[]>([])
 
 const counts = ref({ subscribers: 0, photos: 0, regions: 0, shows: 0, news: 0, merch: 0 })
@@ -133,10 +147,20 @@ async function loadStats() {
   loading.value = false
 }
 
-onMounted(() => { void loadStats() })
+onMounted(async () => {
+  const { data } = await supabase.auth.getSession()
+  session.value = data.session
+  supabase.auth.onAuthStateChange((_e, s) => { session.value = s })
+  void loadStats()
+})
 </script>
 
 <style lang="scss" scoped>
+.login-banner {
+  background: rgba(255,180,0,0.08);
+  border: 1px solid rgba(255,180,0,0.25);
+  color: #e0f2f1;
+}
 .stat-card {
   background: #1a1a2e;
   border: 1px solid rgba(77,182,172,0.18);

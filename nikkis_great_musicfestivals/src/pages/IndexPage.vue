@@ -243,3 +243,26 @@ async function subscribe() {
 }
 .subscribe-input { min-width: 280px; background: white; border-radius: 8px; }
 </style>
+
+<style lang="scss">
+body.body--dark {
+  .artist-accordion {
+    background: rgba(13, 0, 30, 0.92) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+  .artist-card {
+    background: rgba(8, 0, 20, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  .artist-header:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+  .artist-accordion .text-yellow-9   { color: #ffc107 !important; }
+  .artist-accordion .text-deep-orange-8 { color: #ff8a50 !important; }
+  .artist-accordion .text-purple-9   { color: #ce93d8 !important; }
+  .artist-accordion .text-grey-7,
+  .artist-accordion .text-grey-8     { color: rgba(255, 255, 255, 0.6) !important; }
+  .mission-statement { color: rgba(224, 242, 241, 0.85) !important; }
+  .subscribe-input { background: rgba(255, 255, 255, 0.08) !important; }
+}
+</style>

@@ -24,7 +24,8 @@
 
         <q-separator vertical inset dark class="q-mx-sm" />
         <q-btn flat round icon="open_in_new" :to="'/'" title="View site" size="sm" />
-        <q-btn v-if="session" flat round icon="logout" title="Sign out" @click="signOut" size="sm" />
+        <q-btn v-if="!session" flat round dense icon="login" color="teal-3" :to="'/admin/login'" title="Log in" size="sm" />
+        <q-btn v-if="session"  flat round dense icon="logout" title="Sign out" @click="signOut" size="sm" />
       </q-toolbar>
     </q-header>
 
