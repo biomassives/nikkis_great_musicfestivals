@@ -117,7 +117,7 @@
       </div>
 
       <router-view style="position:relative; z-index:1;" />
-      <FooterScene />
+      <FooterScene :night="$q.dark.isActive" />
     </q-page-container>
 
   </q-layout>

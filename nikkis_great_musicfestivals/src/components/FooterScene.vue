@@ -1,276 +1,474 @@
 <!--
   FooterScene — full-width animated SVG landscape.
-  Two-colour duotone: deep indigo (sky/mountains) + dark forest (ground).
-  Scene left-to-right: lone pine · hammock between two pines · campfire.
-  Animated: smoke wisps · fire flicker · stream shimmer · hammock sway.
 
-  Sits below router-view inside q-page-container.
-  The .footer-fade gradient above it bridges the page background into the
-  SVG's sky colour (#0d0028).
+  Two variants controlled by the `night` prop (default: false = day):
+
+  DAY  — sky top exactly matches #f5f0ff (page-light) so no fade div needed.
+         Pale-blue atmosphere, 4 organic mountain layers in sage greens,
+         meadow wildflowers, bright stream, sun, hammock, campfire.
+
+  NIGHT — deep indigo sky, 4 mountain layers in dark purples, crescent moon,
+           stars, dark stream, purple hammock, campfire glow, smoke wisps.
+
+  Smoke wisps on both variants: S-curve path shape (waviness in SVG geometry),
+  CSS animation = pure translateY only — zero X drift.
 -->
 <template>
-  <div class="footer-scene-wrap">
-    <!-- colour-transition band: page bg → SVG sky -->
-    <div class="footer-fade" />
 
-    <svg
-      viewBox="0 0 1440 260"
-      preserveAspectRatio="xMidYMid slice"
-      xmlns="http://www.w3.org/2000/svg"
-      class="footer-svg"
-      aria-hidden="true"
-    >
-      <defs>
-        <!-- sky gradient -->
-        <linearGradient id="fs-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stop-color="#0d0028" />
-          <stop offset="100%" stop-color="#1a0645" />
-        </linearGradient>
-        <!-- fire glow -->
-        <radialGradient id="fs-fireglow" cx="50%" cy="60%" r="50%">
-          <stop offset="0%"   stop-color="#ff8f00" stop-opacity="0.45" />
-          <stop offset="100%" stop-color="#ff8f00" stop-opacity="0" />
-        </radialGradient>
-        <!-- stream -->
-        <linearGradient id="fs-stream" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stop-color="#1565c0" stop-opacity="0.85" />
-          <stop offset="100%" stop-color="#0d3572" stop-opacity="0.7" />
-        </linearGradient>
-        <!-- moon glow -->
-        <radialGradient id="fs-moonglow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stop-color="#e8d8ff" stop-opacity="0.2" />
-          <stop offset="100%" stop-color="#e8d8ff" stop-opacity="0" />
-        </radialGradient>
-      </defs>
+  <!-- ════════════════════════════════════════════════════════════
+       DAY  VERSION
+  ═════════════════════════════════════════════════════════════ -->
+  <svg v-if="!night"
+    viewBox="0 0 1440 270"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+    class="footer-svg footer-svg--day"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="d-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#f5f0ff" />
+        <stop offset="28%"  stop-color="#d0eaff" />
+        <stop offset="65%"  stop-color="#b8e4f0" />
+        <stop offset="100%" stop-color="#d8f0e0" />
+      </linearGradient>
+      <radialGradient id="d-sunglow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#fff176" stop-opacity="0.55" />
+        <stop offset="100%" stop-color="#ffe066" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="d-stream" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#7dd8f0" stop-opacity="0.9" />
+        <stop offset="100%" stop-color="#4ab8d8" stop-opacity="0.75" />
+      </linearGradient>
+      <radialGradient id="d-fireglow" cx="50%" cy="60%" r="50%">
+        <stop offset="0%"   stop-color="#ff8f00" stop-opacity="0.28" />
+        <stop offset="100%" stop-color="#ff8f00" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="d-ground" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#5aaa3a" />
+        <stop offset="100%" stop-color="#3a7820" />
+      </linearGradient>
+    </defs>
 
-      <!-- ══ SKY ══════════════════════════════════════════════════ -->
-      <rect width="1440" height="260" fill="url(#fs-sky)" />
+    <rect width="1440" height="270" fill="url(#d-sky)" />
 
-      <!-- Stars -->
-      <g opacity="0.7">
-        <circle cx="45"   cy="22"  r="0.9" fill="white" />
-        <circle cx="130"  cy="38"  r="0.7" fill="white" />
-        <circle cx="210"  cy="14"  r="1"   fill="white" />
-        <circle cx="380"  cy="28"  r="0.8" fill="white" />
-        <circle cx="490"  cy="10"  r="0.7" fill="white" />
-        <circle cx="620"  cy="32"  r="0.9" fill="white" />
-        <circle cx="740"  cy="16"  r="0.7" fill="white" />
-        <circle cx="850"  cy="40"  r="0.8" fill="white" />
-        <circle cx="1010" cy="18"  r="0.9" fill="white" />
-        <circle cx="1120" cy="34"  r="0.7" fill="white" />
-        <circle cx="1240" cy="12"  r="1"   fill="white" />
-        <circle cx="1420" cy="28"  r="0.8" fill="white" />
-        <circle cx="690"  cy="55"  r="0.6" fill="white" opacity="0.5" />
-        <circle cx="155"  cy="58"  r="0.6" fill="white" opacity="0.4" />
-        <circle cx="1300" cy="48"  r="0.7" fill="white" opacity="0.5" />
-      </g>
+    <!-- Sun -->
+    <circle cx="1260" cy="52" r="70"  fill="url(#d-sunglow)" />
+    <circle cx="1260" cy="52" r="26"  fill="#fff8c0" opacity="0.95" />
+    <circle cx="1260" cy="52" r="22"  fill="#ffe566" opacity="0.92" />
 
-      <!-- Moon + glow -->
-      <circle cx="1340" cy="42" r="45"  fill="url(#fs-moonglow)" />
-      <circle cx="1340" cy="42" r="20"  fill="#fffce8" opacity="0.92" />
-      <circle cx="1350" cy="38" r="17"  fill="#1a0645" />   <!-- crescent mask -->
+    <!-- Mountain layer 1 — distant haze -->
+    <path opacity="0.65" fill="#b8d0de"
+          d="M-10,178 C 42,172  88,162 138,166 C178,170 210,148 258,134
+             C298,122 332,130 372,142 C408,153 435,136 475,122
+             C510,109 545,116 582,128 C615,139 644,124 684,112
+             C718,101 754,108 795,120 C832,131 860,118 900,107
+             C936, 97 972,105 1010,116 C1045,126 1072,114 1112,106
+             C1148, 99 1183,108 1222,120 C1258,131 1292,122 1335,132
+             C1368,140 1405,152 1440,162 L1440,178 Z" />
 
-      <!-- ══ FAR MOUNTAINS ════════════════════════════════════════ -->
-      <path d="M0,170 L70,88 L140,152 L230,42 L330,125 L445,58 L555,148
-               L660,38 L770,128 L885,52 L1000,132 L1118,46 L1235,130
-               L1358,68 L1440,108 L1440,170 Z"
-            fill="#1f0858" />
+    <!-- Mountain layer 2 — far peaks, sage-grey -->
+    <path fill="#8ab5a5"
+          d="M-10,178 C 18,172  48,158  82,152 C110,147 138,118 178, 96
+             C212, 78 244, 88 280,108 C310,125 335,108 372, 86
+             C404, 68 436, 78 472, 98 C503,115 528, 96 566, 74
+             C600, 55 635, 66 672, 89 C704,110 728, 90 765, 68
+             C798, 50 834, 62 872, 85 C906,106 932, 88 968, 65
+             C1000, 46 1038, 60 1078, 84 C1112,105 1138, 88 1175, 68
+             C1208, 52 1242, 70 1278, 95 C1308,116 1336,105 1370,118
+             C1398,130 1422,148 1440,160 L1440,178 Z" />
 
-      <!-- ══ NEAR MOUNTAINS ═══════════════════════════════════════ -->
-      <path d="M0,170 L52,118 L130,165 L245,78 L355,158 L462,92 L582,162
-               L705,82 L822,158 L942,86 L1060,152 L1182,80 L1300,150
-               L1384,102 L1440,132 L1440,170 Z"
-            fill="#100535" />
+    <!-- Mountain layer 3 — mid-range, forest sage -->
+    <path fill="#4e8862"
+          d="M-10,178 C 14,175  36,168  62,162 C 85,156 108,132 142,112
+             C170, 95 196,104 226,122 C252,138 272,120 305,100
+             C332, 84 358, 94 388,115 C414,133 436,118 466,100
+             C492, 85 516, 95 545,115 C570,132 592,118 624,100
+             C652, 85 676, 70 714, 56 C748, 44 780, 58 816, 80
+             C848,100 872, 84 908, 65 C940, 49 976, 64 1012, 90
+             C1044,112 1066, 98 1100, 80 C1130, 65 1158, 82 1192,105
+             C1220,126 1244,112 1278,128 C1305,142 1330,132 1362,145
+             C1388,156 1416,164 1440,170 L1440,178 Z" />
 
-      <!-- ══ GROUND ════════════════════════════════════════════════ -->
-      <path d="M0,162 Q240,155 480,160 Q720,165 960,157 Q1200,150 1440,160
-               L1440,260 L0,260 Z"
-            fill="#071409" />
+    <!-- Mountain layer 4 — near foothills, deep forest -->
+    <path fill="#2e6038"
+          d="M-10,178 C 22,176  52,172  84,170 C110,168 135,158 166,152
+             C192,147 216,156 244,163 C266,168 288,160 314,154
+             C336,149 358,157 384,163 C406,168 426,162 452,156
+             C474,151 498,160 524,166 C546,171 570,167 598,162
+             C622,158 648,164 676,170 C700,174 724,172 752,168
+             C775,165 800,170 828,174 C850,177 874,177 900,177
+             L1440,177 L1440,178 Z" />
 
-      <!-- Grass highlight line -->
-      <path d="M0,162 Q240,156 480,161 Q720,166 960,158 Q1200,151 1440,161"
-            fill="none" stroke="#102818" stroke-width="3" opacity="0.8" />
+    <!-- Meadow ground -->
+    <path fill="url(#d-ground)"
+          d="M-10,176 Q 240,169 480,174 Q 720,179 960,171
+             Q1200,164 1440,172 L1440,270 L-10,270 Z" />
+    <path fill="none" stroke="#78c048" stroke-width="2.5" opacity="0.55"
+          d="M-10,176 Q 240,170 480,175 Q 720,180 960,172 Q1200,165 1440,173" />
 
-      <!-- ══ STREAM ═════════════════════════════════════════════════
-           Filled band — top bank + bottom bank reversed             -->
-      <path class="stream-body"
-            d="M0,238 Q160,226 320,240 Q480,254 640,236 Q800,220 960,238
-               Q1120,254 1280,240 Q1380,232 1440,238
-               L1440,252 Q1380,246 1280,254 Q1120,268 960,252
-               Q800,236 640,250 Q480,268 320,254
-               Q160,240 0,252 Z"
-            fill="url(#fs-stream)" />
-      <!-- stream shimmer highlight -->
-      <path class="stream-shimmer"
-            d="M0,240 Q160,228 320,242 Q480,256 640,238 Q800,222 960,240
-               Q1120,256 1280,242 Q1380,234 1440,240"
-            fill="none" stroke="#42a5f5" stroke-width="1.2" opacity="0.4" />
+    <!-- Wildflowers -->
+    <g opacity="0.7">
+      <circle cx="80"   cy="192" r="2.2" fill="#ff6b6b" />
+      <circle cx="145"  cy="198" r="1.8" fill="#ffd700" />
+      <circle cx="228"  cy="188" r="2"   fill="#ff85a8" />
+      <circle cx="310"  cy="200" r="1.6" fill="#ffd700" />
+      <circle cx="480"  cy="193" r="2"   fill="#ff6b6b" />
+      <circle cx="555"  cy="202" r="1.8" fill="#a0e8a0" />
+      <circle cx="648"  cy="190" r="2.2" fill="#ffd700" />
+      <circle cx="730"  cy="198" r="1.6" fill="#ff85a8" />
+      <circle cx="860"  cy="194" r="2"   fill="#ffd700" />
+      <circle cx="1080" cy="196" r="1.8" fill="#ff6b6b" />
+      <circle cx="1165" cy="202" r="2"   fill="#ffd700" />
+      <circle cx="1310" cy="190" r="1.6" fill="#ff85a8" />
+      <circle cx="1390" cy="198" r="2"   fill="#ffd700" />
+    </g>
 
-      <!-- ══ LONE PINE — far left ═══════════════════════════════════ -->
-      <g>
-        <rect x="117" y="160" width="6" height="18" rx="1" fill="#030b03" />
-        <polygon points="100,166 134,166 120,148" fill="#061208" />
-        <polygon points="104,152 130,152 120,136" fill="#082010" />
-        <polygon points="108,140 128,140 120,124" fill="#0a2812" />
-      </g>
+    <!-- Stream -->
+    <path class="stream-body" fill="url(#d-stream)"
+          d="M  0,242 Q 150,230 290,244 Q 440,258 590,240
+             Q 730,224 875,242 Q1020,258 1160,244 Q1320,230 1440,242
+             L1440,256 Q1320,244 1160,258 Q1020,272 875,256
+             Q 730,240 590,254 Q 440,270 290,258 Q 150,244   0,256 Z" />
+    <path class="stream-shimmer" fill="none"
+          stroke="#a8e8f8" stroke-width="1.5" opacity="0.5"
+          d="M0,244 Q 150,232 290,246 Q 440,260 590,242
+             Q 730,226 875,244 Q1020,260 1160,246 Q1320,232 1440,244" />
 
-      <!-- ══ LEFT HAMMOCK TREE (x=318) ═════════════════════════════ -->
-      <g>
-        <rect x="313" y="158" width="10" height="24" rx="2" fill="#030b03" />
-        <polygon points="284,168 352,168 318,146" fill="#061208" />
-        <polygon points="290,152 346,152 318,130" fill="#082010" />
-        <polygon points="296,138 340,138 318,116" fill="#0a2812" />
-        <polygon points="302,124 334,124 318,105" fill="#0c3014" />
-      </g>
+    <!-- Lone pine — far left -->
+    <g>
+      <rect x="118" y="164" width="5" height="16" rx="1" fill="#1a3a10" />
+      <polygon points="103,170 133,170 118,154" fill="#224c16" />
+      <polygon points="106,157 130,157 118,143" fill="#2a6018" />
+      <polygon points="110,145 126,145 118,131" fill="#327020" />
+    </g>
+    <!-- Small tree far right -->
+    <g>
+      <rect x="1318" y="168" width="5" height="12" rx="1" fill="#1a3a10" />
+      <polygon points="1305,173 1331,173 1318,160" fill="#224c16" />
+      <polygon points="1308,162 1328,162 1318,150" fill="#2a6018" />
+      <polygon points="1311,152 1325,152 1318,140" fill="#327020" />
+    </g>
 
-      <!-- ══ RIGHT HAMMOCK TREE (x=598) ════════════════════════════ -->
-      <g>
-        <rect x="593" y="158" width="10" height="24" rx="2" fill="#030b03" />
-        <polygon points="564,168 632,168 598,146" fill="#061208" />
-        <polygon points="570,152 626,152 598,130" fill="#082010" />
-        <polygon points="576,138 620,138 598,116" fill="#0a2812" />
-        <polygon points="582,124 614,124 598,105" fill="#0c3014" />
-      </g>
+    <!-- Left hammock tree -->
+    <g>
+      <rect x="317" y="160" width="10" height="22" rx="2" fill="#162e0e" />
+      <polygon points="288,170 358,170 322,148" fill="#1e4212" />
+      <polygon points="293,155 350,155 322,133" fill="#265818" />
+      <polygon points="299,141 344,141 322,120" fill="#2e6e1e" />
+      <polygon points="305,127 338,127 322,107" fill="#347a22" />
+      <polygon points="311,113 332,113 322, 96" fill="#3a8228" />
+    </g>
+    <!-- Right hammock tree -->
+    <g>
+      <rect x="599" y="160" width="10" height="22" rx="2" fill="#162e0e" />
+      <polygon points="570,170 638,170 604,148" fill="#1e4212" />
+      <polygon points="575,155 634,155 604,133" fill="#265818" />
+      <polygon points="581,141 628,141 604,120" fill="#2e6e1e" />
+      <polygon points="587,127 622,127 604,107" fill="#347a22" />
+      <polygon points="593,114 616,114 604, 97" fill="#3a8228" />
+    </g>
 
-      <!-- ══ HAMMOCK ════════════════════════════════════════════════ -->
-      <g class="hammock-group">
-        <!-- fabric -->
-        <path d="M320,158 Q458,188 596,158 L596,162 Q458,192 320,162 Z"
-              fill="#3d1f7d" opacity="0.92" />
-        <!-- centre stripes -->
-        <path d="M320,159 Q458,189 596,159" fill="none"
-              stroke="#5c35a8" stroke-width="1.2" stroke-dasharray="6 5" opacity="0.6" />
-        <!-- ropes -->
-        <line x1="318" y1="158" x2="322" y2="158"
-              stroke="#2d1560" stroke-width="2" stroke-linecap="round" />
-        <line x1="596" y1="158" x2="592" y2="158"
-              stroke="#2d1560" stroke-width="2" stroke-linecap="round" />
-        <!-- person silhouette -->
-        <ellipse cx="458" cy="183" rx="34"  ry="8"  fill="#0d0028" opacity="0.8" />
-        <ellipse cx="458" cy="175" rx="9"   ry="8"  fill="#0d0028" opacity="0.8" />
-      </g>
+    <!-- Hammock -->
+    <g class="hammock-group">
+      <path d="M324,160 Q462,192 602,160 L602,165 Q462,197 324,165 Z"
+            fill="#5c2d91" opacity="0.88" />
+      <path d="M324,161 Q462,193 602,161" fill="none"
+            stroke="#8b55cc" stroke-width="1.4" stroke-dasharray="7 6" opacity="0.55" />
+      <ellipse cx="462" cy="186" rx="36" ry="8"   fill="#1a0a2e" opacity="0.55" />
+      <ellipse cx="462" cy="178" rx=" 9" ry="8.5" fill="#1a0a2e" opacity="0.55" />
+    </g>
 
-      <!-- ══ CAMPFIRE (x=985) ══════════════════════════════════════ -->
-      <!-- glow -->
-      <circle cx="985" cy="210" r="52" fill="url(#fs-fireglow)" />
+    <!-- Campfire -->
+    <circle cx="990" cy="218" r="44" fill="url(#d-fireglow)" />
+    <line x1="968" y1="226" x2="1012" y2="215" stroke="#4a2808" stroke-width="6" stroke-linecap="round" />
+    <line x1="968" y1="215" x2="1012" y2="226" stroke="#4a2808" stroke-width="6" stroke-linecap="round" />
+    <g class="fire-group">
+      <path d="M977,218 Q974,204 979,192 Q984,180 987,188 Q990,178 993,188 Q997,198 994,216 Z" fill="#e65100" />
+      <path d="M979,218 Q977,208 981,198 Q985,190 988,196 Q991,188 994,196 Q996,205 993,218 Z" fill="#ff8f00" />
+      <path d="M982,218 Q981,210 984,203 Q987,197 989,201 Q991,196 993,201 Q994,208 992,218 Z" fill="#ffcc02" />
+    </g>
 
-      <!-- logs -->
-      <line x1="963" y1="218" x2="1007" y2="208"
-            stroke="#2a1505" stroke-width="6" stroke-linecap="round" />
-      <line x1="963" y1="208" x2="1007" y2="218"
-            stroke="#2a1505" stroke-width="6" stroke-linecap="round" />
+    <!-- Smoke wisps — wavy path, pure Y animation -->
+    <path class="smoke-wisp w1"
+          d="M990,184 C988,177 993,170 990,163 C987,156 992,149 990,142 C988,135 992,128 990,121"
+          fill="none" stroke="rgba(175,175,175,0.62)"
+          stroke-width="3.2" stroke-linecap="round" />
+    <path class="smoke-wisp w2"
+          d="M992,184 C994,177 989,170 992,163 C995,156 990,149 993,142 C995,135 991,128 993,121"
+          fill="none" stroke="rgba(175,175,175,0.52)"
+          stroke-width="2.6" stroke-linecap="round" />
+    <path class="smoke-wisp w3"
+          d="M988,184 C986,177 991,170 988,163 C985,156 990,149 987,142 C985,135 989,128 987,121"
+          fill="none" stroke="rgba(175,175,175,0.44)"
+          stroke-width="2.1" stroke-linecap="round" />
+  </svg>
 
-      <!-- flames — animated flicker group -->
-      <g class="fire-group">
-        <!-- base outer flame -->
-        <path d="M973,212 Q970,198 975,186 Q980,174 983,182
-                 Q986,172 989,182 Q994,192 990,210 Z"
-              fill="#e65100" />
-        <!-- mid amber flame -->
-        <path d="M975,212 Q973,202 977,192 Q981,184 984,190
-                 Q987,182 990,190 Q992,200 989,212 Z"
-              fill="#ff8f00" />
-        <!-- hot yellow inner -->
-        <path d="M978,212 Q977,205 980,198 Q983,192 985,197
-                 Q987,191 989,197 Q990,204 988,212 Z"
-              fill="#ffd600" />
-        <!-- small side flickers -->
-        <path d="M968,212 Q966,206 969,200 Q972,194 975,198
-                 Q975,205 972,212 Z"
-              fill="#ff8f00" opacity="0.7" />
-        <path d="M996,212 Q998,206 996,200 Q993,194 990,198
-                 Q990,205 994,212 Z"
-              fill="#ff8f00" opacity="0.7" />
-      </g>
+  <!-- ════════════════════════════════════════════════════════════
+       NIGHT VERSION  (same scene as day, shifted to moonlit palette)
+  ═════════════════════════════════════════════════════════════ -->
+  <svg v-else
+    viewBox="0 0 1440 270"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+    class="footer-svg footer-svg--night"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="n-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#070014" />
+        <stop offset="40%"  stop-color="#0d1a2e" />
+        <stop offset="75%"  stop-color="#0a2018" />
+        <stop offset="100%" stop-color="#081a10" />
+      </linearGradient>
+      <radialGradient id="n-moonglow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#c8e8ff" stop-opacity="0.28" />
+        <stop offset="100%" stop-color="#c8e8ff" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="n-stream" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#1e4a7a" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#102840" stop-opacity="0.7" />
+      </linearGradient>
+      <radialGradient id="n-fireglow" cx="50%" cy="55%" r="50%">
+        <stop offset="0%"   stop-color="#ff7000" stop-opacity="0.65" />
+        <stop offset="60%"  stop-color="#ff4500" stop-opacity="0.22" />
+        <stop offset="100%" stop-color="#ff4500" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="n-ground" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#0d2b10" />
+        <stop offset="100%" stop-color="#071508" />
+      </linearGradient>
+    </defs>
 
-      <!-- ══ SMOKE WISPS ════════════════════════════════════════════ -->
-      <path class="smoke s1"
-            d="M984,180 Q980,164 983,148 Q987,132 981,116"
-            fill="none" stroke="rgba(190,160,230,0.55)"
-            stroke-width="3.5" stroke-linecap="round" />
-      <path class="smoke s2"
-            d="M986,180 Q991,163 987,147 Q982,131 988,115"
-            fill="none" stroke="rgba(190,160,230,0.45)"
-            stroke-width="2.8" stroke-linecap="round" />
-      <path class="smoke s3"
-            d="M983,181 Q977,163 980,147 Q984,131 978,114"
-            fill="none" stroke="rgba(190,160,230,0.38)"
-            stroke-width="2.2" stroke-linecap="round" />
+    <rect width="1440" height="270" fill="url(#n-sky)" />
 
-    </svg>
-  </div>
+    <!-- Stars — scattered, varied brightness -->
+    <g>
+      <circle cx="45"   cy="18"  r="1"   fill="white" opacity="0.88" />
+      <circle cx="130"  cy="32"  r="0.7" fill="white" opacity="0.7" />
+      <circle cx="198"  cy="11"  r="1.1" fill="white" opacity="0.95" />
+      <circle cx="290"  cy="26"  r="0.6" fill="white" opacity="0.55" />
+      <circle cx="380"  cy="8"   r="0.8" fill="white" opacity="0.8" />
+      <circle cx="455"  cy="38"  r="0.7" fill="white" opacity="0.6" />
+      <circle cx="540"  cy="14"  r="1"   fill="white" opacity="0.9" />
+      <circle cx="620"  cy="28"  r="0.6" fill="white" opacity="0.5" />
+      <circle cx="710"  cy="9"   r="0.9" fill="white" opacity="0.85" />
+      <circle cx="800"  cy="35"  r="0.7" fill="white" opacity="0.65" />
+      <circle cx="880"  cy="16"  r="1"   fill="white" opacity="0.8" />
+      <circle cx="960"  cy="42"  r="0.6" fill="white" opacity="0.55" />
+      <circle cx="1050" cy="12"  r="0.8" fill="white" opacity="0.75" />
+      <circle cx="1140" cy="30"  r="0.7" fill="white" opacity="0.6" />
+      <circle cx="80"   cy="52"  r="0.5" fill="white" opacity="0.4" />
+      <circle cx="340"  cy="48"  r="0.5" fill="white" opacity="0.38" />
+      <circle cx="670"  cy="50"  r="0.6" fill="white" opacity="0.42" />
+      <circle cx="940"  cy="55"  r="0.5" fill="white" opacity="0.38" />
+      <circle cx="1220" cy="22"  r="0.9" fill="white" opacity="0.78" />
+    </g>
+
+    <!-- Crescent moon -->
+    <circle cx="1280" cy="48" r="52"  fill="url(#n-moonglow)" />
+    <circle cx="1280" cy="48" r="22"  fill="#f0f4ff" opacity="0.94" />
+    <circle cx="1292" cy="43" r="19"  fill="#070014" />
+
+    <!-- Mountain layer 1 — distant haze, muted blue-grey -->
+    <path opacity="0.55" fill="#2a4858"
+          d="M-10,178 C 42,172  88,162 138,166 C178,170 210,148 258,134
+             C298,122 332,130 372,142 C408,153 435,136 475,122
+             C510,109 545,116 582,128 C615,139 644,124 684,112
+             C718,101 754,108 795,120 C832,131 860,118 900,107
+             C936, 97 972,105 1010,116 C1045,126 1072,114 1112,106
+             C1148, 99 1183,108 1222,120 C1258,131 1292,122 1335,132
+             C1368,140 1405,152 1440,162 L1440,178 Z" />
+
+    <!-- Mountain layer 2 — far peaks, dark sage-teal -->
+    <path fill="#1e4438"
+          d="M-10,178 C 18,172  48,158  82,152 C110,147 138,118 178, 96
+             C212, 78 244, 88 280,108 C310,125 335,108 372, 86
+             C404, 68 436, 78 472, 98 C503,115 528, 96 566, 74
+             C600, 55 635, 66 672, 89 C704,110 728, 90 765, 68
+             C798, 50 834, 62 872, 85 C906,106 932, 88 968, 65
+             C1000, 46 1038, 60 1078, 84 C1112,105 1138, 88 1175, 68
+             C1208, 52 1242, 70 1278, 95 C1308,116 1336,105 1370,118
+             C1398,130 1422,148 1440,160 L1440,178 Z" />
+
+    <!-- Mountain layer 3 — mid-range, dark forest green -->
+    <path fill="#163824"
+          d="M-10,178 C 14,175  36,168  62,162 C 85,156 108,132 142,112
+             C170, 95 196,104 226,122 C252,138 272,120 305,100
+             C332, 84 358, 94 388,115 C414,133 436,118 466,100
+             C492, 85 516, 95 545,115 C570,132 592,118 624,100
+             C652, 85 676, 70 714, 56 C748, 44 780, 58 816, 80
+             C848,100 872, 84 908, 65 C940, 49 976, 64 1012, 90
+             C1044,112 1066, 98 1100, 80 C1130, 65 1158, 82 1192,105
+             C1220,126 1244,112 1278,128 C1305,142 1330,132 1362,145
+             C1388,156 1416,164 1440,170 L1440,178 Z" />
+
+    <!-- Mountain layer 4 — near foothills, deep forest -->
+    <path fill="#0c2618"
+          d="M-10,178 C 22,176  52,172  84,170 C110,168 135,158 166,152
+             C192,147 216,156 244,163 C266,168 288,160 314,154
+             C336,149 358,157 384,163 C406,168 426,162 452,156
+             C474,151 498,160 524,166 C546,171 570,167 598,162
+             C622,158 648,164 676,170 C700,174 724,172 752,168
+             C775,165 800,170 828,174 C850,177 874,177 900,177
+             L1440,177 L1440,178 Z" />
+
+    <!-- Meadow ground -->
+    <path fill="url(#n-ground)"
+          d="M-10,176 Q 240,169 480,174 Q 720,179 960,171
+             Q1200,164 1440,172 L1440,270 L-10,270 Z" />
+    <path fill="none" stroke="#1a4020" stroke-width="2" opacity="0.5"
+          d="M-10,176 Q 240,170 480,175 Q 720,180 960,172 Q1200,165 1440,173" />
+
+    <!-- Fireflies / moonlit flowers -->
+    <g opacity="0.55">
+      <circle cx="80"   cy="192" r="1.4" fill="#a0ffb0" />
+      <circle cx="145"  cy="198" r="1.1" fill="#c8ffd0" />
+      <circle cx="310"  cy="200" r="1.2" fill="#a0ffb0" />
+      <circle cx="480"  cy="193" r="1.4" fill="#c8ffd0" />
+      <circle cx="648"  cy="190" r="1.2" fill="#a0ffb0" />
+      <circle cx="860"  cy="194" r="1.4" fill="#c8ffd0" />
+      <circle cx="1165" cy="202" r="1.1" fill="#a0ffb0" />
+      <circle cx="1390" cy="198" r="1.2" fill="#c8ffd0" />
+    </g>
+
+    <!-- Stream (moonlit) -->
+    <path class="stream-body" fill="url(#n-stream)"
+          d="M  0,242 Q 150,230 290,244 Q 440,258 590,240
+             Q 730,224 875,242 Q1020,258 1160,244 Q1320,230 1440,242
+             L1440,256 Q1320,244 1160,258 Q1020,272 875,256
+             Q 730,240 590,254 Q 440,270 290,258 Q 150,244   0,256 Z" />
+    <path class="stream-shimmer" fill="none"
+          stroke="#4db8e8" stroke-width="1.4" opacity="0.32"
+          d="M0,244 Q 150,232 290,246 Q 440,260 590,242
+             Q 730,226 875,244 Q1020,260 1160,246 Q1320,232 1440,244" />
+
+    <!-- Lone pine — far left (dark silhouette) -->
+    <g>
+      <rect x="118" y="164" width="5" height="16" rx="1" fill="#081808" />
+      <polygon points="103,170 133,170 118,154" fill="#0c2210" />
+      <polygon points="106,157 130,157 118,143" fill="#102a14" />
+      <polygon points="110,145 126,145 118,131" fill="#143218" />
+    </g>
+    <!-- Small pine far right -->
+    <g>
+      <rect x="1318" y="168" width="5" height="12" rx="1" fill="#081808" />
+      <polygon points="1305,173 1331,173 1318,160" fill="#0c2210" />
+      <polygon points="1308,162 1328,162 1318,150" fill="#102a14" />
+      <polygon points="1311,152 1325,152 1318,140" fill="#143218" />
+    </g>
+
+    <!-- Left hammock tree (dark silhouette, same shape) -->
+    <g>
+      <rect x="317" y="160" width="10" height="22" rx="2" fill="#071007" />
+      <polygon points="288,170 358,170 322,148" fill="#0c1e0c" />
+      <polygon points="293,155 350,155 322,133" fill="#102810" />
+      <polygon points="299,141 344,141 322,120" fill="#143214" />
+      <polygon points="305,127 338,127 322,107" fill="#183818" />
+      <polygon points="311,113 332,113 322, 96" fill="#1c401c" />
+    </g>
+    <!-- Right hammock tree (dark silhouette) -->
+    <g>
+      <rect x="599" y="160" width="10" height="22" rx="2" fill="#071007" />
+      <polygon points="570,170 638,170 604,148" fill="#0c1e0c" />
+      <polygon points="575,155 634,155 604,133" fill="#102810" />
+      <polygon points="581,141 628,141 604,120" fill="#143214" />
+      <polygon points="587,127 622,127 604,107" fill="#183818" />
+      <polygon points="593,114 616,114 604, 97" fill="#1c401c" />
+    </g>
+
+    <!-- Hammock (deep purple, same position) -->
+    <g class="hammock-group">
+      <path d="M324,160 Q462,192 602,160 L602,165 Q462,197 324,165 Z"
+            fill="#2e1060" opacity="0.9" />
+      <path d="M324,161 Q462,193 602,161" fill="none"
+            stroke="#6040a0" stroke-width="1.4" stroke-dasharray="7 6" opacity="0.55" />
+      <ellipse cx="462" cy="186" rx="36" ry="8"   fill="#0d0028" opacity="0.7" />
+      <ellipse cx="462" cy="178" rx=" 9" ry="8.5" fill="#0d0028" opacity="0.7" />
+    </g>
+
+    <!-- Campfire (vivid at night) -->
+    <circle cx="990" cy="218" r="60" fill="url(#n-fireglow)" />
+    <line x1="968" y1="226" x2="1012" y2="215" stroke="#1a0c04" stroke-width="6" stroke-linecap="round" />
+    <line x1="968" y1="215" x2="1012" y2="226" stroke="#1a0c04" stroke-width="6" stroke-linecap="round" />
+    <g class="fire-group">
+      <path d="M977,218 Q974,204 979,192 Q984,180 987,188 Q990,178 993,188 Q997,198 994,216 Z" fill="#e65100" />
+      <path d="M979,218 Q977,208 981,198 Q985,190 988,196 Q991,188 994,196 Q996,205 993,218 Z" fill="#ff8f00" />
+      <path d="M982,218 Q981,210 984,203 Q987,197 989,201 Q991,196 993,201 Q994,208 992,218 Z" fill="#ffd600" />
+    </g>
+
+    <!-- Smoke wisps — soft grey, pure Y animation -->
+    <path class="smoke-wisp w1"
+          d="M990,184 C988,177 993,170 990,163 C987,156 992,149 990,142 C988,135 992,128 990,121"
+          fill="none" stroke="rgba(200,210,220,0.58)"
+          stroke-width="3.2" stroke-linecap="round" />
+    <path class="smoke-wisp w2"
+          d="M992,184 C994,177 989,170 992,163 C995,156 990,149 993,142 C995,135 991,128 993,121"
+          fill="none" stroke="rgba(200,210,220,0.46)"
+          stroke-width="2.6" stroke-linecap="round" />
+    <path class="smoke-wisp w3"
+          d="M988,184 C986,177 991,170 988,163 C985,156 990,149 987,142 C985,135 989,128 987,121"
+          fill="none" stroke="rgba(200,210,220,0.36)"
+          stroke-width="2.1" stroke-linecap="round" />
+  </svg>
+
 </template>
 
 <script setup lang="ts">
-// No runtime logic — all animation is CSS.
+withDefaults(defineProps<{ night?: boolean }>(), { night: false })
 </script>
 
 <style scoped>
-/* ── Wrapper ─────────────────────────────────────────────────── */
-.footer-scene-wrap { position: relative; width: 100%; }
-
-/* ── Colour-transition bridge ────────────────────────────────── */
-.footer-fade {
-  height: 90px;
-  /* Transitions from the layout light background into the SVG sky */
-  background: linear-gradient(to bottom, #f5f0ff 0%, #0d0028 100%);
-  pointer-events: none;
-}
-
-/* Dark-mode override applied by parent class propagation */
-.bg-dark .footer-fade,
-.page-dark .footer-fade {
-  background: linear-gradient(to bottom, #070014 0%, #0d0028 100%);
-}
-
-/* ── SVG ─────────────────────────────────────────────────────── */
 .footer-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  /* min-height keeps scene visible on very wide short viewports */
-  min-height: 180px;
-  background: #0d0028;
+  display: block; width: 100%; height: auto; min-height: 190px;
 }
+.footer-svg--day   { background: #f5f0ff; }
+.footer-svg--night { background: #070014; }
 
-/* ── Stream shimmer ──────────────────────────────────────────── */
+/* Stream */
 .stream-body    { animation: streamPulse 5s ease-in-out infinite; }
 .stream-shimmer { animation: streamPulse 5s ease-in-out infinite reverse; }
 @keyframes streamPulse {
-  0%, 100% { opacity: 0.75; }
+  0%, 100% { opacity: 0.78; }
   50%      { opacity: 1; }
 }
 
-/* ── Hammock sway ────────────────────────────────────────────── */
+/* Hammock */
 .hammock-group {
-  animation: hammockSway 5s ease-in-out infinite;
-  transform-origin: 458px 172px;
+  animation: hammockSway 5.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 @keyframes hammockSway {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(4px); }
 }
 
-/* ── Fire flicker ────────────────────────────────────────────── */
+/* Fire */
 .fire-group {
-  animation: fireFlicker 0.75s ease-in-out infinite alternate;
-  transform-origin: 984px 205px;
+  animation: fireFlicker 0.8s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center bottom;
 }
 @keyframes fireFlicker {
   0%   { transform: scaleY(1)    scaleX(1); }
-  40%  { transform: scaleY(1.1)  scaleX(0.92); }
-  100% { transform: scaleY(0.96) scaleX(1.06); }
+  45%  { transform: scaleY(1.12) scaleX(0.91); }
+  100% { transform: scaleY(0.95) scaleX(1.07); }
 }
 
-/* ── Smoke rise ──────────────────────────────────────────────── */
-.smoke { animation: smokeRise 3.5s ease-out infinite; }
-.s2    { animation-delay: 1.1s; }
-.s3    { animation-delay: 2.3s; }
+/* Smoke — wavy path shape, translateY ONLY, zero X drift */
+.smoke-wisp {
+  animation: wispRise 4.2s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+.w2 { animation-delay: 1.4s; }
+.w3 { animation-delay: 2.8s; }
 
-@keyframes smokeRise {
-  0%   { transform: translateY(0)    scaleX(1);   opacity: 0; }
-  8%   { opacity: 1; }
-  75%  { transform: translateY(-28px) scaleX(1.6); opacity: 0.4; }
-  100% { transform: translateY(-42px) scaleX(2.2); opacity: 0; }
+@keyframes wispRise {
+  0%   { transform: translateY(0);      opacity: 0;    }
+  10%  {                                opacity: 0.78; }
+  75%  { transform: translateY(-60px);  opacity: 0.28; }
+  100% { transform: translateY(-88px);  opacity: 0;    }
 }
 </style>
