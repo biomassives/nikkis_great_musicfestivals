@@ -155,9 +155,10 @@ function moveChild(i: number, ci: number, dir: -1 | 1) {
 async function load() {
   const { data } = await supabase
     .from('site_settings').select('value')
-    .eq('key', 'nav_config').maybeSingle()
-  if (Array.isArray(data?.value) && (data?.value as unknown[]).length) {
-    items.value = (data?.value as NavItem[]).map(item => ({
+    .eq('key', 'nav_config').limit(1)
+  const row = data?.[0]
+  if (Array.isArray(row?.value) && (row?.value as unknown[]).length) {
+    items.value = (row?.value as NavItem[]).map(item => ({
       ...item,
       children: item.children ?? [],
     }))

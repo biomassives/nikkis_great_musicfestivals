@@ -159,10 +159,10 @@ function inquire(name: string) {
 onMounted(async () => {
   const [itemsRes, sectionsRes] = await Promise.all([
     supabase.from('merch_items').select('*').eq('published', true).order('display_order'),
-    supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').maybeSingle(),
+    supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').limit(1),
   ])
   items.value = (itemsRes.data as MerchItem[]) ?? []
-  if (sectionsRes.data?.value) sections.value = sectionsRes.data.value as MerchSection[]
+  if (sectionsRes.data?.[0]?.value) sections.value = sectionsRes.data[0].value as MerchSection[]
   tab.value = sections.value[0]?.slug ?? 'art'
   loading.value = false
 })

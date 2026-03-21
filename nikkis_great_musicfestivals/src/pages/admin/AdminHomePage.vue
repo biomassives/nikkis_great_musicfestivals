@@ -266,7 +266,61 @@
 
       <q-separator dark />
 
-      <!-- ⑤ SEO & SOCIAL -->
+      <!-- ⑤ FOOTER SKY TEXT -->
+      <q-expansion-item class="home-section">
+        <template #header>
+          <q-item-section avatar><q-icon name="title" color="yellow-5" /></q-item-section>
+          <q-item-section>
+            <q-item-label class="section-label-text">Footer Sky Text</q-item-label>
+            <q-item-label caption class="text-grey-6">Dashed digital message displayed in the footer SVG sky — can link anywhere</q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <div class="row items-center q-gutter-sm no-wrap" @click.stop>
+              <q-icon v-if="saved.skyText" name="check_circle" color="positive" size="16px" />
+              <q-btn size="xs" color="teal" unelevated label="Save" :loading="saving.skyText" @click="saveSkyText" />
+            </div>
+          </q-item-section>
+        </template>
+        <q-card class="section-card">
+          <q-card-section class="q-gutter-md">
+            <q-input v-model="skyText.text" label="Sky message (keep short — 30–50 chars)"
+              dark outlined dense label-color="teal-3" color="teal-3" clearable
+              hint="Rendered in dashed monospace across the footer sky. Leave blank to hide." />
+            <q-input v-model="skyText.url" label="Link URL (optional)"
+              dark outlined dense label-color="teal-3" color="teal-3" clearable
+              hint="e.g. https://archive.org/details/billystrings2026-02-06" />
+            <div class="row items-center q-gutter-md">
+              <q-input v-model="skyText.color" label="Text color" readonly
+                dark outlined dense label-color="teal-3" color="teal-3" style="max-width:180px" />
+              <div class="column items-center" style="gap:4px">
+                <div class="text-caption text-grey-5">Color</div>
+                <input type="color" v-model="skyText.color" class="color-picker" title="Sky text color" />
+              </div>
+            </div>
+            <!-- Preview strip -->
+            <div v-if="skyText.text" class="sky-preview">
+              <span :style="`
+                font-family: 'Courier New', monospace;
+                font-weight: 700;
+                letter-spacing: 5px;
+                font-size: 13px;
+                color: transparent;
+                -webkit-text-stroke: 0.7px ${skyText.color};
+                text-decoration: ${skyText.url ? 'underline' : 'none'};
+                opacity: 0.82;
+              `">{{ skyText.text }}</span>
+            </div>
+          </q-card-section>
+          <q-card-actions align="right" class="q-pr-md q-pb-md">
+            <q-icon v-if="saved.skyText" name="check_circle" color="positive" size="18px" class="q-mr-sm" />
+            <q-btn unelevated color="teal" label="Save Sky Text" :loading="saving.skyText" @click="saveSkyText" />
+          </q-card-actions>
+        </q-card>
+      </q-expansion-item>
+
+      <q-separator dark />
+
+      <!-- ⑥ SEO & SOCIAL -->
       <q-expansion-item class="home-section">
         <template #header>
           <q-item-section avatar><q-icon name="search" color="light-blue-3" /></q-item-section>
@@ -452,8 +506,8 @@ const ogFileInput      = ref<HTMLInputElement | null>(null)
 const welcomeFileInput = ref<HTMLInputElement | null>(null)
 
 // ── Per-section save state ───────────────────────────────────────────────────
-const saving = reactive({ content: false, welcome: false, artists: false, appearance: false, seo: false })
-const saved  = reactive({ content: false, welcome: false, artists: false, appearance: false, seo: false })
+const saving = reactive({ content: false, welcome: false, artists: false, appearance: false, seo: false, skyText: false })
+const saved  = reactive({ content: false, welcome: false, artists: false, appearance: false, seo: false, skyText: false })
 const savingAll = ref(false)
 const savedAll  = ref(false)
 
@@ -548,6 +602,12 @@ const appearance = reactive({
   footer_default_night: false,
 })
 
+const skyText = reactive({
+  text:  'Music Festivals & Nature Camping & Community Building',
+  url:   '',
+  color: '#ffd700',
+})
+
 const seo = reactive({
   site_name:       "Nikki's Great Music Festivals",
   og_title:        "Nikki's Great Music Festivals — Tour Maps, Live Music & Community",
@@ -630,9 +690,14 @@ async function saveSeo() {
   await supabase.from('site_settings').upsert({ key: 'homepage_seo', value: { ...seo }, updated_at: new Date().toISOString() })
   saving.seo = false; flash('seo')
 }
+async function saveSkyText() {
+  saving.skyText = true
+  await supabase.from('site_settings').upsert({ key: 'footer_sky_text', value: { ...skyText }, updated_at: new Date().toISOString() })
+  saving.skyText = false; flash('skyText')
+}
 async function saveAll() {
   savingAll.value = true; savedAll.value = false
-  await Promise.all([saveContent(), saveWelcome(), saveArtists(), saveAppearance(), saveSeo()])
+  await Promise.all([saveContent(), saveWelcome(), saveArtists(), saveAppearance(), saveSeo(), saveSkyText()])
   savingAll.value = false; savedAll.value = true
   setTimeout(() => { savedAll.value = false }, 3000)
 }
@@ -647,6 +712,7 @@ async function loadSettings() {
     if (row.key === 'welcome_overlay')     Object.assign(welcome,    row.value as object)
     if (row.key === 'homepage_artists' && Array.isArray(row.value) && row.value.length)
       artists.value = row.value as HomepageArtist[]
+    if (row.key === 'footer_sky_text') Object.assign(skyText, row.value as object)
   }
 }
 
@@ -754,4 +820,11 @@ onMounted(loadSettings)
   font-size: 12px; font-weight: 700; letter-spacing: 2px;
   text-transform: uppercase; padding: 10px 24px; border-radius: 999px; cursor: default;
 }
+.sky-preview {
+  margin-top: 4px;
+  background: linear-gradient(to bottom, #0d1a2e, #0a1828);
+  border-radius: 8px; padding: 20px 28px;
+  text-align: center;
+}
+.ls-2 { letter-spacing: 2px; }
 </style>

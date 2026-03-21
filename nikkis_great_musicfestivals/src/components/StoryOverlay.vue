@@ -31,8 +31,7 @@
             <div class="story-body">
 
               <!-- Content is admin-authored only, not user-submitted -->
-              <div v-for="(para, i) in cfg.paragraphs" :key="i"
-                class="story-para" v-html="para" />
+              <div class="story-body-content" v-html="cfg.content" />
 
               <p class="story-closing">
                 {{ cfg.closing }}
@@ -77,7 +76,7 @@ const cfg = reactive({
   image_caption: 'On the road',
   eyebrow:       'Our Full Story',
   title:         'The Music\nNever Stopped',
-  paragraphs:    [...DEFAULT_PARAGRAPHS] as string[],
+  content:       DEFAULT_PARAGRAPHS.map(p => `<p>${p}</p>`).join(''),
   closing:       'Come with us.',
 })
 
@@ -86,16 +85,19 @@ onMounted(async () => {
     .from('site_settings')
     .select('value')
     .eq('key', 'story_overlay')
-    .maybeSingle()
-  if (data?.value && typeof data.value === 'object') {
-    const v = data.value as Record<string, unknown>
+    .limit(1)
+  const row = data?.[0]
+  if (row?.value && typeof row.value === 'object') {
+    const v = row.value as Record<string, unknown>
     if (typeof v.image_url     === 'string') cfg.image_url     = v.image_url
     if (typeof v.image_caption === 'string') cfg.image_caption = v.image_caption
     if (typeof v.eyebrow       === 'string') cfg.eyebrow       = v.eyebrow
     if (typeof v.title         === 'string') cfg.title         = v.title
-    if (typeof v.closing       === 'string') cfg.closing       = v.closing
-    if (Array.isArray(v.paragraphs) && (v.paragraphs as unknown[]).length > 0) {
-      cfg.paragraphs = v.paragraphs as string[]
+    if (typeof v.closing  === 'string') cfg.closing  = v.closing
+    if (typeof v.content  === 'string') {
+      cfg.content = v.content
+    } else if (Array.isArray(v.paragraphs) && (v.paragraphs as unknown[]).length > 0) {
+      cfg.content = (v.paragraphs as string[]).map(p => `<p>${p}</p>`).join('')
     }
   }
 })
@@ -248,24 +250,28 @@ watch(() => props.modelValue, (open) => {
 .story-body {
   flex: 1;
 
-  .story-para {
-    margin-bottom: 24px;
-
-    :deep(p) {
+  .story-body-content {
+    :deep(p)  {
       font-size: clamp(14px, 1.2vw, 17px);
       line-height: 1.8;
       color: rgba(255,255,255,0.72);
-      margin: 0 0 0.8em;
+      margin: 0 0 1.1em;
       font-weight: 300;
     }
-    :deep(strong) { color: #fff; }
-    :deep(em)     { color: rgba(255,215,0,0.8); }
-    :deep(a)      { color: #80cbc4; text-decoration: underline; }
+    :deep(h2) { font-size: clamp(18px, 2vw, 26px); font-weight: 700; color: #fff; margin: 1.4em 0 0.4em; }
+    :deep(h3) { font-size: clamp(16px, 1.6vw, 22px); font-weight: 600; color: #fff; margin: 1.2em 0 0.3em; }
+    :deep(strong)  { color: #fff; }
+    :deep(em)      { color: rgba(255,215,0,0.85); }
+    :deep(a)       { color: #80cbc4; text-decoration: underline; }
     :deep(ul), :deep(ol) {
-      padding-left: 1.5em;
-      font-size: clamp(14px, 1.2vw, 17px);
-      line-height: 1.8;
+      padding-left: 1.5em; margin: 0 0 1em;
+      font-size: clamp(14px, 1.2vw, 17px); line-height: 1.8;
       color: rgba(255,255,255,0.72);
+    }
+    :deep(blockquote) {
+      border-left: 3px solid rgba(255,215,0,0.5);
+      padding-left: 16px; margin: 0 0 1em;
+      color: rgba(255,255,255,0.6); font-style: italic;
     }
   }
 

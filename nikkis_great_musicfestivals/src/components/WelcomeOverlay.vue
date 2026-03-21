@@ -63,8 +63,8 @@ onMounted(async () => {
     .from('site_settings')
     .select('value')
     .eq('key', 'welcome_overlay')
-    .maybeSingle()
-  if (data?.value) Object.assign(cfg, data.value as object)
+    .limit(1)
+  if (data?.[0]?.value) Object.assign(cfg, data[0].value as object)
 
   visible.value = true   // show only after the correct image URL is in place
 })

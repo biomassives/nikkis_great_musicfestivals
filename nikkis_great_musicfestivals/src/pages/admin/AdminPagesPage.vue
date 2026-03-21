@@ -7,7 +7,7 @@
       <div class="row items-center q-mb-lg">
         <div>
           <div class="text-h5 text-purple-3">Pages</div>
-          <div class="text-caption text-grey-5">Custom content pages — images, video, embeds, media links</div>
+          <div class="text-caption text-grey-5">Custom content pages with rich text, images, video and embeds</div>
         </div>
         <q-space />
         <q-btn color="purple-5" unelevated icon="add" label="New Page" @click="newPage" />
@@ -48,9 +48,6 @@
               </div>
               <div v-if="page.nav_parent" class="text-caption text-grey-6 q-mt-xs">
                 <q-icon name="account_tree" size="11px" class="q-mr-xs" />under {{ page.nav_parent }}
-              </div>
-              <div class="text-caption text-grey-7 q-mt-xs">
-                {{ page.blocks?.length ?? 0 }} block{{ (page.blocks?.length ?? 0) === 1 ? '' : 's' }}
               </div>
             </q-card-section>
             <q-card-actions align="right">
@@ -98,7 +95,7 @@
 
       <!-- Page Settings -->
       <div class="text-subtitle2 text-purple-4 text-uppercase ls-2 q-mb-sm">Page Settings</div>
-      <q-card class="settings-card q-mb-xl">
+      <q-card class="settings-card q-mb-lg">
         <q-card-section class="q-gutter-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-sm-6">
@@ -127,158 +124,23 @@
         </q-card-section>
       </q-card>
 
-      <!-- Block list -->
-      <div class="text-subtitle2 text-purple-4 text-uppercase ls-2 q-mb-sm">Content Blocks</div>
-
-      <div v-if="editingPage.blocks.length === 0"
-        class="text-grey-6 text-center q-py-lg q-mb-md">
-        No blocks yet — add one below.
-      </div>
-
-      <div v-for="(block, bi) in editingPage.blocks" :key="block.id" class="block-card q-mb-md">
-
-        <!-- Block header row -->
-        <div class="block-header">
-          <div class="row items-center q-gutter-xs">
-            <q-btn flat round dense icon="arrow_upward"   size="xs" color="grey-6"
-              :disable="bi === 0"                             @click="moveBlock(bi, -1)" />
-            <q-btn flat round dense icon="arrow_downward" size="xs" color="grey-6"
-              :disable="bi === editingPage.blocks.length - 1" @click="moveBlock(bi,  1)" />
-            <q-chip dense :color="blockMeta(block.type).color" text-color="white"
-              :icon="blockMeta(block.type).icon" :label="blockMeta(block.type).label"
-              size="sm" class="q-ml-xs" />
-          </div>
-          <q-btn flat round dense icon="delete" size="sm" color="red-4"
-            @click="removeBlock(bi)" />
-        </div>
-
-        <!-- Block body -->
-        <div class="block-body q-pa-md">
-
-          <!-- HEADING -->
-          <template v-if="block.type === 'heading'">
-            <div class="row q-col-gutter-sm">
-              <div class="col-auto" style="min-width:100px">
-                <q-select v-model="block.level" :options="[1,2,3]" label="Level"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-              <div class="col">
-                <q-input v-model="block.text" label="Heading text"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-            </div>
-          </template>
-
-          <!-- TEXT (WYSIWYG — Quill Snow) -->
-          <template v-else-if="block.type === 'text'">
-            <QuillEditor
-              :content="block.content ?? ''"
-              content-type="html"
-              theme="snow"
-              placeholder="Write your content here…"
-              class="block-wysiwyg"
-              @update:content="(v) => { block.content = String(v) }"
-            />
-          </template>
-
-          <!-- IMAGE -->
-          <template v-else-if="block.type === 'image'">
-            <div class="row q-col-gutter-sm items-center q-mb-sm">
-              <div class="col">
-                <q-input v-model="block.url" label="Image URL"
-                  dark outlined dense label-color="purple-3" color="purple-3" clearable />
-              </div>
-              <div class="col-auto">
-                <q-btn color="purple-8" icon="upload" label="Upload" unelevated size="sm"
-                  :loading="uploadingImg && uploadingBlockId === block.id"
-                  @click="triggerBlockUpload(block.id)" />
-              </div>
-            </div>
-            <div class="row q-col-gutter-sm q-mb-sm">
-              <div class="col-8">
-                <q-input v-model="block.caption" label="Caption (optional)"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-              <div class="col-4">
-                <q-select v-model="block.width" label="Width"
-                  :options="[{label:'Full width',value:'full'},{label:'Wide',value:'wide'},{label:'Medium',value:'medium'}]"
-                  option-value="value" option-label="label" emit-value map-options
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-            </div>
-            <q-input v-model="block.link" label="Wrap in link (optional)"
-              dark outlined dense label-color="purple-3" color="purple-3"
-              hint="Makes the image clickable" />
-            <div v-if="block.url" class="q-mt-sm">
-              <img :src="block.url" style="max-height:110px; border-radius:6px; object-fit:cover;" />
-            </div>
-          </template>
-
-          <!-- VIDEO -->
-          <template v-else-if="block.type === 'video'">
-            <q-input v-model="block.url" label="Video URL"
-              dark outlined dense label-color="purple-3" color="purple-3"
-              hint="YouTube, Vimeo, Internet Archive, or direct .mp4 URL"
-              class="q-mb-sm" />
-            <q-input v-model="block.caption" label="Caption (optional)"
-              dark outlined dense label-color="purple-3" color="purple-3" />
-          </template>
-
-          <!-- IFRAME / EMBED -->
-          <template v-else-if="block.type === 'iframe'">
-            <q-input v-model="block.url" label="Embed URL"
-              dark outlined dense label-color="purple-3" color="purple-3"
-              hint="nugs.net, archive.org, Bandcamp, SoundCloud, or any embeddable URL"
-              class="q-mb-sm" />
-            <div class="row q-col-gutter-sm">
-              <div class="col">
-                <q-input v-model="block.iframe_title" label="Label / description"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-              <div class="col-auto" style="min-width:140px">
-                <q-input v-model.number="block.height" label="Height (px)" type="number"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-            </div>
-          </template>
-
-          <!-- MEDIA LINK -->
-          <template v-else-if="block.type === 'media_link'">
-            <div class="row q-col-gutter-sm q-mb-sm">
-              <div class="col-8">
-                <q-input v-model="block.url" label="Destination URL"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-              <div class="col-4">
-                <q-input v-model="block.site_name" label="Site (e.g. nugs.net)"
-                  dark outlined dense label-color="purple-3" color="purple-3" />
-              </div>
-            </div>
-            <q-input v-model="block.title" label="Link title"
-              dark outlined dense label-color="purple-3" color="purple-3" class="q-mb-sm" />
-            <q-input v-model="block.description" label="Short description"
-              dark outlined dense label-color="purple-3" color="purple-3" class="q-mb-sm" />
-            <q-input v-model="block.thumbnail" label="Thumbnail image URL (optional)"
-              dark outlined dense label-color="purple-3" color="purple-3" />
-          </template>
-
-          <!-- DIVIDER -->
-          <template v-else-if="block.type === 'divider'">
-            <div class="text-caption text-grey-6">Horizontal divider line — no settings needed.</div>
-          </template>
-
-        </div>
-      </div>
-
-      <!-- Add Block toolbar -->
-      <div class="add-block-section q-mb-xl">
-        <div class="text-caption text-purple-5 text-uppercase ls-1 q-mb-sm">Add Block</div>
-        <div class="row q-gutter-sm flex-wrap">
-          <q-btn v-for="bt in BLOCK_TYPES" :key="bt.type"
-            :icon="bt.icon" :label="bt.label" :color="bt.color"
-            outline size="sm" @click="addBlock(bt.type)" />
-        </div>
-      </div>
+      <!-- Single rich-text editor -->
+      <div class="text-subtitle2 text-purple-4 text-uppercase ls-2 q-mb-sm">Content</div>
+      <q-card class="settings-card q-mb-xl">
+        <q-card-section class="q-pa-none">
+          <QuillEditor
+            ref="editorRef"
+            :content="editingPage.content"
+            content-type="html"
+            theme="snow"
+            :options="QUILL_OPTIONS"
+            placeholder="Write your page content here — headings, paragraphs, lists, links, and images…"
+            class="page-wysiwyg"
+            @ready="onEditorReady"
+            @update:content="(v) => { editingPage.content = String(v) }"
+          />
+        </q-card-section>
+      </q-card>
 
       <div class="row justify-end q-mb-xl">
         <q-btn color="purple-5" unelevated icon="save" label="Save Page"
@@ -287,15 +149,57 @@
 
     </template>
 
-    <!-- Shared hidden file input for block image uploads -->
-    <input ref="blockFileInput" type="file" accept="image/*"
-      class="hidden" @change="handleBlockUpload" />
+    <!-- ── Image Insert Dialog ──────────────────────────────────────────── -->
+    <q-dialog v-model="imgDialog.show" persistent>
+      <q-card style="min-width:420px;max-width:600px;width:100%" dark class="dialog-card">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6 text-purple-3">Insert Image</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-gutter-md">
+          <div class="row q-col-gutter-sm items-center">
+            <div class="col">
+              <q-input v-model="imgDialog.url" label="Image URL"
+                dark outlined dense label-color="purple-3" color="purple-3"
+                placeholder="https://…" clearable />
+            </div>
+            <div class="col-auto">
+              <q-btn color="purple-8" icon="upload" label="Upload" unelevated size="sm"
+                :loading="imgDialog.uploading" @click="triggerImgUpload" />
+            </div>
+          </div>
+
+          <div v-if="imgDialog.url" class="img-preview-wrap">
+            <img :src="imgDialog.url" class="img-preview" />
+          </div>
+
+          <q-input v-model="imgDialog.caption" label="Caption (optional)"
+            dark outlined dense label-color="purple-3" color="purple-3" />
+
+          <q-input v-model="imgDialog.link" label="Link when clicked (optional)"
+            dark outlined dense label-color="purple-3" color="purple-3"
+            hint="e.g. full-size image URL or a gallery page — leave blank for no link" />
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Cancel" color="grey-5" v-close-popup />
+          <q-btn unelevated label="Insert" color="purple-5" icon="add_photo_alternate"
+            :disable="!imgDialog.url" @click="confirmInsertImage" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Hidden file input for image dialog -->
+    <input ref="imgFileInput" type="file" accept="image/*"
+      class="hidden" @change="handleImgUpload" />
 
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import { QuillEditor } from '@vueup/vue-quill'
@@ -304,31 +208,11 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 const $q = useQuasar()
 
 // ── Types ──────────────────────────────────────────────────────────────────
-type BlockType = 'heading' | 'text' | 'image' | 'video' | 'iframe' | 'media_link' | 'divider'
-
-interface Block {
-  id:            string
-  type:          BlockType
-  level?:        1 | 2 | 3       // heading
-  text?:         string           // heading
-  content?:      string           // text paragraph
-  url?:          string           // image / video / iframe / media_link
-  caption?:      string           // image / video
-  width?:        'full' | 'wide' | 'medium'  // image
-  link?:         string           // image (wraps in <a>)
-  iframe_title?: string           // iframe
-  height?:       number           // iframe
-  title?:        string           // media_link
-  description?:  string           // media_link
-  thumbnail?:    string           // media_link
-  site_name?:    string           // media_link
-}
-
 interface Page {
   id?:        string
   slug:       string
   title:      string
-  blocks:     Block[]
+  content:    string   // full HTML from Quill
   published:  boolean
   nav_parent: string | null
   created_at?: string
@@ -344,7 +228,6 @@ const pages       = ref<Page[]>([])
 const hasDraft    = ref(false)
 const localDraft  = ref<Page | null>(null)
 
-// Default nav items used as immediate options before Supabase loads
 const DEFAULT_NAV = [
   { title: 'Photography', link: '/photography' },
   { title: 'Maps',        link: '/maps'         },
@@ -356,56 +239,85 @@ const navParentOptions = ref<{ label: string; value: string }[]>(
   DEFAULT_NAV.map(i => ({ label: `${i.title} (${i.link})`, value: i.link }))
 )
 
-
 const editingPage = ref<Page>({
-  slug: '', title: '', blocks: [], published: false, nav_parent: null,
+  slug: '', title: '', content: '', published: false, nav_parent: null,
 })
 
 let slugTouched: boolean = false
 function onSlugInput() { slugTouched = true }
 
-// ── Upload state ───────────────────────────────────────────────────────────
-const blockFileInput   = ref<HTMLInputElement | null>(null)
-const uploadingBlockId = ref('')
-const uploadingImg     = ref(false)
+// ── Quill editor ───────────────────────────────────────────────────────────
+const editorRef = ref()
 
-// ── Constants ──────────────────────────────────────────────────────────────
-const BLOCK_TYPES = [
-  { type: 'heading'    as BlockType, icon: 'title',           label: 'Heading',    color: 'purple-8'     },
-  { type: 'text'       as BlockType, icon: 'notes',           label: 'Text',       color: 'blue-grey-8'  },
-  { type: 'image'      as BlockType, icon: 'image',           label: 'Image',      color: 'teal-8'       },
-  { type: 'video'      as BlockType, icon: 'play_circle',     label: 'Video',      color: 'deep-orange-8'},
-  { type: 'iframe'     as BlockType, icon: 'code',            label: 'Embed',      color: 'indigo-8'     },
-  { type: 'media_link' as BlockType, icon: 'open_in_new',     label: 'Media Link', color: 'green-8'      },
-  { type: 'divider'    as BlockType, icon: 'horizontal_rule', label: 'Divider',    color: 'grey-8'       },
-]
-
-const BLOCK_META: Record<BlockType, { icon: string; label: string; color: string }> = {
-  heading:    { icon: 'title',           label: 'Heading',    color: 'purple-7'    },
-  text:       { icon: 'notes',           label: 'Text',       color: 'blue-grey-7' },
-  image:      { icon: 'image',           label: 'Image',      color: 'teal-7'      },
-  video:      { icon: 'play_circle',     label: 'Video',      color: 'deep-orange-7'},
-  iframe:     { icon: 'code',            label: 'Embed',      color: 'indigo-7'    },
-  media_link: { icon: 'open_in_new',     label: 'Media Link', color: 'green-7'     },
-  divider:    { icon: 'horizontal_rule', label: 'Divider',    color: 'grey-7'      },
+const QUILL_OPTIONS = {
+  modules: {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link', 'image'],
+      ['clean'],
+    ],
+  },
 }
 
-const SETUP_SQL = `-- Run once in Supabase SQL Editor
-CREATE TABLE IF NOT EXISTS custom_pages (
-  id         uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  slug       text        UNIQUE NOT NULL,
-  title      text        NOT NULL DEFAULT '',
-  blocks     jsonb       NOT NULL DEFAULT '[]',
-  published  boolean     NOT NULL DEFAULT false,
-  nav_parent text,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE custom_pages ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public reads published pages"
-  ON custom_pages FOR SELECT USING (published = true);
-CREATE POLICY "Auth manages all pages"
-  ON custom_pages FOR ALL USING (auth.role() = 'authenticated');`
+// ── Image dialog ───────────────────────────────────────────────────────────
+const imgFileInput = ref<HTMLInputElement | null>(null)
+const imgDialog = reactive({
+  show:      false,
+  url:       '',
+  caption:   '',
+  link:      '',
+  uploading: false,
+})
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let pendingQuill: any = null
+
+// Called by QuillEditor @ready — wire the image toolbar button
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function onEditorReady(quill: any) {
+  quill.getModule('toolbar').addHandler('image', () => {
+    pendingQuill    = quill
+    imgDialog.url     = ''
+    imgDialog.caption = ''
+    imgDialog.link    = ''
+    imgDialog.show    = true
+  })
+}
+
+function triggerImgUpload() { imgFileInput.value?.click() }
+
+async function handleImgUpload(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  imgDialog.uploading = true
+  const ext  = file.name.split('.').pop() ?? 'jpg'
+  const path = `pages/${Date.now()}.${ext}`
+  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  if (!error) {
+    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    imgDialog.url = data.publicUrl
+  }
+  imgDialog.uploading = false
+  if (imgFileInput.value) imgFileInput.value.value = ''
+}
+
+function confirmInsertImage() {
+  if (!pendingQuill || !imgDialog.url) return
+  const range = pendingQuill.getSelection(true) as { index: number } | null
+  const idx   = range ? range.index : (pendingQuill.getLength() as number) - 1
+
+  const caption  = imgDialog.caption
+    ? `<figcaption class="ql-img-caption">${imgDialog.caption}</figcaption>` : ''
+  const linkOpen  = imgDialog.link
+    ? `<a href="${imgDialog.link}" target="_blank" rel="noopener noreferrer">` : ''
+  const linkClose = imgDialog.link ? '</a>' : ''
+  const html = `<figure class="ql-custom-figure">${linkOpen}<img src="${imgDialog.url}" alt="${imgDialog.caption || ''}" />${linkClose}${caption}</figure><p><br></p>`
+
+  pendingQuill.clipboard.dangerouslyPasteHTML(idx, html)
+  imgDialog.show = false
+}
 
 // ── Draft helpers ──────────────────────────────────────────────────────────
 function draftKey(id?: string) { return `ngmf_page_draft_${id ?? 'new'}` }
@@ -431,7 +343,6 @@ function discardDraft() {
   localDraft.value = null
 }
 
-// Auto-save to localStorage while editing (debounced 800 ms)
 let draftTimer: ReturnType<typeof setTimeout> | null = null
 watch(editingPage, () => {
   if (view.value !== 'editor') return
@@ -441,32 +352,7 @@ watch(editingPage, () => {
   }, 800)
 }, { deep: true })
 
-// ── Block helpers ──────────────────────────────────────────────────────────
-function blockMeta(type: BlockType) { return BLOCK_META[type] }
-
-function addBlock(type: BlockType) {
-  const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-  const defaults: Record<BlockType, Partial<Block>> = {
-    heading:    { level: 2, text: '' },
-    text:       { content: '' },
-    image:      { url: '', width: 'full', caption: '' },
-    video:      { url: '', caption: '' },
-    iframe:     { url: '', height: 500, iframe_title: '' },
-    media_link: { url: '', title: '', site_name: '' },
-    divider:    {},
-  }
-  editingPage.value.blocks.push({ id, type, ...defaults[type] })
-}
-
-function removeBlock(i: number) { editingPage.value.blocks.splice(i, 1) }
-
-function moveBlock(i: number, dir: -1 | 1) {
-  const arr = [...editingPage.value.blocks]
-  const tmp = arr[i]!; arr[i] = arr[i + dir]!; arr[i + dir] = tmp
-  editingPage.value.blocks = arr
-}
-
-// ── Slug auto-generate ─────────────────────────────────────────────────────
+// ── Slug ───────────────────────────────────────────────────────────────────
 function autoSlug(title: string) {
   if (slugTouched || editingPage.value.id) return
   editingPage.value.slug = title
@@ -476,47 +362,37 @@ function autoSlug(title: string) {
     .replace(/\s+/g, '-')
 }
 
-// ── Image upload (shared input for all image blocks) ───────────────────────
-function triggerBlockUpload(blockId: string) {
-  uploadingBlockId.value = blockId
-  blockFileInput.value?.click()
-}
-
-async function handleBlockUpload(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file || !uploadingBlockId.value) return
-  uploadingImg.value = true
-  const ext  = file.name.split('.').pop() ?? 'jpg'
-  const path = `pages/${Date.now()}.${ext}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
-  if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
-    const block = editingPage.value.blocks.find(b => b.id === uploadingBlockId.value)
-    if (block) block.url = data.publicUrl
-  }
-  uploadingImg.value = false
-  uploadingBlockId.value = ''
-  if (blockFileInput.value) blockFileInput.value.value = ''
-}
-
 // ── Navigation ─────────────────────────────────────────────────────────────
 function newPage() {
   slugTouched = false
-  editingPage.value = { slug: '', title: '', blocks: [], published: false, nav_parent: null }
+  editingPage.value = { slug: '', title: '', content: '', published: false, nav_parent: null }
   checkDraft(undefined)
   view.value = 'editor'
 }
 
 function editPage(page: Page) {
   slugTouched = true
-  editingPage.value = { ...page, blocks: page.blocks.map(b => ({ ...b })) }
+  editingPage.value = { ...page }
   hasDraft.value = false; localDraft.value = null
   checkDraft(page.id)
   view.value = 'editor'
 }
 
-function goBack() {
-  view.value = 'list'
+function goBack() { view.value = 'list' }
+
+// ── Extract content from legacy blocks column ──────────────────────────────
+function extractContent(blocks: unknown): string {
+  if (!Array.isArray(blocks) || blocks.length === 0) return ''
+  const arr = blocks as Array<Record<string, unknown>>
+  // New format: single {type:'content', content:'<html>'}
+  if (arr[0]?.type === 'content' && typeof arr[0]?.content === 'string') {
+    return arr[0].content
+  }
+  // Legacy multi-block: join all content/text blocks
+  return arr
+    .filter(b => typeof b.content === 'string')
+    .map(b => b.content as string)
+    .join('')
 }
 
 // ── Save / Delete ──────────────────────────────────────────────────────────
@@ -528,10 +404,11 @@ async function savePage() {
   saving.value  = true
   saveError.value = ''
 
+  // Store content inside existing blocks jsonb column — no migration needed
   const payload = {
     slug:       editingPage.value.slug,
     title:      editingPage.value.title,
-    blocks:     editingPage.value.blocks,
+    blocks:     [{ id: 'main', type: 'content', content: editingPage.value.content }],
     published:  editingPage.value.published,
     nav_parent: editingPage.value.nav_parent || null,
     updated_at: new Date().toISOString(),
@@ -542,22 +419,19 @@ async function savePage() {
       .update(payload).eq('id', editingPage.value.id)
     if (error) { saveError.value = error.message; saving.value = false; return }
     const idx = pages.value.findIndex(p => p.id === editingPage.value.id)
-    if (idx !== -1) Object.assign(pages.value[idx]!, { ...payload, id: editingPage.value.id })
+    if (idx !== -1) Object.assign(pages.value[idx]!, { ...editingPage.value })
   } else {
     const { data, error } = await supabase.from('custom_pages')
       .insert(payload).select().single()
     if (error) { saveError.value = error.message; saving.value = false; return }
-    const created = data as Page
-    editingPage.value.id = created.id as string
-    pages.value.unshift(created)
-    // move draft from 'new' key to actual id key
+    const created = data as { id: string }
+    editingPage.value.id = created.id
+    pages.value.unshift({ ...editingPage.value })
     localStorage.removeItem(draftKey(undefined))
   }
 
-  // Clear the draft for this page now that it's saved
   localStorage.removeItem(draftKey(editingPage.value.id))
   hasDraft.value = false
-
   saving.value = false
   $q.notify({ message: 'Page saved', color: 'teal', position: 'top', icon: 'check' })
 }
@@ -576,6 +450,23 @@ function deletePage(page: Page) {
 }
 
 // ── Setup SQL ──────────────────────────────────────────────────────────────
+const SETUP_SQL = `-- Run once in Supabase SQL Editor
+CREATE TABLE IF NOT EXISTS custom_pages (
+  id         uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug       text        UNIQUE NOT NULL,
+  title      text        NOT NULL DEFAULT '',
+  blocks     jsonb       NOT NULL DEFAULT '[]',
+  published  boolean     NOT NULL DEFAULT false,
+  nav_parent text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE custom_pages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public reads published pages"
+  ON custom_pages FOR SELECT USING (published = true);
+CREATE POLICY "Auth manages all pages"
+  ON custom_pages FOR ALL USING (auth.role() = 'authenticated');`
+
 async function copySetupSql() {
   await navigator.clipboard.writeText(SETUP_SQL)
   $q.notify({ message: 'SQL copied to clipboard', color: 'teal', position: 'top', icon: 'check' })
@@ -585,10 +476,10 @@ async function copySetupSql() {
 async function loadNavOptions() {
   const { data } = await supabase
     .from('site_settings').select('value')
-    .eq('key', 'nav_config').maybeSingle()
-  // If a saved nav config exists, use it; otherwise the hardcoded defaults stay
-  if (Array.isArray(data?.value) && (data?.value as unknown[]).length) {
-    navParentOptions.value = (data?.value as { title: string; link: string }[])
+    .eq('key', 'nav_config').limit(1)
+  const row = data?.[0]
+  if (Array.isArray(row?.value) && (row?.value as unknown[]).length) {
+    navParentOptions.value = (row?.value as { title: string; link: string }[])
       .filter(i => i.link !== '/')
       .map(i => ({ label: `${i.title} (${i.link})`, value: i.link }))
   }
@@ -600,7 +491,15 @@ onMounted(async () => {
   if (error) {
     setupNeeded.value = true
   } else {
-    pages.value = (data as Page[]) ?? []
+    pages.value = ((data as Array<Record<string, unknown>>) ?? []).map(row => ({
+      id:         row.id as string,
+      slug:       row.slug as string,
+      title:      row.title as string,
+      content:    extractContent(row.blocks),
+      published:  row.published as boolean,
+      nav_parent: (row.nav_parent as string | null) ?? null,
+      created_at: row.created_at as string,
+    }))
   }
   loading.value = false
   void loadNavOptions()
@@ -623,38 +522,20 @@ onMounted(async () => {
   border-radius: 12px;
 }
 
-.block-card {
+.dialog-card {
   background: #1a1a2e;
-  border: 1px solid rgba(179,157,219,0.18);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color 0.15s;
-  &:hover { border-color: rgba(179,157,219,0.38); }
+  border: 1px solid rgba(179,157,219,0.25);
+  border-radius: 14px;
 }
 
-.block-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px;
-  background: rgba(179,157,219,0.05);
-  border-bottom: 1px solid rgba(179,157,219,0.1);
-}
-
-.block-body { background: transparent; }
-
-
-.add-block-section {
-  padding: 16px;
-  background: rgba(179,157,219,0.04);
-  border: 1px dashed rgba(179,157,219,0.18);
-  border-radius: 10px;
-}
+.img-preview-wrap { border-radius: 8px; overflow: hidden; }
+.img-preview { width: 100%; max-height: 160px; object-fit: cover; display: block; }
 
 .setup-banner  { background: rgba(255,179,0,0.08); border: 1px solid rgba(255,179,0,0.3); color: #e0f2f1; }
 .draft-banner  { background: rgba(255,179,0,0.08); border: 1px solid rgba(255,179,0,0.25); color: #fff8e1; }
 .error-banner  { background: rgba(255,82,82,0.1);  border: 1px solid rgba(255,82,82,0.3);  color: #ffcdd2; }
 
 .ls-2 { letter-spacing: 2px; }
-.ls-1 { letter-spacing: 1.5px; }
 .hidden { display: none; }
 
 code {
@@ -663,21 +544,21 @@ code {
 }
 </style>
 
-<!-- Quill Snow dark-theme overrides — must be unscoped to reach injected DOM -->
+<!-- Quill Snow dark-theme overrides — unscoped to reach injected DOM -->
 <style lang="scss">
-.block-wysiwyg {
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(179,157,219,0.25);
+.page-wysiwyg {
+  border-radius: 0 0 12px 12px;
 
   .ql-toolbar.ql-snow {
     background: #131325;
-    border-color: rgba(179,157,219,0.22);
+    border: none;
+    border-bottom: 1px solid rgba(179,157,219,0.15);
+    border-radius: 12px 12px 0 0;
 
     .ql-stroke              { stroke: rgba(255,255,255,0.55); }
     .ql-fill                { fill:   rgba(255,255,255,0.55); }
     .ql-picker-label        { color:  rgba(255,255,255,0.6);  }
-    .ql-picker-label::before { color: rgba(255,255,255,0.6);  }
+    .ql-picker-label::before { color: rgba(255,255,255,0.6); }
 
     button:hover .ql-stroke,
     .ql-active  .ql-stroke  { stroke: #b39ddb; }
@@ -685,6 +566,15 @@ code {
     .ql-active  .ql-fill    { fill:   #b39ddb; }
     .ql-picker-label:hover,
     .ql-picker-label.ql-active { color: #b39ddb; }
+
+    .ql-header .ql-picker-item[data-value="1"]::before { content: 'Heading 1'; font-size: 1.3em; font-weight: 700; }
+    .ql-header .ql-picker-item[data-value="2"]::before { content: 'Heading 2'; font-size: 1.15em; font-weight: 600; }
+    .ql-header .ql-picker-item[data-value="3"]::before { content: 'Heading 3'; }
+    .ql-header .ql-picker-item:not([data-value])::before { content: 'Paragraph'; }
+    .ql-header .ql-picker-label[data-value="1"]::before { content: 'H1'; }
+    .ql-header .ql-picker-label[data-value="2"]::before { content: 'H2'; }
+    .ql-header .ql-picker-label[data-value="3"]::before { content: 'H3'; }
+    .ql-header .ql-picker-label:not([data-value])::before { content: 'Para'; }
 
     .ql-picker-options {
       background: #1a1a2e;
@@ -697,27 +587,53 @@ code {
 
   .ql-container.ql-snow {
     background: #0d0d22;
-    border-color: rgba(179,157,219,0.22);
-    min-height: 160px;
+    border: none;
+    border-radius: 0 0 12px 12px;
+    min-height: 420px;
 
     .ql-editor {
       color: #e0f2f1;
       font-size: 15px;
-      line-height: 1.75;
-      min-height: 160px;
+      line-height: 1.8;
+      min-height: 420px;
+      padding: 20px 24px;
 
-      p         { margin-bottom: 0.8em; }
-      h2, h3, h4 { color: #fff; margin: 1em 0 0.3em; }
-      ul, ol     { padding-left: 1.4em; }
+      p          { margin-bottom: 0.9em; }
+      h1         { font-size: 2em; font-weight: 900; color: #fff; margin: 1.2em 0 0.4em; }
+      h2         { font-size: 1.55em; font-weight: 700; color: #fff; margin: 1em 0 0.3em; }
+      h3         { font-size: 1.2em; font-weight: 600; color: #fff; margin: 0.9em 0 0.25em; }
+      ul, ol     { padding-left: 1.4em; margin-bottom: 0.9em; }
       blockquote {
         border-left: 3px solid #7c4dff;
         color: rgba(255,255,255,0.6);
         padding-left: 12px; margin-left: 0;
       }
       a { color: #b39ddb; }
+      img { max-width: 100%; border-radius: 8px; display: block; margin: 8px 0; }
 
       &.ql-blank::before { color: rgba(255,255,255,0.25); font-style: italic; }
     }
   }
+}
+
+/* Inline figure inserted by the image dialog */
+.ql-custom-figure {
+  margin: 16px 0;
+  display: block;
+
+  img {
+    max-width: 100%;
+    border-radius: 8px;
+    display: block;
+  }
+  a { display: block; }
+}
+
+.ql-img-caption {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  margin-top: 6px;
+  font-style: italic;
 }
 </style>

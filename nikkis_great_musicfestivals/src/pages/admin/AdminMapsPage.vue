@@ -60,7 +60,7 @@
           </q-card-section>
           <q-card-actions align="right">
             <q-btn flat color="grey-5"  icon="delete"        size="sm" @click.stop="deleteRegion(region)" />
-            <q-btn flat color="teal-4"  icon="edit"          size="sm" label="Edit"        @click.stop="openEdit(region)" />
+            <q-btn flat color="teal-4"  icon="edit"          size="sm" label="Edit"        @click.stop="void openEdit(region)" />
             <q-btn flat color="teal-3"  icon="edit_location" size="sm" label="Edit Points" @click.stop="editPoints(region.id)" />
           </q-card-actions>
         </q-card>
@@ -122,6 +122,37 @@
             <div class="text-caption text-grey-5 q-mt-xs">Preview</div>
           </div>
 
+          <q-separator dark class="q-my-xs" />
+          <div class="text-caption text-teal-5 text-uppercase" style="letter-spacing:1.5px">Hero Carousel Images</div>
+          <div class="text-caption text-grey-6">
+            Up to 5 images shown in the slideshow above the region map.
+            Paste Unsplash or storage URLs. Leave blank to use auto-selected defaults.
+          </div>
+          <div v-for="(_, i) in heroForm.images" :key="i">
+            <q-input
+              v-model="heroForm.images[i]"
+              :label="`Image ${i + 1} URL`"
+              dark outlined dense label-color="teal-3" color="teal-3" clearable
+            />
+          </div>
+
+          <q-separator dark class="q-my-xs" />
+          <div class="text-caption text-teal-5 text-uppercase" style="letter-spacing:1.5px">Archive.org Show Player</div>
+          <div class="text-caption text-grey-6">
+            Shown as the audio player strip beneath the hero carousel. Leave blank to use region-hash default.
+          </div>
+          <q-input v-model="heroForm.archive_id" label="archive.org identifier (e.g. billystrings2026-02-06)"
+            dark outlined dense label-color="teal-3" color="teal-3" clearable />
+          <q-input v-model="heroForm.archive_label" label="Display label (e.g. Billy Strings · Athens, GA)"
+            dark outlined dense label-color="teal-3" color="teal-3" />
+          <div v-if="heroForm.archive_id" class="text-caption text-teal-6 q-mt-xs">
+            <q-icon name="open_in_new" size="12px" />
+            <a :href="`https://archive.org/details/${heroForm.archive_id}`"
+               target="_blank" rel="noopener noreferrer" class="text-teal-4 q-ml-xs">
+              Preview on archive.org
+            </a>
+          </div>
+
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="grey-5" v-close-popup />
@@ -161,12 +192,20 @@ const form   = reactive({
   image_url: null as string | null,
 })
 
+const heroForm = reactive({
+  images: ['', '', '', '', ''] as string[],
+  archive_id:    '',
+  archive_label: '',
+})
+const savingHero = ref(false)
+
 function openAdd() {
   dialog.value = { open: true, isNew: true, editId: '' }
   Object.assign(form, { name: '', description: '', center_lat: 37.5, center_lng: -98.0, zoom: 6, image_url: null })
+  Object.assign(heroForm, { images: ['', '', '', '', ''], archive_id: '', archive_label: '' })
 }
 
-function openEdit(region: MapRegion) {
+async function openEdit(region: MapRegion) {
   dialog.value = { open: true, isNew: false, editId: region.id }
   Object.assign(form, {
     name:        region.name,
@@ -176,6 +215,20 @@ function openEdit(region: MapRegion) {
     zoom:        region.zoom,
     image_url:   region.image_url ?? null,
   })
+  // Reset hero form, then load saved config
+  Object.assign(heroForm, { images: ['', '', '', '', ''], archive_id: '', archive_label: '' })
+  const { data: heroData } = await supabase
+    .from('site_settings').select('value')
+    .eq('key', `region_hero_${region.id}`).limit(1)
+  const heroVal = (heroData as { value: unknown }[] | null)?.[0]?.value as Record<string, unknown> | undefined
+  if (heroVal) {
+    if (Array.isArray(heroVal.images)) {
+      const imgs = heroVal.images as string[]
+      for (let i = 0; i < 5; i++) heroForm.images[i] = imgs[i] ?? ''
+    }
+    if (typeof heroVal.archive_id    === 'string') heroForm.archive_id    = heroVal.archive_id
+    if (typeof heroVal.archive_label === 'string') heroForm.archive_label = heroVal.archive_label
+  }
 }
 
 async function saveRegion() {
@@ -207,6 +260,23 @@ async function saveRegion() {
       if (idx !== -1) Object.assign(regions.value[idx]!, payload)
     }
   }
+  // Save hero config for this region
+  const heroRegionId = dialog.value.isNew ? '' : dialog.value.editId
+  const cleanImages  = heroForm.images.map(u => u.trim()).filter(Boolean)
+  if (heroRegionId && (cleanImages.length || heroForm.archive_id.trim())) {
+    savingHero.value = true
+    await supabase.from('site_settings').upsert({
+      key:   `region_hero_${heroRegionId}`,
+      value: {
+        images:        cleanImages,
+        archive_id:    heroForm.archive_id.trim(),
+        archive_label: heroForm.archive_label.trim(),
+      },
+      updated_at: new Date().toISOString(),
+    })
+    savingHero.value = false
+  }
+
   saving.value = false
   dialog.value.open = false
 }

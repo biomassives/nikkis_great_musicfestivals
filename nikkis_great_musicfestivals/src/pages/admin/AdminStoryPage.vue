@@ -79,39 +79,18 @@
       </q-card-section>
     </q-card>
 
-    <!-- ── PARAGRAPHS ──────────────────────────────────────────── -->
-    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-sm">Body Paragraphs</div>
+    <!-- ── BODY ────────────────────────────────────────────────── -->
+    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-sm">Body</div>
     <q-card class="settings-card q-mb-lg">
       <q-card-section>
-        <div class="text-caption text-grey-5 q-mb-md">
-          Each paragraph supports rich text — bold, italic, links, lists.
-        </div>
-
-        <div v-for="(para, i) in form.paragraphs" :key="i" class="para-row q-mb-md">
-          <div class="row items-start q-gutter-xs q-mb-xs">
-            <div class="text-caption text-teal-5 text-weight-bold para-label">{{ i + 1 }}.</div>
-            <q-space />
-            <q-btn flat dense round icon="arrow_upward"   color="grey-5" size="sm" :disable="i === 0"                          @click="moveParagraph(i, -1)" />
-            <q-btn flat dense round icon="arrow_downward" color="grey-5" size="sm" :disable="i === form.paragraphs.length - 1" @click="moveParagraph(i,  1)" />
-            <q-btn flat dense round icon="delete"         color="red-4"  size="sm"                                             @click="removeParagraph(i)" />
-          </div>
-          <QuillEditor
-            :content="form.paragraphs[i] ?? ''"
-            content-type="html"
-            theme="snow"
-            class="story-wysiwyg"
-            @update:content="(v) => { form.paragraphs[i] = String(v) }"
-          />
-        </div>
-
-        <q-btn
-          icon="add"
-          label="Add Paragraph"
-          color="teal-7"
-          outline
-          size="sm"
-          class="q-mt-sm"
-          @click="addParagraph"
+        <QuillEditor
+          :content="form.content"
+          content-type="html"
+          theme="snow"
+          :options="QUILL_OPTIONS"
+          placeholder="Write the story here — use headings, bold, lists, links…"
+          class="story-wysiwyg"
+          @update:content="(v) => { form.content = String(v) }"
         />
       </q-card-section>
     </q-card>
@@ -129,44 +108,34 @@ import { supabase } from 'src/lib/supabase'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
+const QUILL_OPTIONS = {
+  modules: {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline'],
+      ['blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean'],
+    ],
+  },
+}
+
 const saving         = ref(false)
 const saved          = ref(false)
 const uploadingImage = ref(false)
 const imageFileInput = ref<HTMLInputElement | null>(null)
 
-const DEFAULT_PARAGRAPHS: string[] = [
-  'We first followed the circus in the summer of 1991, somewhere between Buckeye Lake and Deer Creek, when the corn was high and the highway smelled of rain and burning sage. By the time the boys kicked into the second set, ten thousand souls had abandoned their ordinary selves in the grass — trading the weight of the week for something the setlist could never quite contain. A door swinging open in the middle of a Tuesday in July.',
-  "Nikki's Great Music Festivals grew out of that first lot. Not the parking lot exactly — that particular sacred, chaotic marketplace of grilled cheese and miracles — but the feeling it generated: that community is not a thing you join but a thing you build, stake by stake, set by set, across the geography of a country that reveals itself differently from the back of a tour bus than it does from an office window.",
-  "The mission was never complicated. Get people to the music. Get the music to people who couldn't get to it on their own. Senior communities in rural Tennessee deserve to hear live bluegrass with the same urgency as a festival field in Colorado. The joy is not scarce. It only needs moving.",
-  'We have now logged eleven summers, forty-two states, and more campground friendships than any spreadsheet could hold. The artists who have let us carry their work into living rooms and rec halls and outdoor stages cut into hillsides — Billy Strings reeling off a twenty-minute reprise at elevation, Leftover Salmon burning through \u201cEuphoria\u201d while lightning flickered on the western ridge, the Stringdusters playing an unannounced third set because nobody wanted to go home — these are the facts our calendar doesn\u2019t quite capture.',
-  'Every trail we walk and every show we document feeds back into the same current. The photography is evidence. The maps are memory. The newsletter is the letter you write home when home has temporarily relocated to a meadow in the mountains.',
-  'What the calendar does capture is this: we keep going. The road is the purpose. The faces at the front of the stage and the back of the lot are the same faces — wide open, ears out, looking for the note that unlocks whatever needed unlocking.',
-]
+const DEFAULT_CONTENT = `<p>We first followed the circus in the summer of 1991, somewhere between Buckeye Lake and Deer Creek, when the corn was high and the highway smelled of rain and burning sage. By the time the boys kicked into the second set, ten thousand souls had abandoned their ordinary selves in the grass — trading the weight of the week for something the setlist could never quite contain. A door swinging open in the middle of a Tuesday in July.</p><p>Nikki's Great Music Festivals grew out of that first lot. Not the parking lot exactly — that particular sacred, chaotic marketplace of grilled cheese and miracles — but the feeling it generated: that community is not a thing you join but a thing you build, stake by stake, set by set, across the geography of a country that reveals itself differently from the back of a tour bus than it does from an office window.</p><p>The mission was never complicated. Get people to the music. Get the music to people who couldn't get to it on their own. Senior communities in rural Tennessee deserve to hear live bluegrass with the same urgency as a festival field in Colorado. The joy is not scarce. It only needs moving.</p><p>We have now logged eleven summers, forty-two states, and more campground friendships than any spreadsheet could hold.</p><p>Every trail we walk and every show we document feeds back into the same current. The photography is evidence. The maps are memory. The newsletter is the letter you write home when home has temporarily relocated to a meadow in the mountains.</p><p>What the calendar does capture is this: we keep going. The road is the purpose. The faces at the front of the stage and the back of the lot are the same faces — wide open, ears out, looking for the note that unlocks whatever needed unlocking.</p>`
 
 const form = reactive({
   image_url:     'https://picsum.photos/seed/mountain-evening/900/1400',
   image_caption: 'On the road',
   eyebrow:       'Our Full Story',
   title:         'The Music\nNever Stopped',
-  paragraphs:    [...DEFAULT_PARAGRAPHS] as string[],
+  content:       DEFAULT_CONTENT,
   closing:       'Come with us.',
 })
-
-function addParagraph() {
-  form.paragraphs.push('')
-}
-
-function removeParagraph(i: number) {
-  form.paragraphs.splice(i, 1)
-}
-
-function moveParagraph(i: number, dir: -1 | 1) {
-  const arr = [...form.paragraphs]
-  const tmp = arr[i]!
-  arr[i] = arr[i + dir]!
-  arr[i + dir] = tmp
-  form.paragraphs = arr
-}
 
 function triggerImageUpload() {
   imageFileInput.value?.click()
@@ -191,16 +160,20 @@ async function load() {
     .from('site_settings')
     .select('value')
     .eq('key', 'story_overlay')
-    .maybeSingle()
-  if (data?.value && typeof data.value === 'object') {
-    const v = data.value as Record<string, unknown>
+    .limit(1)
+  const row = data?.[0]
+  if (row?.value && typeof row.value === 'object') {
+    const v = row.value as Record<string, unknown>
     if (typeof v.image_url     === 'string') form.image_url     = v.image_url
     if (typeof v.image_caption === 'string') form.image_caption = v.image_caption
     if (typeof v.eyebrow       === 'string') form.eyebrow       = v.eyebrow
     if (typeof v.title         === 'string') form.title         = v.title
-    if (typeof v.closing       === 'string') form.closing       = v.closing
-    if (Array.isArray(v.paragraphs) && (v.paragraphs as unknown[]).length > 0) {
-      form.paragraphs = v.paragraphs as string[]
+    if (typeof v.closing   === 'string') form.closing   = v.closing
+    // New single-content field; fall back to joining legacy paragraphs array
+    if (typeof v.content === 'string') {
+      form.content = v.content
+    } else if (Array.isArray(v.paragraphs) && (v.paragraphs as unknown[]).length > 0) {
+      form.content = (v.paragraphs as string[]).map(p => `<p>${p}</p>`).join('')
     }
   }
 }
@@ -215,7 +188,7 @@ async function save() {
       image_caption: form.image_caption,
       eyebrow:       form.eyebrow,
       title:         form.title,
-      paragraphs:    [...form.paragraphs],
+      content:       form.content,
       closing:       form.closing,
     },
     updated_at: new Date().toISOString(),

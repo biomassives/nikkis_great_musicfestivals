@@ -1,5 +1,5 @@
 <template>
-  <q-page class="map-detail-page">
+  <q-page :class="['map-detail-page', $q.dark.isActive ? 'mdp--dark' : 'mdp--light']">
 
     <!-- ══ TOP BAR ══════════════════════════════════════════════════ -->
     <div class="map-topbar">
@@ -47,6 +47,70 @@
           <q-icon name="timeline" size="16px" />
         </button>
       </div>
+    </div>
+
+    <!-- ══ REGION HERO ════════════════════════════════════════════════ -->
+    <div v-if="region" class="region-hero">
+
+      <!-- Image carousel -->
+      <q-carousel
+        v-model="currentSlide"
+        animated
+        infinite
+        :autoplay="6500"
+        arrows
+        navigation
+        transition-prev="slide-right"
+        transition-next="slide-left"
+        class="hero-carousel"
+        height="228px"
+      >
+        <q-carousel-slide
+          v-for="(img, idx) in heroImages"
+          :key="idx"
+          :name="idx"
+        >
+          <div class="hero-slide-bg" :style="{ backgroundImage: `url(${img})` }" />
+          <div class="hero-slide-gradient" />
+        </q-carousel-slide>
+
+        <template #control>
+          <q-carousel-control position="top-left" :offset="[18, 18]">
+            <div class="hero-region-info">
+              <div class="hero-eyebrow">Tour Region</div>
+              <div class="hero-rname">{{ region.name }}</div>
+              <div v-if="region.description" class="hero-rdesc">{{ region.description }}</div>
+            </div>
+          </q-carousel-control>
+        </template>
+      </q-carousel>
+
+      <!-- Archive.org show player -->
+      <div class="hero-player">
+        <div class="player-meta">
+          <span class="player-live" />
+          <div class="player-info">
+            <div class="player-title">{{ currentArchiveShow.label }}</div>
+            <div class="player-sub">archive.org · Live Recording</div>
+          </div>
+          <a
+            :href="`https://archive.org/details/${currentArchiveShow.id}`"
+            target="_blank" rel="noopener noreferrer"
+            class="player-popout"
+          >
+            <q-icon name="open_in_new" size="13px" />
+            Pop out
+          </a>
+        </div>
+        <iframe
+          :src="`https://archive.org/embed/${currentArchiveShow.id}`"
+          class="player-frame"
+          frameborder="0"
+          allow="autoplay"
+          loading="lazy"
+        />
+      </div>
+
     </div>
 
     <!-- ══ MAP + SIDE PANEL ROW ══════════════════════════════════════ -->
@@ -200,12 +264,14 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useQuasar } from 'quasar'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { supabase } from 'src/lib/supabase'
 import type { MapRegion, MapPoint } from 'src/lib/supabase'
 
 const route        = useRoute()
+const $q           = useQuasar()
 const region       = ref<MapRegion | null>(null)
 const filters      = reactive({ show: true, senior: true, nature: true })
 const timelineOpen = ref(true)
@@ -217,8 +283,48 @@ const naturePoints = ref<MapPoint[]>([])
 const activeShowId = ref<string | null>(null)
 
 let mapInstance: L.Map | null = null
-const showMarkerRefs = new Map<string, L.Marker>()
+const showMarkerRefs  = new Map<string, L.Marker>()
 const pointMarkerRefs = new Map<string, L.Marker>()
+
+/* ── Hero carousel + archive player ─────────────────────────────── */
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
+  'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80',
+]
+
+// Curated archive.org recordings — freely streamable
+const ARCHIVE_SHOWS = [
+  { id: '78_9958-Take-the-A-train',                                           label: 'Duke Ellington · Take the A Train (1941 78rpm)' },
+  { id: 'gd1977-05-08.shure57.stevenson-ladner-beaumont.29662.sbefp.flac16', label: 'Grateful Dead · Cornell, May 8 1977' },
+  { id: 'gd1972-08-27.sbd.hollister.174.sbeok.shnf',                         label: 'Grateful Dead · Veneta, Aug 27 1972' },
+  { id: 'gd1991-09-10.sbd.miller.87991.sbeok.shnf',                          label: 'Grateful Dead · Madison Square Garden, Sep 1991' },
+  { id: 'gd1985-07-04.sbd.seamons.9517.sbeok.shnf',                          label: 'Grateful Dead · Autzen Stadium, Jul 4 1985' },
+  { id: 'gd1973-11-11.sbd.unknown.14042.sbeok.shnf',                         label: 'Grateful Dead · Winterland, Nov 11 1973' },
+  { id: 'billystrings2026-02-06',                                              label: 'Billy Strings · Athens, GA — Feb 6 2026' },
+]
+
+const currentSlide      = ref(0)
+const customHeroImages  = ref<string[]>([])
+const customArchiveShow = ref<{ id: string; label: string } | null>(null)
+
+const heroImages = computed(() => {
+  if (customHeroImages.value.length >= 2) return customHeroImages.value
+  const hash = (region.value?.name ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  const start = hash % HERO_IMAGES.length
+  return Array.from({ length: 5 }, (_, i) => HERO_IMAGES[(start + i) % HERO_IMAGES.length]!)
+})
+
+const currentArchiveShow = computed(() => {
+  if (customArchiveShow.value) return customArchiveShow.value
+  const hash = (region.value?.name ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  return ARCHIVE_SHOWS[hash % ARCHIVE_SHOWS.length]!
+})
 
 /* ── Filter definitions ─────────────────────────────────────────── */
 const filterDefs = [
@@ -359,12 +465,26 @@ function panToPoint(pt: MapPoint) {
 onMounted(async () => {
   const regionId = route.params.regionId as string
 
-  const [{ data: rgn }, { data: pts }] = await Promise.all([
+  const [{ data: rgn }, { data: pts }, { data: heroData }] = await Promise.all([
     supabase.from('map_regions').select('*').eq('id', regionId).single(),
     supabase.from('map_points').select('*').eq('region_id', regionId),
+    supabase.from('site_settings').select('value').eq('key', `region_hero_${regionId}`).limit(1),
   ])
 
   region.value = rgn as MapRegion
+
+  // Apply custom hero config if present
+  const heroVal = (heroData as { value: unknown }[] | null)?.[0]?.value as Record<string, unknown> | undefined
+  if (heroVal) {
+    if (Array.isArray(heroVal.images) && (heroVal.images as unknown[]).length >= 2)
+      customHeroImages.value = heroVal.images as string[]
+    if (typeof heroVal.archive_id === 'string' && heroVal.archive_id) {
+      customArchiveShow.value = {
+        id:    heroVal.archive_id,
+        label: typeof heroVal.archive_label === 'string' ? heroVal.archive_label : heroVal.archive_id,
+      }
+    }
+  }
   const points: MapPoint[] = (pts as MapPoint[]) ?? []
 
   sortedShows.value  = points
@@ -472,9 +592,8 @@ onMounted(async () => {
 .map-detail-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
   background: #0d0028;
+  /* scrollable — hero → full-viewport map → timeline → footer */
 }
 
 /* ══ Top bar ═════════════════════════════════════════════════════ */
@@ -488,6 +607,10 @@ onMounted(async () => {
   background: linear-gradient(105deg, #0d0024 0%, #1a0042 100%);
   border-bottom: 1px solid rgba(124,77,255,0.35);
   flex-wrap: wrap;
+  /* sticky so it stays visible while scrolling past the hero, sits flush below main header */
+  position: sticky;
+  top: 58px;
+  z-index: 100;
 }
 
 .topbar-back { color: rgba(255,255,255,0.6) !important; }
@@ -542,8 +665,10 @@ onMounted(async () => {
 
 /* ══ Map + side row ══════════════════════════════════════════════ */
 .map-body {
-  flex: 1;
   display: flex;
+  /* Map fills the full viewport below both headers: main (58px) + map topbar (52px) */
+  height: calc(100vh - 110px);
+  flex-shrink: 0;
   overflow: hidden;
 }
 
@@ -608,7 +733,6 @@ onMounted(async () => {
 
 /* ══ Timeline ════════════════════════════════════════════════════ */
 .timeline-panel {
-  flex-shrink: 0;
   background: #06001a;
   border-top: 1px solid rgba(124,77,255,0.25);
   height: 160px; overflow: hidden;
@@ -652,7 +776,6 @@ onMounted(async () => {
 
 /* ══ Photo panel ═════════════════════════════════════════════════ */
 .photo-panel {
-  flex-shrink: 0;
   position: relative;
   height: 220px;
   overflow: hidden;
@@ -680,6 +803,137 @@ onMounted(async () => {
 }
 .photo-enter-active, .photo-leave-active { transition: height 0.25s ease, opacity 0.25s ease; }
 .photo-enter-from, .photo-leave-to       { height: 0 !important; opacity: 0; }
+
+/* ══ Region hero ═════════════════════════════════════════════════ */
+.region-hero { flex-shrink: 0; }
+
+.hero-carousel {
+  :deep(.q-carousel__slide)  { padding: 0; }
+  :deep(.q-carousel__arrow) {
+    background: rgba(0,0,0,0.38);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    &:hover { background: rgba(0,0,0,0.62); }
+    .q-icon { color: #fff !important; }
+  }
+  :deep(.q-carousel__navigation-icon)         { color: rgba(255,255,255,0.45) !important; }
+  :deep(.q-carousel__navigation-icon--active) { color: #fff !important; }
+}
+
+.hero-slide-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+}
+.hero-slide-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(5,0,20,0.22) 0%, transparent 38%, rgba(5,0,20,0.72) 100%);
+}
+
+.hero-region-info { text-shadow: 0 1px 8px rgba(0,0,0,0.9); }
+.hero-eyebrow {
+  font-size: 9px; font-weight: 800; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(255,214,0,0.88); margin-bottom: 4px;
+}
+.hero-rname {
+  font-size: clamp(15px, 2vw, 24px); font-weight: 900;
+  color: #fff; line-height: 1.1;
+}
+.hero-rdesc {
+  font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 3px; max-width: 260px;
+}
+
+/* ── Archive player strip ─────────────────────────────────────── */
+.hero-player {
+  background: #06001a;
+  border-top: 1px solid rgba(124,77,255,0.3);
+  padding: 10px 16px 0;
+}
+.player-meta {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.player-live {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: #ff3333; box-shadow: 0 0 7px rgba(255,50,50,0.75);
+  animation: livePulse 1.8s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+.player-info { flex: 1; min-width: 0; }
+.player-title {
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.player-sub {
+  font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 1px; letter-spacing: 0.5px;
+}
+.player-popout {
+  flex-shrink: 0; display: flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  text-decoration: none; color: rgba(179,157,219,0.75);
+  padding: 4px 10px; border: 1px solid rgba(124,77,255,0.28); border-radius: 20px;
+  transition: color 0.18s, border-color 0.18s;
+  &:hover { color: #d0b4ff; border-color: rgba(124,77,255,0.7); }
+}
+.player-frame { width: 100%; height: 110px; display: block; border: none; }
+
+/* ══ Light-mode overrides ════════════════════════════════════════ */
+.mdp--light {
+  background: #f5f0ff;
+
+  .map-topbar {
+    background: linear-gradient(105deg, #ede8ff 0%, #ddd0ff 100%);
+    border-bottom-color: rgba(124,77,255,0.2);
+  }
+  .topbar-region-name { color: #1a0a2e; }
+  .topbar-region-desc { color: rgba(26,10,46,0.5); }
+  .topbar-back        { color: rgba(26,10,46,0.55) !important; }
+
+  .filter-pill {
+    border-color: rgba(26,10,46,0.15);
+    background: rgba(26,10,46,0.04);
+    color: rgba(26,10,46,0.6);
+    .filter-pill-count { background: rgba(26,10,46,0.08); }
+    &.active, &:hover { color: #1a0a2e; border-color: rgba(26,10,46,0.3); background: rgba(26,10,46,0.08); }
+    &--show.active    { border-color: #7c4dff; background: rgba(124,77,255,0.1);  color: #5c35b0; }
+    &--senior.active  { border-color: #43a047; background: rgba(67,160,71,0.1);   color: #2e7d32; }
+    &--nature.active  { border-color: #e65100; background: rgba(230,81,0,0.1);    color: #bf360c; }
+  }
+
+  .topbar-btn {
+    border-color: rgba(26,10,46,0.15); background: rgba(26,10,46,0.05); color: rgba(26,10,46,0.5);
+    &:hover, &.active { background: rgba(124,77,255,0.12); border-color: #7c4dff; color: #5c35b0; }
+  }
+
+  .side-panel  { background: #fff; border-left-color: rgba(124,77,255,0.15); }
+  .side-section-head { color: #7c4dff; border-bottom-color: rgba(124,77,255,0.12); }
+  .venue-name  { color: #1a0a2e; }
+  .venue-date  { color: #7c4dff; }
+  .venue-desc  { color: rgba(26,10,46,0.4); }
+  .venue-seq   { background: rgba(124,77,255,0.15); color: #5c35b0; }
+  .venue-card:hover { background: rgba(124,77,255,0.05); }
+  .side-empty  { color: rgba(26,10,46,0.3); }
+
+  .hero-player { background: #ede8ff; border-top-color: rgba(124,77,255,0.18); }
+  .player-title { color: rgba(26,10,46,0.85); }
+  .player-sub   { color: rgba(26,10,46,0.4); }
+  .player-popout {
+    color: rgba(90,40,180,0.7); border-color: rgba(124,77,255,0.25);
+    &:hover { color: #5c35b0; border-color: rgba(124,77,255,0.6); }
+  }
+
+  .timeline-panel { background: #ede8ff; border-top-color: rgba(124,77,255,0.15); }
+  .tl-title    { color: #6030c0; }
+  .tl-subtitle { color: rgba(26,10,46,0.4); }
+  .tl-month    { color: #9c80cc; }
+  .tl-base     { background: rgba(124,77,255,0.18); }
+  .tl-show-name { color: #3d2080; }
+  .tl-show-date { color: rgba(26,10,46,0.35); }
+  .tl-dot       { background: #7c4dff; }
+}
 </style>
 
 <style>

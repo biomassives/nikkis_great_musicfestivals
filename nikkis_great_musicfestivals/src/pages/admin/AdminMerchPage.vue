@@ -371,8 +371,8 @@ async function load() {
 }
 
 onMounted(async () => {
-  const { data } = await supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').maybeSingle()
-  if (data?.value) sections.value = data.value as MerchSection[]
+  const { data } = await supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').limit(1)
+  if (data?.[0]?.value) sections.value = data[0].value as MerchSection[]
   Object.assign(form, emptyForm())
   void load()
 })

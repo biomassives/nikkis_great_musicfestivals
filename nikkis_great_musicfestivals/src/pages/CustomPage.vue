@@ -14,9 +14,16 @@
 
     <template v-else>
       <div class="page-content">
-        <div v-for="block in page.blocks" :key="block.id" class="block-render">
 
-          <!-- HEADING -->
+        <!-- Primary content: rich HTML from Quill editor -->
+        <!-- Content is admin-authored only, not user-submitted -->
+        <div class="page-body" v-html="page.content" />
+
+        <!-- Legacy block rendering (old pages created before unified editor) -->
+        <div v-for="block in page.blocks.filter(b => b.type !== 'content')"
+          :key="block.id" class="block-render">
+
+          <!-- HEADING (legacy) -->
           <template v-if="block.type === 'heading'">
             <h1 v-if="block.level === 1" class="block-h1">{{ block.text }}</h1>
             <h2 v-else-if="block.level === 2" class="block-h2">{{ block.text }}</h2>
@@ -93,7 +100,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from 'src/lib/supabase'
 
-type BlockType = 'heading' | 'text' | 'image' | 'video' | 'iframe' | 'media_link' | 'divider'
+type BlockType = 'content' | 'heading' | 'text' | 'image' | 'video' | 'iframe' | 'media_link' | 'divider'
 
 interface Block {
   id:            string
@@ -117,6 +124,7 @@ interface Page {
   id:        string
   slug:      string
   title:     string
+  content:   string   // extracted from blocks column
   blocks:    Block[]
   published: boolean
 }
@@ -153,8 +161,21 @@ async function loadPage(s: string) {
     .select('*')
     .eq('slug', s)
     .eq('published', true)
-    .maybeSingle()
-  page.value = data as Page | null
+    .limit(1)
+  const raw = data?.[0] ?? null
+  if (raw) {
+    // Extract content from blocks column (new single-block format or legacy)
+    const blocks = (raw.blocks ?? []) as Array<Record<string, unknown>>
+    let content = ''
+    if (blocks[0]?.type === 'content' && typeof blocks[0]?.content === 'string') {
+      content = blocks[0].content
+    } else {
+      content = blocks.filter(b => typeof b.content === 'string').map(b => b.content as string).join('')
+    }
+    page.value = { ...raw, blocks, content } as unknown as Page
+  } else {
+    page.value = null
+  }
   loading.value = false
 }
 
@@ -179,6 +200,44 @@ watch(() => route.params['customSlug'], (s) => {
 }
 
 .block-render { margin-bottom: 32px; }
+
+/* ── Primary Quill content ───────────────────────────────────── */
+.page-body {
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 48px;
+
+  :deep(p)          { margin: 0 0 1em; }
+  :deep(h1)         { font-size: clamp(26px, 4vw, 42px); font-weight: 900; color: #fff; margin: 1.2em 0 0.4em; }
+  :deep(h2)         { font-size: clamp(20px, 3vw, 32px); font-weight: 700; color: #fff; margin: 1em 0 0.35em; }
+  :deep(h3)         { font-size: clamp(16px, 2vw, 24px); font-weight: 600; color: #fff; margin: 0.9em 0 0.3em; }
+  :deep(ul), :deep(ol) { padding-left: 1.5em; margin: 0 0 1em; }
+  :deep(li)         { margin-bottom: 0.3em; }
+  :deep(blockquote) {
+    border-left: 3px solid #7c4dff;
+    margin: 0 0 1em; padding: 8px 16px;
+    background: rgba(124,77,255,0.06);
+    color: rgba(255,255,255,0.65); font-style: italic;
+  }
+  :deep(a)          { color: #b39ddb; text-decoration: underline; }
+  :deep(strong)     { color: #fff; }
+  :deep(img)        { max-width: 100%; border-radius: 10px; display: block; margin: 8px 0; }
+
+  /* Inline image figures inserted via image dialog */
+  :deep(figure.ql-custom-figure) {
+    margin: 24px 0;
+    a { display: block; }
+    img { width: 100%; }
+  }
+  :deep(.ql-img-caption) {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+  }
+}
 
 /* Headings */
 .block-h1 { font-size: clamp(28px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin: 0 0 8px; }

@@ -175,15 +175,15 @@ const navLinks = ref<NavItem[]>([
 
 onMounted(async () => {
   const [navRes, pagesRes] = await Promise.allSettled([
-    supabase.from('site_settings').select('value').eq('key', 'nav_config').maybeSingle(),
+    supabase.from('site_settings').select('value').eq('key', 'nav_config').limit(1),
     supabase.from('custom_pages').select('slug, title, nav_parent').eq('published', true),
   ])
 
   // Apply saved nav config
   if (navRes.status === 'fulfilled') {
-    const navData = navRes.value.data
-    if (Array.isArray(navData?.value) && (navData?.value as unknown[]).length) {
-      navLinks.value = (navData?.value as NavItem[]).map(item => ({
+    const navRow = navRes.value.data?.[0]
+    if (Array.isArray(navRow?.value) && (navRow?.value as unknown[]).length) {
+      navLinks.value = (navRow?.value as NavItem[]).map(item => ({
         ...item,
         children: item.children ?? [],
       }))

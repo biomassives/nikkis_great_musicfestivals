@@ -1,1 +1,7 @@
 // app global css in SCSS form
+
+// Match body background to our page-light / page-dark container colors
+// so there is no white bleed-through between page content and FooterScene.
+// Quasar adds .body--dark to <body> when dark mode is active.
+body:not(.body--dark) { background-color: #f5f0ff; }
+body.body--dark        { background-color: #070014; }

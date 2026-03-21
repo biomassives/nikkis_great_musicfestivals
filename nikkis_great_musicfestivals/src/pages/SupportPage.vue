@@ -222,9 +222,10 @@ onMounted(async () => {
     .from('site_settings')
     .select('value')
     .eq('key', 'support_content')
-    .maybeSingle()
-  if (data?.value && typeof data.value === 'object') {
-    const v = data.value as Record<string, unknown>
+    .limit(1)
+  const row = data?.[0]
+  if (row?.value && typeof row.value === 'object') {
+    const v = row.value as Record<string, unknown>
     if (typeof v.section_label === 'string') cfg.section_label = v.section_label
     if (typeof v.heading       === 'string') cfg.heading       = v.heading
     if (typeof v.description   === 'string') cfg.description   = v.description
