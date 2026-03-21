@@ -61,6 +61,32 @@
               :rules="[v => !!v || 'Required']"
             />
             <q-input v-model="form.name" label="Name" dark outlined label-color="teal-3" color="teal-3" :rules="[v => !!v || 'Required']" />
+
+            <!-- Place search → auto-fills lat/lng -->
+            <q-select
+              v-model="selectedPlace"
+              :options="placeOptions"
+              use-input
+              input-debounce="500"
+              label="Search place to fill lat/lng"
+              hint="Type a venue, city, or address"
+              dark outlined
+              label-color="teal-3" color="teal-3"
+              :loading="searchingPlace"
+              clearable
+              @filter="filterPlaces"
+              @update:model-value="onPlaceSelect"
+            >
+              <template #no-option>
+                <q-item>
+                  <q-item-section class="text-grey-5">
+                    {{ searchingPlace ? 'Searching…' : 'No results' }}
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template #prepend><q-icon name="search" color="teal-5" /></template>
+            </q-select>
+
             <div class="row q-col-gutter-md">
               <div class="col-6">
                 <q-input v-model.number="form.lat" type="number" step="0.0001" label="Latitude"  dark outlined label-color="teal-3" color="teal-3" :rules="[v => !!v || 'Required']" />
@@ -111,8 +137,11 @@ const region   = ref<MapRegion | null>(null)
 const points   = ref<MapPoint[]>([])
 const saving   = ref(false)
 const uploading= ref(false)
-const editingId= ref<string | null>(null)
-const fileInput= ref<HTMLInputElement | null>(null)
+const editingId     = ref<string | null>(null)
+const fileInput     = ref<HTMLInputElement | null>(null)
+const searchingPlace= ref(false)
+const selectedPlace = ref<{ label: string; lat: number; lng: number } | null>(null)
+const placeOptions  = ref<{ label: string; lat: number; lng: number }[]>([])
 
 const categoryOptions = [
   { label: 'Show / Festival',      value: 'show' },
@@ -125,6 +154,42 @@ const emptyForm = () => ({
   name: '', lat: 0, lng: 0, date: '', description: '', image_url: '',
 })
 const form = reactive(emptyForm())
+
+async function filterPlaces(inputVal: string, doneFn: (cb: () => void) => void) {
+  if (!inputVal || inputVal.length < 3) {
+    doneFn(() => { placeOptions.value = [] })
+    return
+  }
+  searchingPlace.value = true
+  try {
+    const resp = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(inputVal)}&format=json&limit=6&addressdetails=0`,
+      { headers: { 'User-Agent': "Nikki's Great Music Festivals admin" } }
+    )
+    const data = await resp.json() as { display_name: string; lat: string; lon: string }[]
+    doneFn(() => {
+      placeOptions.value = data.map(r => ({
+        label: r.display_name,
+        lat:   parseFloat(r.lat),
+        lng:   parseFloat(r.lon),
+      }))
+    })
+  } catch {
+    doneFn(() => { placeOptions.value = [] })
+  } finally {
+    searchingPlace.value = false
+  }
+}
+
+function onPlaceSelect(place: { label: string; lat: number; lng: number } | null) {
+  if (!place) return
+  form.lat = place.lat
+  form.lng = place.lng
+  if (!form.name) {
+    // Use the first part of the display name (before the first comma) as a name hint
+    form.name = place.label.split(',')[0]?.trim() ?? ''
+  }
+}
 
 function catIcon(cat: string) {
   return cat === 'show' ? 'event' : cat === 'senior' ? 'elderly' : 'landscape'
@@ -157,6 +222,7 @@ function openEditDialog(pt: MapPoint) {
 
 function resetForm() {
   editingId.value = null
+  selectedPlace.value = null
   Object.assign(form, emptyForm())
 }
 
