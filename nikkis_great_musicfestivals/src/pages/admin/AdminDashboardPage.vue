@@ -109,6 +109,7 @@ const sections = [
   { title: 'Newsletter',       icon: 'mark_email_unread', color: 'light-blue-4',  route: '/admin/newsletter', desc: 'Compose newsletters and view subscribers' },
   { title: 'News & Updates',   icon: 'newspaper',         color: 'green-4',       route: '/admin/news',       desc: 'Write tour stories and event recaps' },
   { title: 'Merch & Goods',    icon: 'style',             color: 'pink-4',        route: '/admin/merch',      desc: 'Manage art, photo prints, and other items' },
+  { title: 'Homepage',         icon: 'home',              color: 'teal-3',        route: '/admin/home',       desc: 'Content, background image, and SEO meta tags' },
   { title: 'View Public Site', icon: 'open_in_new',       color: 'grey-4',        route: '/',                 desc: 'See how the site looks to visitors' },
 ]
 

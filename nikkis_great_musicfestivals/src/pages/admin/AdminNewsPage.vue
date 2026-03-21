@@ -16,7 +16,7 @@
         <div v-if="loading" class="flex flex-center q-py-xl">
           <q-spinner-orbit color="teal" size="40px" />
         </div>
-        <q-list v-else separator dark class="rounded-borders news-list">
+        <q-list v-else dark class="rounded-borders news-list">
           <q-item
             v-for="article in articles"
             :key="article.id"
@@ -150,26 +150,100 @@
               dark
             />
 
-            <div class="row q-gutter-sm q-mt-sm">
+            <div class="row items-center q-gutter-sm q-mt-sm">
               <q-btn type="submit" :label="editingId ? 'Update Article' : 'Save Article'" color="teal" unelevated :loading="saving" />
               <q-btn v-if="editingId" flat label="New" @click="resetForm" />
+              <q-btn v-if="draftSaved" flat dense label="Discard draft" color="grey-5" size="sm" @click="resetForm" />
+              <span v-if="draftSaved" class="text-caption text-grey-6 q-ml-xs">
+                <q-icon name="save" size="12px" /> draft saved
+              </span>
             </div>
           </q-form>
         </div>
+
+        <!-- Live Preview -->
+        <div class="news-preview q-mt-lg q-pa-lg rounded-borders">
+          <div class="row items-center q-mb-md">
+            <div class="text-caption text-teal-5 text-uppercase ls-1 col">Preview — how it looks on the public site</div>
+            <q-badge v-if="form.published" color="positive" label="Will be published" />
+            <q-badge v-else color="grey-7" label="Saved as draft" />
+          </div>
+          <q-timeline color="secondary" class="preview-timeline">
+            <q-timeline-entry
+              :title="form.title || 'Article title…'"
+              :subtitle="form.date || 'Date'"
+              :icon="form.icon"
+              :color="form.color"
+            >
+              <div class="preview-card q-pa-md rounded-borders">
+                <div v-if="form.image_url" class="q-mb-md">
+                  <q-img :src="form.image_url" :ratio="16/9" class="rounded-borders" />
+                </div>
+                <p class="text-body2 q-mb-sm preview-body">
+                  {{ form.body || 'Article body will appear here.' }}
+                </p>
+                <div class="row q-gutter-xs">
+                  <q-chip
+                    v-for="tag in previewTags"
+                    :key="tag"
+                    dense size="sm"
+                    color="indigo-1" text-color="indigo-9"
+                  >{{ tag }}</q-chip>
+                </div>
+              </div>
+            </q-timeline-entry>
+          </q-timeline>
+        </div>
+
       </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import type { NewsArticle } from 'src/lib/supabase'
 
+const $q        = useQuasar()
 const articles  = ref<NewsArticle[]>([])
 const loading   = ref(true)
 const saving    = ref(false)
 const editingId = ref<string | null>(null)
+const draftSaved = ref(false)
+
+const DRAFT_KEY = 'admin_news_form_draft'
+
+function saveDraft() {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...form, _editingId: editingId.value }))
+  draftSaved.value = true
+}
+
+function clearDraft() {
+  localStorage.removeItem(DRAFT_KEY)
+  draftSaved.value = false
+}
+
+function restoreDraft(): boolean {
+  const stored = localStorage.getItem(DRAFT_KEY)
+  if (!stored) return false
+  try {
+    const data = JSON.parse(stored) as typeof form & { _editingId: string | null }
+    Object.assign(form, {
+      title:     data.title     ?? '',
+      date:      data.date      ?? '',
+      icon:      data.icon      ?? 'star',
+      color:     data.color     ?? 'amber',
+      body:      data.body      ?? '',
+      tagsStr:   data.tagsStr   ?? '',
+      image_url: data.image_url ?? '',
+      published: data.published ?? true,
+    })
+    if (data._editingId) editingId.value = data._editingId
+    return !!(data.title || data.body || data.tagsStr)
+  } catch { return false }
+}
 
 const iconOptions = [
   { label: 'Star',         value: 'star'          },
@@ -201,9 +275,17 @@ const emptyForm = () => ({
 })
 const form = reactive(emptyForm())
 
+// Auto-save every change to localStorage
+watch(form, saveDraft, { deep: true })
+
+const previewTags = computed(() =>
+  form.tagsStr.split(',').map(t => t.trim()).filter(Boolean)
+)
+
 function resetForm() {
   editingId.value = null
   Object.assign(form, emptyForm())
+  clearDraft()
 }
 
 function openEdit(a: NewsArticle) {
@@ -218,6 +300,7 @@ function openEdit(a: NewsArticle) {
 
 async function save() {
   saving.value = true
+  const wasPublished = form.published
   const tags = form.tagsStr.split(',').map(t => t.trim()).filter(Boolean)
   const payload = {
     title:     form.title,
@@ -229,14 +312,27 @@ async function save() {
     image_url: form.image_url || null,
     published: form.published,
   }
-  if (editingId.value) {
-    await supabase.from('news_articles').update(payload).eq('id', editingId.value)
-  } else {
-    await supabase.from('news_articles').insert(payload)
+  const { error } = editingId.value
+    ? await supabase.from('news_articles').update(payload).eq('id', editingId.value)
+    : await supabase.from('news_articles').insert(payload)
+
+  if (error) {
+    $q.notify({ message: `Error: ${error.message}`, color: 'negative', icon: 'error', position: 'top' })
+    saving.value = false
+    return
   }
+
   await load()
+  clearDraft()
   resetForm()
   saving.value = false
+  $q.notify({
+    message: wasPublished ? 'Article published! Visible on the public site.' : 'Article saved as draft.',
+    color:   wasPublished ? 'teal' : 'grey-7',
+    icon:    wasPublished ? 'check_circle' : 'drafts',
+    position: 'top',
+    timeout: 4000,
+  })
 }
 
 async function deleteArticle(id: string) {
@@ -250,21 +346,50 @@ async function load() {
   loading.value = false
 }
 
-onMounted(() => { void load() })
+onMounted(() => {
+  const hadDraft = restoreDraft()
+  if (hadDraft) {
+    $q.notify({ message: 'Draft restored — your last unsaved work is back.', color: 'teal-8', icon: 'restore', position: 'top', timeout: 4000 })
+    draftSaved.value = true
+  }
+  void load()
+})
 </script>
 
 <style lang="scss" scoped>
 .news-list {
   background: #1a1a2e;
   border: 1px solid rgba(77,182,172,0.2);
-  max-height: calc(100vh - 220px);
-  overflow-y: auto;
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: rgba(77,182,172,0.3); border-radius: 2px; }
+  // No max-height — grow to show all articles
+}
+// Divider between items, but NOT after the last one
+.news-list :deep(.q-item + .q-item) {
+  border-top: 1px solid rgba(77,182,172,0.12);
 }
 .item-active { background: rgba(77,182,172,0.08); border-left: 3px solid #4db6ac; }
 .news-form-panel {
   background: #1a1a2e;
   border: 1px solid rgba(77,182,172,0.2);
+}
+.news-preview {
+  background: #f0f4fa;
+  border: 1px solid rgba(57,73,171,0.15);
+}
+.preview-timeline { background: transparent !important; }
+.preview-card {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(57,73,171,0.12);
+}
+.preview-body { color: #444; white-space: pre-wrap; }
+.ls-1 { letter-spacing: 1.5px; }
+</style>
+
+<style lang="scss">
+/* Non-scoped: force dark text inside the light preview pane regardless of body--dark */
+.news-preview .q-timeline__title,
+.news-preview .q-timeline__title *,
+.news-preview .q-timeline__subtitle,
+.news-preview .q-timeline__subtitle * {
+  color: #1a1a2e !important;
 }
 </style>

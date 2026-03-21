@@ -19,7 +19,11 @@
           class="region-card cursor-pointer"
           @click="goToRegion(region.id)"
         >
-          <div class="region-map-preview" :id="`map-preview-${region.id}`"></div>
+          <!-- Use uploaded image if available, otherwise render mini Leaflet map -->
+          <div v-if="region.image_url" class="region-map-preview region-photo">
+            <img :src="region.image_url" class="region-photo-img" :alt="region.name" />
+          </div>
+          <div v-else class="region-map-preview" :id="`map-preview-${region.id}`"></div>
 
           <q-card-section>
             <div class="text-h6 text-bold">{{ region.name }}</div>
@@ -58,18 +62,24 @@ const loading = ref(true)
 const regions = ref<MapRegion[]>([])
 const pointCounts = ref<Record<string, { label: string; color: string }[]>>({})
 
-const markerColors: Record<string, string> = {
-  show:   '#5c6bc0',
-  senior: '#66bb6a',
-  nature: '#ffa726',
+const pinColors: Record<string, string> = {
+  senior: '#43a047',
+  nature: '#ff8f00',
 }
 
-function makeIcon(color: string) {
+function makeShowIcon(i: number) {
   return L.divIcon({
     className: '',
-    html: `<div style="width:10px;height:10px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 0 4px rgba(0,0,0,0.4)"></div>`,
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
+    html: `<div style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#5c35b0);border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;box-shadow:0 1px 6px rgba(124,77,255,0.6);">${i + 1}</div>`,
+    iconSize: [18, 18], iconAnchor: [9, 9],
+  })
+}
+
+function makePinIcon(color: string) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:10px;height:10px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
+    iconSize: [10, 10], iconAnchor: [5, 5],
   })
 }
 
@@ -93,27 +103,57 @@ async function loadData() {
       { label: `${counts.nature} Nature`, color: 'orange-8' },
     ].filter(b => parseInt(b.label) > 0)
 
-    // init preview map after DOM
+    // init preview map after DOM (skip if a region photo is set — the image replaces it)
+    if (r.image_url) return
     void nextTick(() => {
       const el = document.getElementById(`map-preview-${r.id}`)
       if (!el || (el as HTMLElement & { _leaflet_id?: number })._leaflet_id) return
+
       const m = L.map(el, {
-        zoomControl: false,
-        dragging: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        touchZoom: false,
-        keyboard: false,
+        zoomControl: false, dragging: false, scrollWheelZoom: false,
+        doubleClickZoom: false, touchZoom: false, keyboard: false,
         attributionControl: false,
-      }).setView([r.center_lat, r.center_lng], 5)
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m)
-
-      rPts.forEach(p => {
-        L.marker([p.lat, p.lng], { icon: makeIcon(markerColors[p.category] ?? '#888') })
-          .bindTooltip(p.name)
-          .addTo(m)
       })
+
+      // CartoDB Voyager — clean, same as detail page
+      L.tileLayer(
+        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        { subdomains: 'abcd', maxZoom: 19 }
+      ).addTo(m)
+
+      // Separate + sort shows
+      const shows = rPts
+        .filter(p => p.category === 'show' && p.date)
+        .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
+      const others = rPts.filter(p => p.category !== 'show')
+
+      // Dashed tour route polyline
+      if (shows.length >= 2) {
+        L.polyline(
+          shows.map(s => [s.lat, s.lng] as L.LatLngTuple),
+          { color: '#7c4dff', weight: 2, dashArray: '6 8', opacity: 0.85, interactive: false }
+        ).addTo(m)
+      }
+
+      // Numbered show markers
+      shows.forEach((show, i) => {
+        L.marker([show.lat, show.lng], { icon: makeShowIcon(i) }).addTo(m)
+      })
+
+      // Senior / nature pin markers
+      others.forEach(p => {
+        L.marker([p.lat, p.lng], { icon: makePinIcon(pinColors[p.category] ?? '#888') }).addTo(m)
+      })
+
+      // Fit view to the actual points; fall back to region center if empty
+      if (rPts.length > 0) {
+        m.fitBounds(
+          L.latLngBounds(rPts.map(p => [p.lat, p.lng] as L.LatLngTuple)),
+          { padding: [22, 22], maxZoom: 10 }
+        )
+      } else {
+        m.setView([r.center_lat, r.center_lng], r.zoom ?? 7)
+      }
     })
   })
 
@@ -141,9 +181,25 @@ onMounted(() => { void loadData() })
 }
 
 .region-map-preview {
-  height: 180px;
+  height: 200px;
   width: 100%;
-  background: #e8e8e8;
+  background: #d4d8e8;
   pointer-events: none;
+  overflow: hidden;
+  position: relative;
+  /* Subtle vignette so the card edge blends in */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.08) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+.region-photo-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.35s ease;
+  .region-card:hover & { transform: scale(1.04); }
 }
 </style>

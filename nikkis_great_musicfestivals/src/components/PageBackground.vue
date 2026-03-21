@@ -5,6 +5,8 @@
 -->
 <template>
   <div class="page-bg-root absolute-full no-pointer-events overflow-hidden" aria-hidden="true">
+    <!-- Optional photo background -->
+    <img v-if="imageUrl" :src="imageUrl" class="bg-photo absolute-full" alt="" />
 
     <!-- HOME: Mardi-Gras spiral -->
     <svg v-if="variant === 'home'" class="absolute-full" width="100%" height="100%">
@@ -111,11 +113,12 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ variant: string; opacity?: number }>(), { opacity: 0.09 })
+withDefaults(defineProps<{ variant: string; opacity?: number; imageUrl?: string | null }>(), { opacity: 0.09 })
 </script>
 
 <style scoped>
 .page-bg-root { z-index: 0; }
+.bg-photo { width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0.18; }
 
 .pg-pulse {
   animation: pgPulse 8s ease-in-out infinite alternate;

@@ -13,14 +13,32 @@ export interface MapRegion {
   center_lng: number
   zoom: number
   display_order: number
+  image_url: string | null
+}
+
+export interface GallerySection {
+  slug: string
+  label: string
+  description: string
+  icon: string
+  color: string
+}
+
+export interface MerchSection {
+  slug: string
+  label: string
+  description: string
+  icon: string
+  color: string
 }
 
 export interface GalleryPhoto {
   id: string
-  category: 'outdoor' | 'concert' | 'cuteness'
+  category: string
   url: string
   caption: string | null
   display_order: number
+  published: boolean
 }
 
 export interface Newsletter {
@@ -57,15 +75,29 @@ export interface NewsArticle {
   created_at: string
 }
 
+export interface HomepageArtist {
+  id: string          // slug, e.g. "billy-strings"
+  name: string
+  subtitle: string    // genre / description line
+  icon: string        // Material icon name
+  icon_color: string  // Quasar color name
+  badge_text: string
+  badge_color: string
+  bio_main: string
+  bio_sub: string
+  songs: string[]
+}
+
 export interface MerchItem {
   id: string
-  category: 'art' | 'photos' | 'other'
+  category: string
   name: string
   description: string | null
   price: string | null
   image_url: string | null
   badge: string | null
   sold_out: boolean
+  published: boolean
   display_order: number
   created_at: string
 }

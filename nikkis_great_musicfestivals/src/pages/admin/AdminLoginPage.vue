@@ -44,6 +44,19 @@
           unelevated
         />
       </q-form>
+
+      <div class="text-center q-mt-lg">
+        <q-btn
+          flat dense
+          label="Forgot password?"
+          color="teal-3"
+          size="sm"
+          :loading="resetLoading"
+          @click="sendReset"
+        />
+        <div v-if="resetSent" class="text-positive text-caption q-mt-sm">Reset email sent — check your inbox.</div>
+        <div v-if="resetError" class="text-negative text-caption q-mt-sm">{{ resetError }}</div>
+      </div>
     </q-card>
   </q-page>
 </template>
@@ -58,6 +71,22 @@ const email    = ref('')
 const password = ref('')
 const loading  = ref(false)
 const error    = ref('')
+
+const resetLoading = ref(false)
+const resetSent    = ref(false)
+const resetError   = ref('')
+
+async function sendReset() {
+  if (!email.value) { resetError.value = 'Enter your email above first.'; return }
+  resetLoading.value = true
+  resetError.value   = ''
+  resetSent.value    = false
+  const { error: err } = await supabase.auth.resetPasswordForEmail(email.value, {
+    redirectTo: `${window.location.origin}/admin/reset-password`,
+  })
+  resetLoading.value = false
+  if (err) { resetError.value = err.message } else { resetSent.value = true }
+}
 
 async function login() {
   loading.value = true

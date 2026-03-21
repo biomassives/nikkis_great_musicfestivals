@@ -1,6 +1,9 @@
 <template>
   <q-page class="home-page relative overflow-hidden">
-    <PageBackground variant="home" />
+    <PageBackground :variant="bgVariant" :opacity="bgOpacity" :imageUrl="bgImageUrl" />
+
+    <WelcomeOverlay />
+    <StoryOverlay v-model="showStory" />
 
     <div class="page-content q-pa-lg">
 
@@ -10,144 +13,79 @@
           <SpirographLogo :size="200" :spin="true" class="hero-logo" />
         </div>
         <div class="col-12 col-md-7 text-left">
-          <div class="text-h2 text-bold text-primary q-mb-md">Nikki's Great Music Festivals</div>
+          <div class="text-h2 text-bold text-primary q-mb-md">{{ content.hero_title }}</div>
           <div class="mission-statement text-h5 q-mb-lg" style="max-width: 800px">
-            "Helping to improve lives by improving access to great music, community, and the outdoors."
+            "{{ content.mission_statement }}"
           </div>
           <div class="row q-gutter-sm">
-            <q-btn label="Our Full Story" color="secondary" outline />
-            <q-btn label="Explore the Tour" color="primary" unelevated :to="'/maps'" />
+            <q-btn :label="content.cta_story_label" color="secondary" outline @click="showStory = true" />
+            <q-btn :label="content.cta_tour_label" color="primary" unelevated :to="'/maps'" />
           </div>
         </div>
       </header>
 
       <!-- ARTIST INTERVIEWS -->
       <section class="q-mb-xl">
-        <div class="section-label q-mb-xs">Artist Interviews</div>
-        <div class="text-h4 text-bold q-mb-lg">Featured Artists</div>
+        <div class="section-label q-mb-xs">{{ content.artists_label }}</div>
+        <div class="text-h4 text-bold q-mb-lg">{{ content.artists_title }}</div>
 
         <q-list bordered class="artist-accordion rounded-borders overflow-hidden">
+          <template v-for="(artist, i) in artists" :key="artist.id">
+            <q-expansion-item
+              :default-opened="i === 0"
+              group="artists"
+              header-class="artist-header"
+            >
+              <template #header>
+                <div class="row items-center full-width q-gutter-md">
+                  <div class="artist-icon-wrap">
+                    <q-icon :name="artist.icon || 'music_note'" :color="artist.icon_color" size="44px" />
+                  </div>
+                  <div class="text-left">
+                    <div class="text-h6 text-bold" :class="artistTextClass(artist.icon_color)">{{ artist.name }}</div>
+                    <div class="text-caption text-grey-7">{{ artist.subtitle }}</div>
+                  </div>
+                  <q-space />
+                  <q-badge :color="artist.badge_color" :label="artist.badge_text" class="q-mr-md" />
+                </div>
+              </template>
+              <q-card class="artist-card">
+                <q-card-section class="text-left">
+                  <p class="text-body1">{{ artist.bio_main }}</p>
+                  <p class="text-body2 text-grey-8">{{ artist.bio_sub }}</p>
+                  <div class="row q-gutter-sm q-mt-md">
+                    <q-chip
+                      v-for="song in artist.songs" :key="song"
+                      icon="music_note"
+                      :color="chipColor(artist.icon_color)"
+                      :text-color="chipTextColor(artist.icon_color)"
+                    >{{ song }}</q-chip>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+            <q-separator v-if="i < artists.length - 1" />
+          </template>
 
-          <!-- Billy Strings -->
-          <q-expansion-item v-model="openArtist.billyStrings" group="artists" header-class="artist-header">
-            <template v-slot:header>
-              <div class="row items-center full-width q-gutter-md">
-                <div class="artist-icon-wrap">
-                  <svg width="48" height="48" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="#ffd700" stroke-width="2" stroke-dasharray="6 3"/>
-                    <path d="M30 65 Q50 25 70 65" fill="none" stroke="#ffd700" stroke-width="3"/>
-                    <line x1="35" y1="65" x2="65" y2="65" stroke="#ffd700" stroke-width="2"/>
-                    <line x1="50" y1="30" x2="50" y2="65" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="3 2"/>
-                  </svg>
-                </div>
-                <div class="text-left">
-                  <div class="text-h6 text-bold text-yellow-9">Billy Strings</div>
-                  <div class="text-caption text-grey-7">Progressive Bluegrass · Newgrass · Psychedelic</div>
-                </div>
-                <q-space />
-                <q-badge color="amber" text-color="black" label="Headline" class="q-mr-md" />
-              </div>
-            </template>
-            <q-card class="artist-card">
-              <q-card-section class="text-left">
-                <p class="text-body1">William Apostol — known to the world as <strong>Billy Strings</strong> — is a Grammy-winning flatpicker who bends time with a guitar. Raised on the old-time music of Michigan and west of the Blue Ridge, he has become one of the most electrifying live performers in any genre, threading jaw-dropping technique through dark folk imagery and untethered improvisation.</p>
-                <p class="text-body2 text-grey-8">At Nikki's festivals, Billy's sets tend to stretch deep into the night — the jam-grass crowd locks in, and the field turns into something that feels less like a concert and more like a ritual. Bring layers. Bring patience. Let the third set happen to you.</p>
-                <div class="row q-gutter-sm q-mt-md">
-                  <q-chip icon="music_note" color="amber-2" text-color="brown-9">Home</q-chip>
-                  <q-chip icon="music_note" color="amber-2" text-color="brown-9">Dust in a Baggie</q-chip>
-                  <q-chip icon="music_note" color="amber-2" text-color="brown-9">Meet Me at the Creek</q-chip>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-
-          <q-separator />
-
-          <!-- Leftover Salmon -->
-          <q-expansion-item v-model="openArtist.leftoverSalmon" group="artists" header-class="artist-header">
-            <template v-slot:header>
-              <div class="row items-center full-width q-gutter-md">
-                <div class="artist-icon-wrap">
-                  <svg width="48" height="48" viewBox="0 0 100 100">
-                    <ellipse cx="50" cy="50" rx="44" ry="28" fill="none" stroke="#ff8c69" stroke-width="2"/>
-                    <path d="M15 50 Q30 35 50 50 Q70 65 85 50" fill="none" stroke="#ff8c69" stroke-width="3"/>
-                    <circle cx="78" cy="44" r="3" fill="#ff8c69"/>
-                    <path d="M82 50 L95 42 L95 58 Z" fill="#ff8c69"/>
-                  </svg>
-                </div>
-                <div class="text-left">
-                  <div class="text-h6 text-bold text-deep-orange-8">Leftover Salmon</div>
-                  <div class="text-caption text-grey-7">Polyethnic Cajun Slamgrass · Roots · Mountain Folk</div>
-                </div>
-                <q-space />
-                <q-badge color="deep-orange" label="Legacy Act" class="q-mr-md" />
-              </div>
-            </template>
-            <q-card class="artist-card">
-              <q-card-section class="text-left">
-                <p class="text-body1">Colorado's <strong>Leftover Salmon</strong> invented "Polyethnic Cajun Slamgrass" — a label that sounds like a joke until you hear it, and then it makes perfect sense. Vince Herman and Mark Vann started cooking something strange and wonderful in the early '90s, and the band has been a cornerstone of the jam scene ever since.</p>
-                <p class="text-body2 text-grey-8">Festival crowds who've seen Leftover Salmon dozens of times will tell you: no two shows are the same. The energy is communal, the musicianship is staggering, and the party starts before the first note lands. Pack a cowboy hat. Hydrate. Dance until your knees forget they have feelings.</p>
-                <div class="row q-gutter-sm q-mt-md">
-                  <q-chip icon="music_note" color="orange-2" text-color="deep-orange-9">Zombie Jamboree</q-chip>
-                  <q-chip icon="music_note" color="orange-2" text-color="deep-orange-9">Salmon Run</q-chip>
-                  <q-chip icon="music_note" color="orange-2" text-color="deep-orange-9">Euphoria</q-chip>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-
-          <q-separator />
-
-          <!-- Infamous Stringdusters -->
-          <q-expansion-item v-model="openArtist.stringDusters" group="artists" header-class="artist-header">
-            <template v-slot:header>
-              <div class="row items-center full-width q-gutter-md">
-                <div class="artist-icon-wrap">
-                  <svg width="48" height="48" viewBox="0 0 100 100">
-                    <polygon points="50,8 92,32 92,68 50,92 8,68 8,32" fill="none" stroke="#6a0dad" stroke-width="2"/>
-                    <line x1="50" y1="8" x2="50" y2="92" stroke="#6a0dad" stroke-width="1" stroke-dasharray="4 3"/>
-                    <line x1="8" y1="50" x2="92" y2="50" stroke="#6a0dad" stroke-width="1" stroke-dasharray="4 3"/>
-                    <circle cx="50" cy="50" r="10" fill="none" stroke="#9c27b0" stroke-width="2"/>
-                  </svg>
-                </div>
-                <div class="text-left">
-                  <div class="text-h6 text-bold text-purple-9">The Infamous Stringdusters</div>
-                  <div class="text-caption text-grey-7">Grammy Bluegrass · Acoustic Jam · Americana</div>
-                </div>
-                <q-space />
-                <q-badge color="purple" label="Grammy Winners" class="q-mr-md" />
-              </div>
-            </template>
-            <q-card class="artist-card">
-              <q-card-section class="text-left">
-                <p class="text-body1"><strong>The Infamous Stringdusters</strong> have spent two decades proving that bluegrass is not a museum piece. Grammy-winning and perpetually evolving, the band writes originals that sound traditional until they don't, and then they improvise in ways that should not work but absolutely do.</p>
-                <p class="text-body2 text-grey-8">Their sets at outdoor festivals have a particular magic: acoustic instruments carrying over acres of open field, five-part harmonies landing like a surprise. The Dusters reward attentive listening and reward dancing in equal measure.</p>
-                <div class="row q-gutter-sm q-mt-md">
-                  <q-chip icon="music_note" color="purple-2" text-color="purple-10">Fork in the Road</q-chip>
-                  <q-chip icon="music_note" color="purple-2" text-color="purple-10">Silver Sky</q-chip>
-                  <q-chip icon="music_note" color="purple-2" text-color="purple-10">Things You Left Behind</q-chip>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-
+          <q-item v-if="artists.length === 0" class="q-py-xl">
+            <q-item-section class="text-grey-6 text-center">No artists yet — check back soon.</q-item-section>
+          </q-item>
         </q-list>
       </section>
 
       <!-- NEWSLETTER SUBSCRIBE FOOTER -->
       <section id="subscribe-bottom" class="subscribe-section q-pa-xl text-center q-mb-xl rounded-borders">
         <div class="section-label q-mb-xs">Stay Connected</div>
-        <div class="text-h4 text-bold q-mb-sm">Join the Newsletter Adventure</div>
+        <div class="text-h4 text-bold q-mb-sm">{{ content.subscribe_title }}</div>
         <div class="text-body1 text-grey-7 q-mb-xl" style="max-width: 540px; margin: 0 auto 32px;">
-          Show dates, artist interviews, trail reports, and community stories — straight to your inbox.
+          {{ content.subscribe_body }}
         </div>
         <div class="row justify-center q-gutter-md items-start">
           <q-input
             v-model="email"
             type="email"
             placeholder="your@email.com"
-            outlined
-            dense
+            outlined dense
             class="subscribe-input"
             :error="!!emailError"
             :error-message="emailError"
@@ -174,13 +112,156 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useMeta } from 'quasar'
 import { supabase } from 'src/lib/supabase'
+import type { HomepageArtist } from 'src/lib/supabase'
 import PageBackground  from 'src/components/PageBackground.vue'
 import SpirographLogo  from 'src/components/SpirographLogo.vue'
+import WelcomeOverlay  from 'src/components/WelcomeOverlay.vue'
+import StoryOverlay    from 'src/components/StoryOverlay.vue'
 
-const openArtist = reactive({ billyStrings: true, leftoverSalmon: false, stringDusters: false })
+const showStory = ref(false)
 
+// ── Settings loaded from Supabase (fallbacks = hardcoded defaults) ──────────
+const content = reactive({
+  hero_title:        "Nikki's Great Music Festivals",
+  mission_statement: 'Helping to improve lives by improving access to great music, community, and the outdoors.',
+  cta_story_label:   'Our Full Story',
+  cta_tour_label:    'Explore the Tour',
+  artists_label:     'Artist Interviews',
+  artists_title:     'Featured Artists',
+  subscribe_title:   'Join the Newsletter Adventure',
+  subscribe_body:    'Show dates, artist interviews, trail reports, and community stories — straight to your inbox.',
+})
+
+const artists = ref<HomepageArtist[]>([
+  {
+    id: 'billy-strings', name: 'Billy Strings',
+    subtitle: 'Progressive Bluegrass · Newgrass · Psychedelic',
+    icon: 'music_note', icon_color: 'amber',
+    badge_text: 'Headline', badge_color: 'amber',
+    bio_main: "William Apostol — known to the world as Billy Strings — is a Grammy-winning flatpicker who bends time with a guitar. Raised on the old-time music of Michigan and west of the Blue Ridge, he has become one of the most electrifying live performers in any genre, threading jaw-dropping technique through dark folk imagery and untethered improvisation.",
+    bio_sub: "At Nikki's festivals, Billy's sets tend to stretch deep into the night — the jam-grass crowd locks in, and the field turns into something that feels less like a concert and more like a ritual. Bring layers. Bring patience. Let the third set happen to you.",
+    songs: ['Home', 'Dust in a Baggie', 'Meet Me at the Creek'],
+  },
+  {
+    id: 'leftover-salmon', name: 'Leftover Salmon',
+    subtitle: 'Polyethnic Cajun Slamgrass · Roots · Mountain Folk',
+    icon: 'water', icon_color: 'deep-orange',
+    badge_text: 'Legacy Act', badge_color: 'deep-orange',
+    bio_main: 'Colorado\'s Leftover Salmon invented "Polyethnic Cajun Slamgrass" — a label that sounds like a joke until you hear it, and then it makes perfect sense. Vince Herman and Mark Vann started cooking something strange and wonderful in the early \'90s, and the band has been a cornerstone of the jam scene ever since.',
+    bio_sub: "Festival crowds who've seen Leftover Salmon dozens of times will tell you: no two shows are the same. The energy is communal, the musicianship is staggering, and the party starts before the first note lands. Pack a cowboy hat. Hydrate. Dance until your knees forget they have feelings.",
+    songs: ['Zombie Jamboree', 'Salmon Run', 'Euphoria'],
+  },
+  {
+    id: 'stringdusters', name: 'The Infamous Stringdusters',
+    subtitle: 'Grammy Bluegrass · Acoustic Jam · Americana',
+    icon: 'star', icon_color: 'purple',
+    badge_text: 'Grammy Winners', badge_color: 'purple',
+    bio_main: "The Infamous Stringdusters have spent two decades proving that bluegrass is not a museum piece. Grammy-winning and perpetually evolving, the band writes originals that sound traditional until they don't, and then they improvise in ways that should not work but absolutely do.",
+    bio_sub: 'Their sets at outdoor festivals have a particular magic: acoustic instruments carrying over acres of open field, five-part harmonies landing like a surprise. The Dusters reward attentive listening and reward dancing in equal measure.',
+    songs: ['Fork in the Road', 'Silver Sky', 'Things You Left Behind'],
+  },
+])
+
+const seo = reactive({
+  site_name:        "Nikki's Great Music Festivals",
+  og_title:         "Nikki's Great Music Festivals — Tour Maps, Live Music & Community",
+  og_description:   'Follow the festival trail — tour maps, artist interviews, photography, and community across the US.',
+  og_image:         '',
+  og_url:           'https://nikkisgreatmusicfestivals.vercel.app',
+  meta_description: "Festival tour maps, artist interviews, trail photography and community — Nikki's Great Music Festivals.",
+  meta_keywords:    'music festivals, bluegrass, outdoor concerts, Billy Strings, Leftover Salmon',
+  twitter_card:     'summary_large_image',
+  twitter_site:     '',
+  twitter_creator:  '',
+})
+
+const bgImageUrl = ref<string | null>(null)
+const bgVariant  = ref<'home'|'support'|'news'|'photography'|'maps'|'merch'>('home')
+const bgOpacity  = ref(0.09)
+
+// ── Color helpers for artist chips ──────────────────────────────────────────
+function artistTextClass(color: string): string {
+  const map: Record<string, string> = {
+    'amber':       'text-amber-8',
+    'deep-orange': 'text-deep-orange-8',
+    'purple':      'text-purple-9',
+    'teal':        'text-teal-4',
+    'indigo':      'text-indigo-7',
+    'green':       'text-green-7',
+    'pink':        'text-pink-7',
+    'blue':        'text-blue-7',
+    'red':         'text-red-7',
+  }
+  return map[color] ?? 'text-teal-3'
+}
+
+function chipColor(color: string): string {
+  const map: Record<string, string> = {
+    'amber': 'amber-2', 'deep-orange': 'orange-2', 'purple': 'purple-2',
+    'teal': 'teal-1', 'indigo': 'indigo-1', 'green': 'green-1',
+    'pink': 'pink-1', 'blue': 'blue-1', 'red': 'red-1',
+  }
+  return map[color] ?? 'teal-1'
+}
+
+function chipTextColor(color: string): string {
+  const map: Record<string, string> = {
+    'amber': 'brown-9', 'deep-orange': 'deep-orange-9', 'purple': 'purple-10',
+    'teal': 'teal-9', 'indigo': 'indigo-9', 'green': 'green-9',
+    'pink': 'pink-9', 'blue': 'blue-9', 'red': 'red-9',
+  }
+  return map[color] ?? 'teal-9'
+}
+
+// ── Reactive meta tags ───────────────────────────────────────────────────────
+useMeta(() => ({
+  title: seo.og_title,
+  meta: {
+    charset:       { charset: 'utf-8' },
+    description:   { name: 'description',    content: seo.meta_description },
+    keywords:      { name: 'keywords',        content: seo.meta_keywords },
+    ogSiteName:    { property: 'og:site_name',content: seo.site_name },
+    ogType:        { property: 'og:type',     content: 'website' },
+    ogUrl:         { property: 'og:url',      content: seo.og_url },
+    ogTitle:       { property: 'og:title',    content: seo.og_title },
+    ogDescription: { property: 'og:description', content: seo.og_description },
+    ogImage:       { property: 'og:image',    content: seo.og_image || '' },
+    twitterCard:   { name: 'twitter:card',    content: seo.twitter_card },
+    twitterTitle:  { name: 'twitter:title',   content: seo.og_title },
+    twitterDesc:   { name: 'twitter:description', content: seo.og_description },
+    twitterImage:  { name: 'twitter:image',   content: seo.og_image || '' },
+    ...(seo.twitter_site    ? { twitterSite:    { name: 'twitter:site',    content: seo.twitter_site    } } : {}),
+    ...(seo.twitter_creator ? { twitterCreator: { name: 'twitter:creator', content: seo.twitter_creator } } : {}),
+  },
+}))
+
+// ── Load settings on mount ───────────────────────────────────────────────────
+async function loadSettings() {
+  const { data } = await supabase
+    .from('site_settings')
+    .select('key, value')
+    .in('key', ['homepage_content', 'homepage_seo', 'homepage_appearance', 'homepage_artists'])
+  for (const row of (data ?? []) as { key: string; value: unknown }[]) {
+    if (row.key === 'homepage_content')    Object.assign(content, row.value as object)
+    if (row.key === 'homepage_seo')        Object.assign(seo,     row.value as object)
+    if (row.key === 'homepage_appearance') {
+      const v = row.value as Record<string, unknown>
+      if (v['bg_image_url'] != null) bgImageUrl.value = v['bg_image_url'] as string
+      if (v['bg_variant']   != null) bgVariant.value  = v['bg_variant'] as typeof bgVariant.value
+      if (v['bg_opacity']   != null) bgOpacity.value  = v['bg_opacity'] as number
+    }
+    if (row.key === 'homepage_artists' && Array.isArray(row.value) && (row.value as unknown[]).length) {
+      artists.value = row.value as HomepageArtist[]
+    }
+  }
+}
+
+onMounted(() => { void loadSettings() })
+
+// ── Newsletter subscribe ─────────────────────────────────────────────────────
 const email       = ref('')
 const subscribing = ref(false)
 const subscribed  = ref(false)
@@ -200,15 +281,12 @@ async function subscribe() {
 </script>
 
 <style lang="scss" scoped>
-.home-page  { min-height: 100vh; }
+.home-page    { min-height: 100vh; }
 .page-content { position: relative; z-index: 1; }
 
 .section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #ab47bc;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #ab47bc;
 }
 
 .hero-logo {
@@ -218,26 +296,21 @@ async function subscribe() {
 }
 
 .mission-statement {
-  line-height: 1.4;
-  font-weight: 300;
-  color: #2c3e50;
-  border-left: 4px solid #ffd700;
-  padding-left: 20px;
+  line-height: 1.4; font-weight: 300; color: #2c3e50;
+  border-left: 4px solid #ffd700; padding-left: 20px;
 }
 
 .artist-accordion {
-  max-width: 860px;
-  margin: 0 auto;
+  max-width: 860px; margin: 0 auto;
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(6px);
 }
-.artist-header  { padding: 16px 20px; &:hover { background: rgba(0,0,0,0.03); } }
-.artist-icon-wrap { flex-shrink: 0; filter: drop-shadow(0 0 6px rgba(0,0,0,0.15)); }
-.artist-card { background: rgba(255,255,255,0.6); border-top: 1px solid rgba(0,0,0,0.06); }
+.artist-header    { padding: 16px 20px; &:hover { background: rgba(0,0,0,0.03); } }
+.artist-icon-wrap { flex-shrink: 0; }
+.artist-card      { background: rgba(255,255,255,0.6); border-top: 1px solid rgba(0,0,0,0.06); }
 
 .subscribe-section {
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 700px; margin: 0 auto;
   background: linear-gradient(135deg, rgba(75,0,130,0.06), rgba(255,215,0,0.08), rgba(0,143,57,0.06));
   border: 1px solid rgba(171, 71, 188, 0.2);
 }
@@ -254,15 +327,13 @@ body.body--dark {
     background: rgba(8, 0, 20, 0.75) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
-  .artist-header:hover {
-    background: rgba(255, 255, 255, 0.05) !important;
-  }
-  .artist-accordion .text-yellow-9   { color: #ffc107 !important; }
-  .artist-accordion .text-deep-orange-8 { color: #ff8a50 !important; }
-  .artist-accordion .text-purple-9   { color: #ce93d8 !important; }
+  .artist-header:hover { background: rgba(255, 255, 255, 0.05) !important; }
+  .artist-accordion .text-amber-8        { color: #ffc107 !important; }
+  .artist-accordion .text-deep-orange-8  { color: #ff8a50 !important; }
+  .artist-accordion .text-purple-9       { color: #ce93d8 !important; }
   .artist-accordion .text-grey-7,
-  .artist-accordion .text-grey-8     { color: rgba(255, 255, 255, 0.6) !important; }
+  .artist-accordion .text-grey-8         { color: rgba(255,255,255,0.6) !important; }
   .mission-statement { color: rgba(224, 242, 241, 0.85) !important; }
-  .subscribe-input { background: rgba(255, 255, 255, 0.08) !important; }
+  .subscribe-input   { background: rgba(255, 255, 255, 0.08) !important; }
 }
 </style>

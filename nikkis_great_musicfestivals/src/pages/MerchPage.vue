@@ -11,245 +11,161 @@
         <div class="text-body1 text-grey-7 q-mb-lg">Handmade art, festival photography, and curated finds from our travels</div>
       </div>
 
-      <!-- Category tabs -->
-      <q-tabs
-        v-model="tab"
-        align="center"
-        active-color="deep-purple"
-        indicator-color="amber"
-        class="merch-tabs q-mb-xl"
-        dense
-      >
-        <q-tab name="art"    icon="palette"      label="Art We Make" />
-        <q-tab name="photos" icon="photo_camera" label="Photos"      />
-        <q-tab name="other"  icon="star"         label="Other Stuff" />
-      </q-tabs>
-
-      <!-- Tab panels -->
-      <q-tab-panels v-model="tab" animated transition-prev="fade" transition-next="fade" class="merch-panels">
-
-        <!-- ART WE MAKE -->
-        <q-tab-panel name="art" class="q-pa-none">
-          <div class="panel-intro row items-center q-mb-xl q-gutter-md">
-            <svg width="48" height="48" viewBox="0 0 100 100" class="panel-icon flex-shrink-0">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#7b1fa2" stroke-width="2.5"/>
-              <circle cx="35" cy="38" r="7"  fill="#7b1fa2" opacity="0.6"/>
-              <circle cx="62" cy="30" r="5"  fill="#ffd700" opacity="0.8"/>
-              <circle cx="68" cy="58" r="6"  fill="#ab47bc" opacity="0.7"/>
-              <circle cx="38" cy="65" r="5"  fill="#ff7043" opacity="0.7"/>
-              <path d="M35 38 Q48 22 62 30 Q80 40 68 58 Q58 75 38 65 Q20 55 35 38Z"
-                fill="none" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="4 3"/>
-            </svg>
-            <div>
-              <div class="text-h5 text-bold art-color">Art We Make</div>
-              <div class="text-caption text-grey-6">Original paintings, prints, and handcrafted pieces created during the tour</div>
-            </div>
-          </div>
-          <div class="merch-grid">
-            <div v-for="item in artItems" :key="item.id" class="merch-card">
-              <div class="merch-card-img-wrap">
-                <img :src="item.image" :alt="item.name" class="merch-card-img" />
-                <div v-if="item.badge"   class="merch-card-badge art-bg">{{ item.badge }}</div>
-                <div v-if="item.soldOut" class="merch-card-soldout">Sold Out</div>
-              </div>
-              <div class="merch-card-body">
-                <div class="merch-card-name">{{ item.name }}</div>
-                <div class="merch-card-desc">{{ item.description }}</div>
-                <div class="merch-card-footer">
-                  <div class="merch-card-price art-color">{{ item.price }}</div>
-                  <button v-if="!item.soldOut" class="merch-card-btn art-bg" @click="inquire(item.name)">Inquire</button>
-                  <button v-else class="merch-card-btn merch-card-btn--disabled" disabled>Sold Out</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </q-tab-panel>
-
-        <!-- PHOTOS -->
-        <q-tab-panel name="photos" class="q-pa-none">
-          <div class="panel-intro row items-center q-mb-xl q-gutter-md">
-            <svg width="48" height="48" viewBox="0 0 100 100" class="panel-icon flex-shrink-0">
-              <rect x="10" y="25" width="80" height="60" rx="8" fill="none" stroke="#ff8f00" stroke-width="2.5"/>
-              <circle cx="50" cy="55" r="18" fill="none" stroke="#ff8f00" stroke-width="2"/>
-              <circle cx="50" cy="55" r="10" fill="none" stroke="#ffd700" stroke-width="1.5"/>
-              <circle cx="50" cy="55" r="4"  fill="#ff8f00" opacity="0.7"/>
-              <path d="M35 25 L42 12 L58 12 L65 25" fill="none" stroke="#ff8f00" stroke-width="2"/>
-              <circle cx="78" cy="38" r="4" fill="#ffd700"/>
-            </svg>
-            <div>
-              <div class="text-h5 text-bold photo-color">Photos</div>
-              <div class="text-caption text-grey-6">Limited-edition festival prints, framed and fine art options available</div>
-            </div>
-          </div>
-          <div class="merch-grid">
-            <div v-for="item in photoItems" :key="item.id" class="merch-card">
-              <div class="merch-card-img-wrap">
-                <img :src="item.image" :alt="item.name" class="merch-card-img" />
-                <div v-if="item.badge"   class="merch-card-badge photo-bg">{{ item.badge }}</div>
-                <div v-if="item.soldOut" class="merch-card-soldout">Sold Out</div>
-              </div>
-              <div class="merch-card-body">
-                <div class="merch-card-name">{{ item.name }}</div>
-                <div class="merch-card-desc">{{ item.description }}</div>
-                <div class="merch-card-footer">
-                  <div class="merch-card-price photo-color">{{ item.price }}</div>
-                  <button v-if="!item.soldOut" class="merch-card-btn photo-bg" @click="inquire(item.name)">Inquire</button>
-                  <button v-else class="merch-card-btn merch-card-btn--disabled" disabled>Sold Out</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </q-tab-panel>
-
-        <!-- OTHER STUFF -->
-        <q-tab-panel name="other" class="q-pa-none">
-          <div class="panel-intro row items-center q-mb-xl q-gutter-md">
-            <svg width="48" height="48" viewBox="0 0 100 100" class="panel-icon flex-shrink-0">
-              <polygon points="50,8 61,35 90,35 68,57 76,84 50,68 24,84 32,57 10,35 39,35"
-                fill="none" stroke="#e65100" stroke-width="2.5"/>
-              <polygon points="50,22 57,40 76,40 62,52 67,70 50,60 33,70 38,52 24,40 43,40"
-                fill="#e65100" opacity="0.15"/>
-            </svg>
-            <div>
-              <div class="text-h5 text-bold other-color">Other Stuff</div>
-              <div class="text-caption text-grey-6">Trail finds, festival collectibles, and curated goods from the road</div>
-            </div>
-          </div>
-          <div class="merch-grid">
-            <div v-for="item in otherItems" :key="item.id" class="merch-card">
-              <div class="merch-card-img-wrap">
-                <img :src="item.image" :alt="item.name" class="merch-card-img" />
-                <div v-if="item.badge"   class="merch-card-badge other-bg">{{ item.badge }}</div>
-                <div v-if="item.soldOut" class="merch-card-soldout">Sold Out</div>
-              </div>
-              <div class="merch-card-body">
-                <div class="merch-card-name">{{ item.name }}</div>
-                <div class="merch-card-desc">{{ item.description }}</div>
-                <div class="merch-card-footer">
-                  <div class="merch-card-price other-color">{{ item.price }}</div>
-                  <button v-if="!item.soldOut" class="merch-card-btn other-bg" @click="inquire(item.name)">Inquire</button>
-                  <button v-else class="merch-card-btn merch-card-btn--disabled" disabled>Sold Out</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </q-tab-panel>
-
-      </q-tab-panels>
-
-      <!-- Inquiry CTA -->
-      <div class="inquiry-cta text-center q-py-xl q-mt-xl">
-        <div class="text-h6 text-bold q-mb-sm">Looking for something specific?</div>
-        <div class="text-body2 text-grey-7 q-mb-lg">
-          Many items are one-of-a-kind. Reach out and we'll let you know what's available.
-        </div>
-        <q-btn
-          label="Send an Inquiry"
-          icon="mail_outline"
-          color="deep-purple"
-          unelevated
-          size="md"
-          class="q-mr-sm"
-          href="mailto:nikki@nikkisgreatmusicfestivals.com"
-        />
-        <q-btn
-          label="Support the Tour"
-          icon="favorite"
-          color="amber-8"
-          outline
-          size="md"
-          :to="'/support'"
-        />
+      <div v-if="loading" class="flex flex-center q-py-xl">
+        <q-spinner-orbit color="amber" size="48px" />
       </div>
+
+      <template v-else>
+        <!-- Category tabs -->
+        <q-tabs
+          v-model="tab"
+          align="center"
+          active-color="deep-purple"
+          indicator-color="amber"
+          class="merch-tabs q-mb-xl"
+          dense
+        >
+          <q-tab
+            v-for="sec in sections"
+            :key="sec.slug"
+            :name="sec.slug"
+            :icon="sec.icon"
+            :label="sec.label"
+          />
+        </q-tabs>
+
+        <!-- Tab panels -->
+        <q-tab-panels v-model="tab" animated transition-prev="fade" transition-next="fade" class="merch-panels">
+          <q-tab-panel
+            v-for="sec in sections"
+            :key="sec.slug"
+            :name="sec.slug"
+            class="q-pa-none"
+          >
+            <div class="panel-intro row items-center q-mb-xl q-gutter-md">
+              <q-icon :name="sec.icon" size="48px" class="panel-icon" :style="`color:${getColor(sec.color)}`" />
+              <div>
+                <div class="text-h5 text-bold" :style="`color:${getColor(sec.color)}`">{{ sec.label }}</div>
+                <div class="text-caption text-grey-6">{{ sec.description }}</div>
+              </div>
+            </div>
+
+            <div class="merch-grid">
+              <div v-for="item in itemsBySection(sec.slug)" :key="item.id" class="merch-card">
+                <div class="merch-card-img-wrap">
+                  <img
+                    :src="item.image_url ?? `https://picsum.photos/seed/${item.id}/400/400`"
+                    :alt="item.name"
+                    class="merch-card-img"
+                  />
+                  <div v-if="item.badge"    class="merch-card-badge" :style="`background:${getColor(sec.color)}`">
+                    {{ item.badge }}
+                  </div>
+                  <div v-if="item.sold_out" class="merch-card-soldout">Sold Out</div>
+                </div>
+                <div class="merch-card-body">
+                  <div class="merch-card-name">{{ item.name }}</div>
+                  <div class="merch-card-desc">{{ item.description }}</div>
+                  <div class="merch-card-footer">
+                    <div class="merch-card-price" :style="`color:${getColor(sec.color)}`">{{ item.price }}</div>
+                    <button
+                      v-if="!item.sold_out"
+                      class="merch-card-btn"
+                      :style="`background:${getColor(sec.color)}`"
+                      @click="inquire(item.name)"
+                    >Inquire</button>
+                    <button v-else class="merch-card-btn merch-card-btn--disabled" disabled>Sold Out</button>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="itemsBySection(sec.slug).length === 0" class="text-grey-5 text-center q-py-xl col-span-full">
+                Nothing here yet — check back soon!
+              </div>
+            </div>
+          </q-tab-panel>
+        </q-tab-panels>
+
+        <!-- Inquiry CTA -->
+        <div class="inquiry-cta text-center q-py-xl q-mt-xl">
+          <div class="text-h6 text-bold q-mb-sm">Looking for something specific?</div>
+          <div class="text-body2 text-grey-7 q-mb-lg">
+            Many items are one-of-a-kind. Reach out and we'll let you know what's available.
+          </div>
+          <q-btn
+            label="Send an Inquiry"
+            icon="mail_outline"
+            color="deep-purple"
+            unelevated
+            size="md"
+            class="q-mr-sm"
+            href="mailto:nikki@nikkisgreatmusicfestivals.com"
+          />
+          <q-btn
+            label="Support the Tour"
+            icon="favorite"
+            color="amber-8"
+            outline
+            size="md"
+            :to="'/support'"
+          />
+        </div>
+      </template>
 
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import PageBackground from 'src/components/PageBackground.vue'
+import { supabase } from 'src/lib/supabase'
+import type { MerchItem, MerchSection } from 'src/lib/supabase'
 
-const $q  = useQuasar()
-const tab = ref('art')
+const $q      = useQuasar()
+const loading = ref(true)
+const items   = ref<MerchItem[]>([])
+const tab     = ref('')
 
-interface MerchItem {
-  id: string
-  name: string
-  description: string
-  price: string
-  image: string
-  badge?: string
-  soldOut?: boolean
+const sections = ref<MerchSection[]>([
+  { slug: 'art',    label: 'Art We Make', description: 'Original paintings, prints, and handcrafted pieces created during the tour',  icon: 'palette',      color: 'deep-purple' },
+  { slug: 'photos', label: 'Photos',      description: 'Limited-edition festival prints, framed and fine art options available',       icon: 'photo_camera', color: 'amber-8'     },
+  { slug: 'other',  label: 'Other Stuff', description: 'Trail finds, festival collectibles, and curated goods from the road',          icon: 'star',         color: 'deep-orange' },
+])
+
+const colorMap: Record<string, string> = {
+  'teal-3':       '#80cbc4',
+  'teal-4':       '#26a69a',
+  'amber-8':      '#ff8f00',
+  'green-8':      '#2e7d32',
+  'pink-8':       '#ad1457',
+  'deep-purple':  '#7b1fa2',
+  'blue-5':       '#2196f3',
+  'deep-orange':  '#e65100',
+  'light-blue-4': '#29b6f6',
+  'red-5':        '#f44336',
+}
+function getColor(c: string) { return colorMap[c] ?? '#7b1fa2' }
+
+function itemsBySection(slug: string) {
+  return items.value.filter(i => i.category === slug)
 }
 
 function inquire(name: string) {
   $q.notify({ message: `"${name}" — contact us to purchase!`, color: 'dark', icon: 'shopping_cart', position: 'top' })
 }
 
-const artItems: MerchItem[] = [
-  { id: 'art-1', name: 'Mountain Mandala — Original',
-    description: 'Ink and watercolour on 140lb cold-press. 9"×9". Signed, unframed.',
-    price: '$180', image: 'https://picsum.photos/seed/art1/400/400', badge: 'Original' },
-  { id: 'art-2', name: 'Stage Glow — Print',
-    description: 'Giclee print of oil pastel stage-light study. 8"×10". Archival paper.',
-    price: '$45', image: 'https://picsum.photos/seed/art2/400/400' },
-  { id: 'art-3', name: 'Desert Road Triptych',
-    description: 'Set of three 5"×7" prints depicting the Southwest drive. Signed edition of 50.',
-    price: '$75 / set', image: 'https://picsum.photos/seed/art3/400/400', badge: 'Limited' },
-  { id: 'art-4', name: 'Festival Camp — Acrylic',
-    description: 'Small acrylic on wood panel. 6"×6". One of a kind.',
-    price: '$120', image: 'https://picsum.photos/seed/art4/400/400', soldOut: true },
-  { id: 'art-5', name: 'Frog in the Rain — Sticker Sheet',
-    description: '8 hand-drawn stickers on premium vinyl. Waterproof.',
-    price: '$12', image: 'https://picsum.photos/seed/art5/400/400' },
-  { id: 'art-6', name: 'Tour Journal Zine Vol. 1',
-    description: 'Hand-stapled 28-page zine with sketches, maps, and notes from the road.',
-    price: '$15', image: 'https://picsum.photos/seed/art6/400/400', badge: 'New' },
-]
-
-const photoItems: MerchItem[] = [
-  { id: 'photo-1', name: 'Billy Strings — Stage Right',
-    description: '12"×16" fine art print, fuji crystal archive paper, ready to frame.',
-    price: '$65', image: 'https://picsum.photos/seed/photo1/400/400', badge: 'Fan Fave' },
-  { id: 'photo-2', name: 'Sunrise Over the Field',
-    description: 'Early morning campground mist. 11"×14" lustre print.',
-    price: '$55', image: 'https://picsum.photos/seed/photo2/400/400' },
-  { id: 'photo-3', name: 'Crowd Hands — Panoramic',
-    description: 'Wide-angle crowd shot during a full-field singalong. 20"×8".',
-    price: '$80', image: 'https://picsum.photos/seed/photo3/400/400', badge: 'Limited' },
-  { id: 'photo-4', name: 'Trail Light — Framed',
-    description: 'Pacific Northwest trail shot. 8"×10" in natural walnut frame.',
-    price: '$130', image: 'https://picsum.photos/seed/photo4/400/400' },
-  { id: 'photo-5', name: 'Night Stage — 4×6 Set',
-    description: 'Pack of 10 concert postcards. Great for mailing or framing.',
-    price: '$20', image: 'https://picsum.photos/seed/photo5/400/400' },
-  { id: 'photo-6', name: 'Mountain Camp Portrait',
-    description: 'Medium format scan, 16"×20" metallic print. Gallery-ready.',
-    price: '$150', image: 'https://picsum.photos/seed/photo6/400/400', soldOut: true },
-]
-
-const otherItems: MerchItem[] = [
-  { id: 'other-1', name: 'Enamel Festival Pin Set',
-    description: '4-pin set with frog, mandala, mountain, and music note designs.',
-    price: '$28', image: 'https://picsum.photos/seed/other1/400/400', badge: 'Bestseller' },
-  { id: 'other-2', name: 'Hand-dyed Bandana',
-    description: 'Tie-dye cotton bandana in festival-purple and gold. One per dye.',
-    price: '$22', image: 'https://picsum.photos/seed/other2/400/400' },
-  { id: 'other-3', name: 'Trail Stone — Collected',
-    description: 'Single smooth river stone collected on the PCT stretch. Tiny card included.',
-    price: '$8', image: 'https://picsum.photos/seed/other3/400/400' },
-  { id: 'other-4', name: "Nikki's Great Festivals Tote",
-    description: 'Heavy cotton tote with screen-printed frog logo. 15"×17". Natural.',
-    price: '$30', image: 'https://picsum.photos/seed/other4/400/400', badge: 'New' },
-  { id: 'other-5', name: 'Road Playlist Vol. 3 — Cassette',
-    description: 'Curated driving playlist on actual cassette. Limited run of 40.',
-    price: '$18', image: 'https://picsum.photos/seed/other5/400/400', badge: 'Limited' },
-  { id: 'other-6', name: 'Festival Seed Packet Bundle',
-    description: 'Wildflower seed mixes gathered at Great Plains sites. 5 varieties.',
-    price: '$14', image: 'https://picsum.photos/seed/other6/400/400' },
-]
+onMounted(async () => {
+  const [itemsRes, sectionsRes] = await Promise.all([
+    supabase.from('merch_items').select('*').eq('published', true).order('display_order'),
+    supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').single(),
+  ])
+  items.value = (itemsRes.data as MerchItem[]) ?? []
+  if (sectionsRes.data?.value) sections.value = sectionsRes.data.value as MerchSection[]
+  tab.value = sections.value[0]?.slug ?? 'art'
+  loading.value = false
+})
 </script>
 
 <style lang="scss" scoped>
@@ -268,24 +184,15 @@ const otherItems: MerchItem[] = [
 }
 
 .merch-panels { background: transparent !important; box-shadow: none !important; }
+.panel-intro  { border-left: 3px solid rgba(0,0,0,0.12); padding-left: 16px; }
 
-.panel-intro { border-left: 3px solid rgba(0,0,0,0.12); padding-left: 16px; }
-
-/* Accent colours */
-.art-color   { color: #7b1fa2; }
-.photo-color { color: #ff8f00; }
-.other-color { color: #e65100; }
-.art-bg      { background: #7b1fa2; }
-.photo-bg    { background: #ff8f00; }
-.other-bg    { background: #e65100; }
-
-/* Product grid */
 .merch-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
   padding-bottom: 32px;
 }
+.col-span-full { grid-column: 1 / -1; }
 
 .merch-card {
   background: #fff;
@@ -319,10 +226,10 @@ const otherItems: MerchItem[] = [
 .merch-card-body {
   padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1;
 }
-.merch-card-name { font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 6px; }
-.merch-card-desc { font-size: 12px; color: #666; line-height: 1.5; flex: 1; }
+.merch-card-name   { font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 6px; }
+.merch-card-desc   { font-size: 12px; color: #666; line-height: 1.5; flex: 1; }
 .merch-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-.merch-card-price { font-weight: 800; font-size: 17px; }
+.merch-card-price  { font-weight: 800; font-size: 17px; }
 .merch-card-btn {
   border: none; outline: none; cursor: pointer;
   color: #fff; font-size: 12px; font-weight: 700;
@@ -334,4 +241,27 @@ const otherItems: MerchItem[] = [
 }
 
 .inquiry-cta { border-top: 1px solid rgba(0,0,0,0.08); }
+</style>
+
+<style lang="scss">
+body.body--dark {
+  .merch-page { background: #0d0a00 !important; }
+
+  .merch-page .section-label { color: #ce93d8 !important; }
+  .merch-page .text-h3, .merch-page .text-h5, .merch-page .text-bold { color: rgba(255,255,255,0.9) !important; }
+  .merch-page .text-grey-7, .merch-page .text-grey-6 { color: rgba(255,255,255,0.5) !important; }
+
+  .merch-page .panel-intro { border-left-color: rgba(255,255,255,0.15) !important; }
+
+  .merch-page .merch-card {
+    background: #1e1a0a !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+    &:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.5) !important; }
+  }
+  .merch-page .merch-card-name { color: rgba(255,255,255,0.9) !important; }
+  .merch-page .merch-card-desc { color: rgba(255,255,255,0.55) !important; }
+
+  .merch-page .inquiry-cta { border-top-color: rgba(255,255,255,0.1) !important; }
+  .merch-page .text-h6, .merch-page .text-body2 { color: rgba(255,255,255,0.8) !important; }
+}
 </style>

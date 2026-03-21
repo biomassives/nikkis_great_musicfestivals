@@ -25,6 +25,14 @@
 
       <div class="topbar-actions">
         <button
+          v-if="region?.image_url"
+          :class="['topbar-btn', { active: photoOpen }]"
+          @click="photoOpen = !photoOpen"
+          title="Region photo"
+        >
+          <q-icon name="image" size="16px" />
+        </button>
+        <button
           :class="['topbar-btn', { active: sideOpen }]"
           @click="sideOpen = !sideOpen"
           title="Venue list"
@@ -121,6 +129,19 @@
       </transition>
     </div>
 
+    <!-- ══ REGION PHOTO PANEL ════════════════════════════════════════ -->
+    <transition name="photo">
+      <div v-if="photoOpen && region?.image_url" class="photo-panel">
+        <img :src="region.image_url" class="photo-panel-img" :alt="region.name" />
+        <div class="photo-panel-overlay">
+          <span class="photo-panel-name">{{ region.name }}</span>
+          <button class="photo-close-btn" @click="photoOpen = false">
+            <q-icon name="close" size="16px" />
+          </button>
+        </div>
+      </div>
+    </transition>
+
     <!-- ══ TOUR TIMELINE ═════════════════════════════════════════════ -->
     <transition name="tl">
       <div v-if="timelineOpen" class="timeline-panel">
@@ -189,6 +210,7 @@ const region       = ref<MapRegion | null>(null)
 const filters      = reactive({ show: true, senior: true, nature: true })
 const timelineOpen = ref(true)
 const sideOpen     = ref(false)
+const photoOpen    = ref(false)
 const sortedShows  = ref<MapPoint[]>([])
 const seniorPoints = ref<MapPoint[]>([])
 const naturePoints = ref<MapPoint[]>([])
@@ -627,6 +649,37 @@ onMounted(async () => {
 
 .tl-enter-active, .tl-leave-active { transition: height 0.28s ease, opacity 0.28s ease; }
 .tl-enter-from, .tl-leave-to       { height: 0 !important; opacity: 0; }
+
+/* ══ Photo panel ═════════════════════════════════════════════════ */
+.photo-panel {
+  flex-shrink: 0;
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  border-top: 1px solid rgba(124,77,255,0.2);
+}
+.photo-panel-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.photo-panel-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.55) 0%, transparent 50%);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 10px 14px;
+}
+.photo-panel-name {
+  font-size: 13px; font-weight: 700; color: #fff;
+  letter-spacing: 0.5px; text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+}
+.photo-close-btn {
+  background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%; width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.7); cursor: pointer;
+  &:hover { background: rgba(0,0,0,0.7); color: #fff; }
+}
+.photo-enter-active, .photo-leave-active { transition: height 0.25s ease, opacity 0.25s ease; }
+.photo-enter-from, .photo-leave-to       { height: 0 !important; opacity: 0; }
 </style>
 
 <style>

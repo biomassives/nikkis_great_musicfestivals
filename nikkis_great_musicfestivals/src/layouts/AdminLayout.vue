@@ -13,6 +13,7 @@
         <q-btn flat dense :to="'/admin/newsletter'"       icon="mark_email_unread" label="Newsletter" class="q-mx-xs admin-nav-btn gt-sm" />
         <q-btn flat dense :to="'/admin/news'"             icon="newspaper"         label="News"       class="q-mx-xs admin-nav-btn gt-sm" />
         <q-btn flat dense :to="'/admin/merch'"            icon="style"             label="Merch"      class="q-mx-xs admin-nav-btn gt-sm" />
+        <q-btn flat dense :to="'/admin/home'"             icon="home"              label="Homepage"   class="q-mx-xs admin-nav-btn gt-sm" />
 
         <!-- Mobile: just icons -->
         <q-btn flat round dense :to="'/admin'"       exact icon="dashboard"         size="sm" class="q-mx-xs lt-md" title="Dashboard" />
@@ -21,6 +22,7 @@
         <q-btn flat round dense :to="'/admin/newsletter'" icon="mark_email_unread" size="sm" class="q-mx-xs lt-md" title="Newsletter" />
         <q-btn flat round dense :to="'/admin/news'"       icon="newspaper"         size="sm" class="q-mx-xs lt-md" title="News" />
         <q-btn flat round dense :to="'/admin/merch'"      icon="style"             size="sm" class="q-mx-xs lt-md" title="Merch" />
+        <q-btn flat round dense :to="'/admin/home'"       icon="home"              size="sm" class="q-mx-xs lt-md" title="Homepage" />
 
         <q-separator vertical inset dark class="q-mx-sm" />
         <q-btn flat round icon="open_in_new" :to="'/'" title="View site" size="sm" />

@@ -14,16 +14,16 @@
 
       <!-- BILLING INTERVAL TOGGLE -->
       <div class="flex flex-center q-mb-xl">
-        <q-btn-toggle
-          v-model="interval"
-          :options="[{label:'Monthly', value:'month'},{label:'Annual (save 2 months)', value:'year'}]"
-          color="primary"
-          text-color="primary"
-          toggle-color="primary"
-          toggle-text-color="white"
-          outline
-          rounded
-        />
+        <div class="interval-toggle">
+          <button
+            :class="['interval-btn', { 'interval-btn--active': interval === 'month' }]"
+            @click="interval = 'month'"
+          >Monthly</button>
+          <button
+            :class="['interval-btn', { 'interval-btn--active': interval === 'year' }]"
+            @click="interval = 'year'"
+          >Annual <span class="save-tag">save 2 mo</span></button>
+        </div>
       </div>
 
       <!-- TIER CARDS -->
@@ -84,7 +84,7 @@
       <div class="custom-section q-pa-xl rounded-borders text-center q-mb-xl" style="max-width:600px; margin:0 auto">
         <div class="section-label q-mb-sm">Custom Support</div>
         <div class="text-h6 q-mb-md">Choose your own amount</div>
-        <div class="row justify-center items-start q-gutter-md">
+        <div class="row justify-center items-start q-gutter-md flex-wrap">
           <q-input
             v-model.number="customAmount"
             type="number"
@@ -95,11 +95,16 @@
             :rules="[v => v > 0 || 'Enter an amount']"
             hide-bottom-space
           />
-          <q-btn-toggle
-            v-model="interval"
-            :options="[{label:'Monthly',value:'month'},{label:'Annual',value:'year'}]"
-            color="grey-6" toggle-color="primary" outline dense
-          />
+          <div class="interval-toggle interval-toggle--sm">
+            <button
+              :class="['interval-btn', { 'interval-btn--active': interval === 'month' }]"
+              @click="interval = 'month'"
+            >Monthly</button>
+            <button
+              :class="['interval-btn', { 'interval-btn--active': interval === 'year' }]"
+              @click="interval = 'year'"
+            >Annual</button>
+          </div>
           <q-btn
             label="Contribute"
             color="primary"
@@ -189,22 +194,16 @@ const tiers = [
 ]
 
 const globalPerks = [
-  { icon: 'newspaper',   color: 'indigo-6',      title: 'Newsletter',       desc: 'Show dates, stories, trail reports' },
-  { icon: 'style',       color: 'deep-orange-6', title: 'Merch Gifts',      desc: 'Monthly surprises for friends+' },
-  { icon: 'photo_library',color: 'amber-7',      title: 'Photo Archives',   desc: 'Exclusive concert photography' },
-  { icon: 'people',      color: 'teal-6',        title: 'Community',        desc: 'Connect with fellow festival fans' },
+  { icon: 'newspaper',    color: 'indigo-6',      title: 'Newsletter',     desc: 'Show dates, stories, trail reports' },
+  { icon: 'style',        color: 'deep-orange-6', title: 'Merch Gifts',    desc: 'Monthly surprises for friends+' },
+  { icon: 'photo_library',color: 'amber-7',       title: 'Photo Archives', desc: 'Exclusive concert photography' },
+  { icon: 'people',       color: 'teal-6',        title: 'Community',      desc: 'Connect with fellow festival fans' },
 ]
 
 interface Tier {
-  id: string
-  name: string
-  monthly: number
-  annual: number
+  id: string; name: string; monthly: number; annual: number
   stripePriceId: { month: string; year: string }
-  emoji: string
-  color: string
-  featured: boolean
-  perks: string[]
+  emoji: string; color: string; featured: boolean; perks: string[]
 }
 
 async function checkout(tier: Tier) {
@@ -238,18 +237,60 @@ async function redirectToStripe(params: Record<string, unknown>) {
 </script>
 
 <style lang="scss" scoped>
-.support-page { min-height: 100vh; background: #fff8f2; }
-.page-content { position: relative; z-index: 1; }
+/* ── Page shell ─────────────────────────────────────────────────── */
+.support-page   { min-height: 100vh; background: #fff8f2; }
+.page-content   { position: relative; z-index: 1; }
 
 .section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #e64a19;
-  display: block;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #e64a19; display: block;
 }
 
+/* ── Interval pill toggle ───────────────────────────────────────── */
+.interval-toggle {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 2px solid #1a1a2e;
+  overflow: hidden;
+  background: #fff;
+
+  &--sm .interval-btn { padding: 6px 16px; font-size: 13px; }
+}
+
+.interval-btn {
+  padding: 9px 22px;
+  border: none;
+  background: transparent;
+  color: #1a1a2e;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+
+  &--active {
+    background: #1a1a2e;
+    color: #fff;
+  }
+  &:not(.interval-btn--active):hover {
+    background: rgba(26,26,46,0.06);
+  }
+}
+
+.save-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: #e64a19;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* ── Tier cards ─────────────────────────────────────────────────── */
 .tier-card {
   border-radius: 16px;
   border: 1px solid rgba(0,0,0,0.08);
@@ -264,20 +305,13 @@ async function redirectToStripe(params: Record<string, unknown>) {
 }
 
 .featured-ribbon {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #7b1fa2;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  padding: 4px 16px;
-  border-radius: 20px;
-  white-space: nowrap;
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: #7b1fa2; color: white;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  padding: 4px 16px; border-radius: 20px; white-space: nowrap;
 }
 
+/* ── Custom & perks sections ────────────────────────────────────── */
 .custom-section {
   background: rgba(255,112,67,0.05);
   border: 1px dashed rgba(230,74,25,0.3);
@@ -287,5 +321,73 @@ async function redirectToStripe(params: Record<string, unknown>) {
   background: rgba(123,31,162,0.04);
   border: 1px solid rgba(123,31,162,0.1);
   border-radius: 16px;
+}
+</style>
+
+<style lang="scss">
+/* ── Full dark mode ─────────────────────────────────────────────── */
+body.body--dark {
+  .support-page {
+    background: #0d0020 !important;
+  }
+
+  /* Headings and body text */
+  .support-page .text-h3,
+  .support-page .text-h5,
+  .support-page .text-h6,
+  .support-page .text-body1,
+  .support-page .text-body2,
+  .support-page .text-weight-bold {
+    color: rgba(255,255,255,0.92) !important;
+  }
+  .support-page .text-grey-7 { color: rgba(255,255,255,0.55) !important; }
+  .support-page .text-grey-6 { color: rgba(255,255,255,0.45) !important; }
+
+  /* Interval pill — invert to: white border, white active, dark text on inactive */
+  .support-page .interval-toggle {
+    background: transparent;
+    border-color: rgba(255,255,255,0.75);
+  }
+  .support-page .interval-btn {
+    color: rgba(255,255,255,0.65);
+    &--active {
+      background: #fff;
+      color: #0d0020;
+    }
+    &:not(.interval-btn--active):hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+  }
+
+  /* Tier cards */
+  .support-page .tier-card {
+    background: #1a1035 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    &--featured {
+      border-color: #9c27b0 !important;
+      box-shadow: 0 8px 32px rgba(156,39,176,0.25) !important;
+    }
+    &:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.4) !important; }
+  }
+  .support-page .q-separator { background: rgba(255,255,255,0.1) !important; }
+
+  /* Custom amount section */
+  .support-page .custom-section {
+    background: rgba(230,74,25,0.08) !important;
+    border-color: rgba(230,74,25,0.25) !important;
+  }
+
+  /* Perks summary */
+  .support-page .perks-summary {
+    background: rgba(156,39,176,0.1) !important;
+    border-color: rgba(156,39,176,0.2) !important;
+  }
+
+  /* Quasar input in dark context */
+  .support-page .q-field__native,
+  .support-page .q-field__prefix {
+    color: rgba(255,255,255,0.85) !important;
+  }
 }
 </style>
