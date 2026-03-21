@@ -1,0 +1,10 @@
+{
+  "installCommand": "cd nikkis_great_musicfestivals && npm install",
+  "buildCommand": "cd nikkis_great_musicfestivals && npx quasar build",
+  "outputDirectory": "nikkis_great_musicfestivals/dist/spa",
+  "framework": null,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
