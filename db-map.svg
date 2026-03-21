@@ -1,0 +1,401 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 860" width="1440" height="860" font-family="'Courier New', Courier, monospace">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#1a1a2e" stroke-width="0.6"/>
+    </pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#ffd700" opacity="0.7"/>
+    </marker>
+    <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4dd0c4" opacity="0.7"/>
+    </marker>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="860" fill="#07070f"/>
+  <rect width="1440" height="860" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="720" y="32" text-anchor="middle" font-size="15" fill="#ffd700" letter-spacing="4" font-weight="bold" opacity="0.9">DATABASE &amp; API ARCHITECTURE</text>
+  <text x="720" y="48" text-anchor="middle" font-size="9" fill="#7c8aaa" letter-spacing="2">Nikki's Great Music Festivals · Supabase PostgreSQL + External Services</text>
+
+  <!-- ─── LEGEND ─── -->
+  <rect x="16" y="58" width="380" height="22" rx="3" fill="#0d0d1a" stroke="#2a2a4a" stroke-width="0.8"/>
+  <circle cx="30" cy="69" r="4" fill="#ffd700"/>
+  <text x="38" y="73" font-size="8.5" fill="#c8c8e0">PK</text>
+  <circle cx="68" cy="69" r="4" fill="none" stroke="#4dd0c4" stroke-width="1.2"/>
+  <text x="76" y="73" font-size="8.5" fill="#c8c8e0">FK</text>
+  <line x1="112" y1="69" x2="128" y2="69" stroke="#ffd700" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#arrow)"/>
+  <text x="134" y="73" font-size="8.5" fill="#c8c8e0">relation</text>
+  <rect x="182" y="63" width="36" height="12" rx="2" fill="#1a2a1a" stroke="#4dd0c4" stroke-width="0.7"/>
+  <text x="200" y="72" text-anchor="middle" font-size="7" fill="#4dd0c4">RLS</text>
+  <text x="222" y="73" font-size="8.5" fill="#c8c8e0">row-level security</text>
+  <rect x="306" y="63" width="46" height="12" rx="2" fill="#1a1a2e" stroke="#7c4dff" stroke-width="0.7"/>
+  <text x="329" y="72" text-anchor="middle" font-size="7" fill="#a98fff">supabase</text>
+  <text x="356" y="73" font-size="8.5" fill="#c8c8e0">service</text>
+
+  <!-- ════════════════════════════════════════════════════════
+       COLUMN 1  x=16  w=230
+       map_regions (y=88)
+       map_points  (y=252)
+       ════════════════════════════════════════════════════════ -->
+
+  <!-- map_regions -->
+  <g id="map_regions">
+    <rect x="16" y="88" width="230" height="150" rx="4" fill="#090920" stroke="#1e3a6e" stroke-width="1.2"/>
+    <rect x="16" y="88" width="230" height="22" rx="4" fill="#1a3468"/>
+    <rect x="16" y="100" width="230" height="10" fill="#1a3468"/><!-- bottom square of header -->
+    <text x="24" y="103" font-size="10" fill="#8ab4f8" font-weight="bold">map_regions</text>
+    <rect x="196" y="91" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="208" y="100" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <!-- rows -->
+    <text x="24" y="125" font-size="8.5" fill="#ffd700">⬤ id</text><text x="90" y="125" font-size="8" fill="#555">uuid PK</text>
+    <text x="24" y="139" font-size="8.5" fill="#c8d8ff">  name</text><text x="90" y="139" font-size="8" fill="#555">text</text>
+    <text x="24" y="153" font-size="8.5" fill="#c8d8ff">  description</text><text x="90" y="153" font-size="8" fill="#555">text</text>
+    <text x="24" y="167" font-size="8.5" fill="#c8d8ff">  center_lat</text><text x="130" y="167" font-size="8" fill="#555">numeric</text>
+    <text x="24" y="181" font-size="8.5" fill="#c8d8ff">  center_lng</text><text x="130" y="181" font-size="8" fill="#555">numeric</text>
+    <text x="24" y="195" font-size="8.5" fill="#c8d8ff">  zoom</text><text x="90" y="195" font-size="8" fill="#555">integer</text>
+    <text x="24" y="209" font-size="8.5" fill="#c8d8ff">  image_url</text><text x="90" y="209" font-size="8" fill="#555">text</text>
+    <text x="24" y="223" font-size="8.5" fill="#c8d8ff">  display_order</text><text x="130" y="223" font-size="8" fill="#555">integer</text>
+  </g>
+
+  <!-- map_points -->
+  <g id="map_points">
+    <rect x="16" y="252" width="230" height="178" rx="4" fill="#090920" stroke="#1e3a6e" stroke-width="1.2"/>
+    <rect x="16" y="252" width="230" height="22" rx="4" fill="#1a3468"/>
+    <rect x="16" y="264" width="230" height="10" fill="#1a3468"/>
+    <text x="24" y="267" font-size="10" fill="#8ab4f8" font-weight="bold">map_points</text>
+    <rect x="196" y="255" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="208" y="264" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <!-- rows -->
+    <text x="24" y="289" font-size="8.5" fill="#ffd700">⬤ id</text><text x="90" y="289" font-size="8" fill="#555">uuid PK</text>
+    <text x="24" y="303" font-size="8.5" fill="#4dd0c4">◯ region_id</text><text x="120" y="303" font-size="8" fill="#555">uuid FK</text>
+    <text x="24" y="317" font-size="8.5" fill="#c8d8ff">  name</text><text x="90" y="317" font-size="8" fill="#555">text</text>
+    <text x="24" y="331" font-size="8.5" fill="#c8d8ff">  description</text><text x="90" y="331" font-size="8" fill="#555">text</text>
+    <text x="24" y="345" font-size="8.5" fill="#c8d8ff">  category</text><text x="90" y="345" font-size="8" fill="#555">text</text>
+    <text x="24" y="359" font-size="8.5" fill="#c8d8ff">  lat</text><text x="90" y="359" font-size="8" fill="#555">numeric</text>
+    <text x="24" y="373" font-size="8.5" fill="#c8d8ff">  lng</text><text x="90" y="373" font-size="8" fill="#555">numeric</text>
+    <text x="24" y="387" font-size="8.5" fill="#c8d8ff">  image_url</text><text x="90" y="387" font-size="8" fill="#555">text</text>
+    <text x="24" y="401" font-size="8.5" fill="#c8d8ff">  event_date</text><text x="120" y="401" font-size="8" fill="#555">date</text>
+    <text x="24" y="415" font-size="8.5" fill="#c8d8ff">  created_at</text><text x="120" y="415" font-size="8" fill="#555">timestamptz</text>
+  </g>
+
+  <!-- FK arrow: map_points.region_id → map_regions.id  (right side routing) -->
+  <path d="M 246,303 L 260,303 L 260,163 L 246,163" fill="none" stroke="#ffd700" stroke-width="1.1" stroke-dasharray="4 2" marker-end="url(#arrow)" opacity="0.65"/>
+
+  <!-- ════════════════════════════════════════════════════════
+       COLUMN 2  x=262  w=294
+       site_settings CMS hub
+       ════════════════════════════════════════════════════════ -->
+
+  <g id="site_settings">
+    <rect x="262" y="88" width="294" height="356" rx="4" fill="#070f0b" stroke="#0d5c3a" stroke-width="1.4"/>
+    <rect x="262" y="88" width="294" height="22" rx="4" fill="#0d3520"/>
+    <rect x="262" y="100" width="294" height="10" fill="#0d3520"/>
+    <text x="271" y="103" font-size="10" fill="#4dd0c4" font-weight="bold">site_settings</text>
+    <text x="396" y="103" font-size="8" fill="#2a8a6a" font-style="italic">CMS hub — no-migration pattern</text>
+    <rect x="524" y="91" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="536" y="100" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <!-- schema cols -->
+    <text x="271" y="125" font-size="8.5" fill="#ffd700">⬤ key</text><text x="320" y="125" font-size="8" fill="#555">text PK</text>
+    <text x="271" y="139" font-size="8.5" fill="#c8d8ff">  value</text><text x="320" y="139" font-size="8" fill="#555">jsonb</text>
+    <text x="271" y="153" font-size="8.5" fill="#c8d8ff">  updated_at</text><text x="360" y="153" font-size="8" fill="#555">timestamptz</text>
+    <!-- divider -->
+    <line x1="271" y1="162" x2="548" y2="162" stroke="#1a5a3a" stroke-width="0.8" stroke-dasharray="4 3"/>
+    <text x="271" y="174" font-size="8" fill="#2a9a6a" letter-spacing="1" font-style="italic">— stored keys —</text>
+    <!-- keys -->
+    <text x="271" y="190" font-size="8" fill="#ffd700" opacity="0.8">'homepage_content'</text>
+    <text x="420" y="190" font-size="7.5" fill="#556" font-style="italic">hero, CTAs, mission text, artist profiles</text>
+    <text x="271" y="205" font-size="8" fill="#ffd700" opacity="0.8">'footer_sky_text'</text>
+    <text x="420" y="205" font-size="7.5" fill="#556" font-style="italic">orb sky writer text + color</text>
+    <text x="271" y="220" font-size="8" fill="#ffd700" opacity="0.8">'welcome_overlay'</text>
+    <text x="420" y="220" font-size="7.5" fill="#556" font-style="italic">full-screen splash config</text>
+    <text x="271" y="235" font-size="8" fill="#ffd700" opacity="0.8">'story_overlay'</text>
+    <text x="420" y="235" font-size="7.5" fill="#556" font-style="italic">Our Full Story content</text>
+    <text x="271" y="250" font-size="8" fill="#ffd700" opacity="0.8">'page_background'</text>
+    <text x="420" y="250" font-size="7.5" fill="#556" font-style="italic">SVG pattern, theme image</text>
+    <text x="271" y="265" font-size="8" fill="#ffd700" opacity="0.8">'seo_meta'</text>
+    <text x="420" y="265" font-size="7.5" fill="#556" font-style="italic">og:title, og:image, twitter card</text>
+    <text x="271" y="280" font-size="8" fill="#ffd700" opacity="0.8">'region_hero_{id}'</text>
+    <text x="420" y="280" font-size="7.5" fill="#556" font-style="italic">per-region carousel + archive show</text>
+    <text x="271" y="295" font-size="8" fill="#ffd700" opacity="0.8">'nav_config'</text>
+    <text x="420" y="295" font-size="7.5" fill="#556" font-style="italic">navigation link order/labels</text>
+    <!-- note box -->
+    <rect x="271" y="310" width="274" height="122" rx="3" fill="#0a1f14" stroke="#1a5a3a" stroke-width="0.8"/>
+    <text x="280" y="326" font-size="8" fill="#4dd0c4" font-weight="bold">No-migration CMS pattern</text>
+    <text x="280" y="341" font-size="7.5" fill="#7a9a8a">Add new editable content without schema changes:</text>
+    <text x="280" y="355" font-size="7.5" fill="#7a9a8a">1. Choose a key string</text>
+    <text x="280" y="368" font-size="7.5" fill="#7a9a8a">2. Add reactive() object in admin page</text>
+    <text x="280" y="381" font-size="7.5" fill="#7a9a8a">3. Upsert on save / select on load</text>
+    <text x="280" y="394" font-size="7.5" fill="#7a9a8a">4. Read with fallback defaults in public page</text>
+    <text x="280" y="410" font-size="7.5" fill="#4dd0c4" font-style="italic">jsonb value shape is defined by the app, not the schema.</text>
+    <text x="280" y="423" font-size="7.5" fill="#4dd0c4" font-style="italic">No ALTER TABLE, no migrations, no new routes.</text>
+  </g>
+
+  <!-- ════════════════════════════════════════════════════════
+       COLUMN 3  x=572  w=220
+       custom_pages (y=88)
+       news_posts   (y=250)
+       gallery_items (y=376)
+       ════════════════════════════════════════════════════════ -->
+
+  <!-- custom_pages -->
+  <g id="custom_pages">
+    <rect x="572" y="88" width="222" height="148" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="572" y="88" width="222" height="22" rx="4" fill="#261050"/>
+    <rect x="572" y="100" width="222" height="10" fill="#261050"/>
+    <text x="580" y="103" font-size="10" fill="#c8a8ff" font-weight="bold">custom_pages</text>
+    <rect x="766" y="91" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="778" y="100" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="580" y="123" font-size="8.5" fill="#ffd700">⬤ id</text><text x="620" y="123" font-size="8" fill="#555">uuid PK</text>
+    <text x="580" y="137" font-size="8.5" fill="#c8d8ff">  slug</text><text x="620" y="137" font-size="8" fill="#555">text UNIQUE</text>
+    <text x="580" y="151" font-size="8.5" fill="#c8d8ff">  title</text><text x="620" y="151" font-size="8" fill="#555">text</text>
+    <text x="580" y="165" font-size="8.5" fill="#c8d8ff">  content</text><text x="620" y="165" font-size="8" fill="#555">jsonb (blocks)</text>
+    <text x="580" y="179" font-size="8.5" fill="#c8d8ff">  published</text><text x="650" y="179" font-size="8" fill="#555">boolean</text>
+    <text x="580" y="193" font-size="8.5" fill="#c8d8ff">  show_in_nav</text><text x="660" y="193" font-size="8" fill="#555">boolean</text>
+    <text x="580" y="207" font-size="8.5" fill="#c8d8ff">  created_at</text><text x="660" y="207" font-size="8" fill="#555">timestamptz</text>
+    <text x="580" y="221" font-size="8.5" fill="#c8d8ff">  updated_at</text><text x="660" y="221" font-size="8" fill="#555">timestamptz</text>
+    <text x="580" y="230" font-size="7" fill="#6a5a8a" font-style="italic">route: /p/:slug  ·  Quill WYSIWYG blocks</text>
+  </g>
+
+  <!-- news_posts -->
+  <g id="news_posts">
+    <rect x="572" y="250" width="222" height="120" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="572" y="250" width="222" height="22" rx="4" fill="#261050"/>
+    <rect x="572" y="262" width="222" height="10" fill="#261050"/>
+    <text x="580" y="265" font-size="10" fill="#c8a8ff" font-weight="bold">news_posts</text>
+    <rect x="766" y="253" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="778" y="262" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="580" y="285" font-size="8.5" fill="#ffd700">⬤ id</text><text x="620" y="285" font-size="8" fill="#555">uuid PK</text>
+    <text x="580" y="299" font-size="8.5" fill="#c8d8ff">  title</text><text x="620" y="299" font-size="8" fill="#555">text</text>
+    <text x="580" y="313" font-size="8.5" fill="#c8d8ff">  body</text><text x="620" y="313" font-size="8" fill="#555">text</text>
+    <text x="580" y="327" font-size="8.5" fill="#c8d8ff">  image_url</text><text x="660" y="327" font-size="8" fill="#555">text</text>
+    <text x="580" y="341" font-size="8.5" fill="#c8d8ff">  published_at</text><text x="660" y="341" font-size="8" fill="#555">timestamptz</text>
+    <text x="580" y="358" font-size="7" fill="#6a5a8a" font-style="italic">route: /news</text>
+  </g>
+
+  <!-- gallery_items -->
+  <g id="gallery_items">
+    <rect x="572" y="384" width="222" height="106" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="572" y="384" width="222" height="22" rx="4" fill="#261050"/>
+    <rect x="572" y="396" width="222" height="10" fill="#261050"/>
+    <text x="580" y="399" font-size="10" fill="#c8a8ff" font-weight="bold">gallery_items</text>
+    <rect x="766" y="387" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="778" y="396" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="580" y="419" font-size="8.5" fill="#ffd700">⬤ id</text><text x="620" y="419" font-size="8" fill="#555">uuid PK</text>
+    <text x="580" y="433" font-size="8.5" fill="#c8d8ff">  title</text><text x="620" y="433" font-size="8" fill="#555">text</text>
+    <text x="580" y="447" font-size="8.5" fill="#c8d8ff">  image_url</text><text x="660" y="447" font-size="8" fill="#555">text</text>
+    <text x="580" y="461" font-size="8.5" fill="#c8d8ff">  category</text><text x="660" y="461" font-size="8" fill="#555">text</text>
+    <text x="580" y="475" font-size="8.5" fill="#c8d8ff">  sort_order</text><text x="660" y="475" font-size="8" fill="#555">integer</text>
+    <text x="580" y="484" font-size="7" fill="#6a5a8a" font-style="italic">route: /photography  ·  Supabase Storage</text>
+  </g>
+
+  <!-- ════════════════════════════════════════════════════════
+       COLUMN 4  x=810  w=220
+       merch_items          (y=88)
+       newsletter_subscribers (y=230)
+       nav_items            (y=364)
+       ════════════════════════════════════════════════════════ -->
+
+  <!-- merch_items -->
+  <g id="merch_items">
+    <rect x="810" y="88" width="222" height="130" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="810" y="88" width="222" height="22" rx="4" fill="#261050"/>
+    <rect x="810" y="100" width="222" height="10" fill="#261050"/>
+    <text x="818" y="103" font-size="10" fill="#c8a8ff" font-weight="bold">merch_items</text>
+    <rect x="1004" y="91" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="1016" y="100" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="818" y="123" font-size="8.5" fill="#ffd700">⬤ id</text><text x="858" y="123" font-size="8" fill="#555">uuid PK</text>
+    <text x="818" y="137" font-size="8.5" fill="#c8d8ff">  name</text><text x="858" y="137" font-size="8" fill="#555">text</text>
+    <text x="818" y="151" font-size="8.5" fill="#c8d8ff">  description</text><text x="904" y="151" font-size="8" fill="#555">text</text>
+    <text x="818" y="165" font-size="8.5" fill="#c8d8ff">  price_cents</text><text x="904" y="165" font-size="8" fill="#555">integer</text>
+    <text x="818" y="179" font-size="8.5" fill="#c8d8ff">  image_url</text><text x="904" y="179" font-size="8" fill="#555">text</text>
+    <text x="818" y="193" font-size="8.5" fill="#c8d8ff">  category</text><text x="904" y="193" font-size="8" fill="#555">text</text>
+    <text x="818" y="207" font-size="8.5" fill="#c8d8ff">  stripe_price_id</text><text x="940" y="207" font-size="8" fill="#555">text</text>
+    <text x="818" y="216" font-size="7" fill="#6a5a8a" font-style="italic">route: /merch  ·  Stripe checkout</text>
+  </g>
+
+  <!-- newsletter_subscribers -->
+  <g id="newsletter_subscribers">
+    <rect x="810" y="232" width="222" height="120" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="810" y="232" width="222" height="22" rx="4" fill="#261050"/>
+    <rect x="810" y="244" width="222" height="10" fill="#261050"/>
+    <text x="818" y="247" font-size="9.5" fill="#c8a8ff" font-weight="bold">newsletter_subscribers</text>
+    <rect x="1004" y="235" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="1016" y="244" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="818" y="267" font-size="8.5" fill="#ffd700">⬤ id</text><text x="858" y="267" font-size="8" fill="#555">uuid PK</text>
+    <text x="818" y="281" font-size="8.5" fill="#c8d8ff">  email</text><text x="858" y="281" font-size="8" fill="#555">text UNIQUE</text>
+    <text x="818" y="295" font-size="8.5" fill="#c8d8ff">  name</text><text x="858" y="295" font-size="8" fill="#555">text</text>
+    <text x="818" y="309" font-size="8.5" fill="#c8d8ff">  subscribed_at</text><text x="930" y="309" font-size="8" fill="#555">timestamptz</text>
+    <text x="818" y="323" font-size="8.5" fill="#c8d8ff">  active</text><text x="858" y="323" font-size="8" fill="#555">boolean</text>
+    <text x="818" y="342" font-size="7" fill="#6a5a8a" font-style="italic">signup on homepage + /admin/newsletter broadcast</text>
+  </g>
+
+  <!-- nav_items -->
+  <g id="nav_items">
+    <rect x="810" y="366" width="222" height="120" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="810" y="366" width="222" height="22" rx="4" fill="#261050"/>
+    <rect x="810" y="378" width="222" height="10" fill="#261050"/>
+    <text x="818" y="381" font-size="10" fill="#c8a8ff" font-weight="bold">nav_items</text>
+    <rect x="1004" y="369" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="1016" y="378" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="818" y="401" font-size="8.5" fill="#ffd700">⬤ id</text><text x="858" y="401" font-size="8" fill="#555">uuid PK</text>
+    <text x="818" y="415" font-size="8.5" fill="#c8d8ff">  label</text><text x="858" y="415" font-size="8" fill="#555">text</text>
+    <text x="818" y="429" font-size="8.5" fill="#c8d8ff">  path</text><text x="858" y="429" font-size="8" fill="#555">text</text>
+    <text x="818" y="443" font-size="8.5" fill="#c8d8ff">  sort_order</text><text x="900" y="443" font-size="8" fill="#555">integer</text>
+    <text x="818" y="457" font-size="8.5" fill="#c8d8ff">  visible</text><text x="900" y="457" font-size="8" fill="#555">boolean</text>
+    <text x="818" y="471" font-size="8.5" fill="#c8d8ff">  page_id</text><text x="900" y="471" font-size="8" fill="#555">uuid nullable FK</text>
+    <text x="818" y="480" font-size="7" fill="#6a5a8a" font-style="italic">/admin/nav  ·  optional link to custom_page</text>
+  </g>
+
+  <!-- ════════════════════════════════════════════════════════
+       COLUMN 5  x=1048  w=278
+       support_tiers   (y=88)
+       Supabase Auth   (y=230)
+       Supabase Storage (y=330)
+       ════════════════════════════════════════════════════════ -->
+
+  <!-- support_tiers -->
+  <g id="support_tiers">
+    <rect x="1050" y="88" width="234" height="126" rx="4" fill="#090914" stroke="#3a1a6e" stroke-width="1.2"/>
+    <rect x="1050" y="88" width="234" height="22" rx="4" fill="#261050"/>
+    <rect x="1050" y="100" width="234" height="10" fill="#261050"/>
+    <text x="1058" y="103" font-size="10" fill="#c8a8ff" font-weight="bold">support_tiers</text>
+    <rect x="1256" y="91" width="24" height="12" rx="2" fill="#0d2a10" stroke="#4dd0c4" stroke-width="0.7"/>
+    <text x="1268" y="100" text-anchor="middle" font-size="6.5" fill="#4dd0c4">RLS</text>
+    <text x="1058" y="123" font-size="8.5" fill="#ffd700">⬤ id</text><text x="1098" y="123" font-size="8" fill="#555">uuid PK</text>
+    <text x="1058" y="137" font-size="8.5" fill="#c8d8ff">  name</text><text x="1098" y="137" font-size="8" fill="#555">text</text>
+    <text x="1058" y="151" font-size="8.5" fill="#c8d8ff">  description</text><text x="1144" y="151" font-size="8" fill="#555">text</text>
+    <text x="1058" y="165" font-size="8.5" fill="#c8d8ff">  price_cents</text><text x="1144" y="165" font-size="8" fill="#555">integer</text>
+    <text x="1058" y="179" font-size="8.5" fill="#c8d8ff">  stripe_price_id</text><text x="1170" y="179" font-size="8" fill="#555">text</text>
+    <text x="1058" y="193" font-size="8.5" fill="#c8d8ff">  sort_order</text><text x="1144" y="193" font-size="8" fill="#555">integer</text>
+    <text x="1058" y="202" font-size="7" fill="#6a5a8a" font-style="italic">route: /support  ·  Stripe recurring/one-time</text>
+  </g>
+
+  <!-- Supabase Auth -->
+  <g id="supabase_auth">
+    <rect x="1050" y="228" width="234" height="90" rx="4" fill="#0a0a1f" stroke="#7c4dff" stroke-width="1.4"/>
+    <rect x="1050" y="228" width="234" height="22" rx="4" fill="#2a1a5e"/>
+    <rect x="1050" y="240" width="234" height="10" fill="#2a1a5e"/>
+    <text x="1058" y="243" font-size="10" fill="#a98fff" font-weight="bold">Supabase Auth</text>
+    <rect x="1234" y="231" width="46" height="12" rx="2" fill="#1a1a2e" stroke="#7c4dff" stroke-width="0.7"/>
+    <text x="1257" y="240" text-anchor="middle" font-size="7" fill="#a98fff">service</text>
+    <text x="1058" y="262" font-size="8" fill="#8a8aaa">Email/password sign-in for admin users</text>
+    <text x="1058" y="276" font-size="8" fill="#8a8aaa">Session management via JWT cookies</text>
+    <text x="1058" y="290" font-size="8" fill="#8a8aaa">Password reset email flow</text>
+    <text x="1058" y="304" font-size="8" fill="#8a8aaa">Protected via route guard on /admin/*</text>
+    <text x="1058" y="312" font-size="7" fill="#4a3a7a" font-style="italic">auth.users table (managed, not shown above)</text>
+  </g>
+
+  <!-- Supabase Storage -->
+  <g id="supabase_storage">
+    <rect x="1050" y="332" width="234" height="90" rx="4" fill="#0a0a1f" stroke="#7c4dff" stroke-width="1.4"/>
+    <rect x="1050" y="332" width="234" height="22" rx="4" fill="#2a1a5e"/>
+    <rect x="1050" y="344" width="234" height="10" fill="#2a1a5e"/>
+    <text x="1058" y="347" font-size="10" fill="#a98fff" font-weight="bold">Supabase Storage</text>
+    <rect x="1234" y="335" width="46" height="12" rx="2" fill="#1a1a2e" stroke="#7c4dff" stroke-width="0.7"/>
+    <text x="1257" y="344" text-anchor="middle" font-size="7" fill="#a98fff">service</text>
+    <text x="1058" y="366" font-size="8" fill="#8a8aaa">Bucket: festival-media (public read)</text>
+    <text x="1058" y="380" font-size="8" fill="#8a8aaa">Gallery images, merch photos, admin uploads</text>
+    <text x="1058" y="394" font-size="8" fill="#8a8aaa">Rich-text editor image inserts via URL</text>
+    <text x="1058" y="408" font-size="8" fill="#8a8aaa">Returns public CDN URLs after upload</text>
+    <text x="1058" y="416" font-size="7" fill="#4a3a7a" font-style="italic">referenced by image_url columns across all tables</text>
+  </g>
+
+  <!-- RLS note -->
+  <rect x="1050" y="436" width="234" height="58" rx="4" fill="#08120a" stroke="#1a5a1a" stroke-width="0.8"/>
+  <text x="1058" y="452" font-size="8.5" fill="#4dd0c4" font-weight="bold">Row Level Security policy pattern</text>
+  <text x="1058" y="466" font-size="7.5" fill="#7a9a7a">SELECT: anon — published rows only</text>
+  <text x="1058" y="479" font-size="7.5" fill="#7a9a7a">ALL (INSERT/UPDATE/DELETE):</text>
+  <text x="1058" y="492" font-size="7.5" fill="#7a9a7a">  TO authenticated USING (true) WITH CHECK (true)</text>
+
+  <!-- ════════════════════════════════════════════════════════
+       EXTERNAL APIs ROW  y=510
+       ════════════════════════════════════════════════════════ -->
+
+  <text x="720" y="520" text-anchor="middle" font-size="9" fill="#4a4a7a" letter-spacing="3">— EXTERNAL SERVICES &amp; CLIENT LIBRARIES —</text>
+  <line x1="60" y1="524" x2="610" y2="524" stroke="#1a1a3a" stroke-width="0.6"/>
+  <line x1="830" y1="524" x2="1380" y2="524" stroke="#1a1a3a" stroke-width="0.6"/>
+
+  <!-- archive.org -->
+  <rect x="16" y="534" width="192" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="24" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">archive.org</text>
+  <text x="160" y="550" font-size="7" fill="#3a5a7a">free / open</text>
+  <text x="24" y="565" font-size="7.5" fill="#6a7a9a">Freely streamable live recordings</text>
+  <text x="24" y="578" font-size="7.5" fill="#6a7a9a">Embedded via iframe src:</text>
+  <text x="24" y="591" font-size="7" fill="#ffd700" opacity="0.7">archive.org/embed/{identifier}</text>
+  <text x="24" y="605" font-size="7.5" fill="#6a7a9a">Duke Ellington, Grateful Dead,</text>
+  <text x="24" y="608" font-size="7.5" fill="#6a7a9a">Billy Strings + more</text>
+
+  <!-- CartoDB Tiles -->
+  <rect x="224" y="534" width="192" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="232" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">CartoDB / CARTO</text>
+  <text x="368" y="550" font-size="7" fill="#3a5a7a">free</text>
+  <text x="232" y="565" font-size="7.5" fill="#6a7a9a">Voyager tile layer for Leaflet maps</text>
+  <text x="232" y="578" font-size="7.5" fill="#6a7a9a">No API key required for tiles</text>
+  <text x="232" y="591" font-size="7" fill="#ffd700" opacity="0.7">{s}.basemaps.cartocdn.com</text>
+  <text x="232" y="605" font-size="7.5" fill="#6a7a9a">Clean, low-noise map background</text>
+
+  <!-- Leaflet.js -->
+  <rect x="432" y="534" width="192" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="440" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">Leaflet.js</text>
+  <text x="560" y="550" font-size="7" fill="#3a5a7a">MIT / client</text>
+  <text x="440" y="565" font-size="7.5" fill="#6a7a9a">Interactive map rendering library</text>
+  <text x="440" y="578" font-size="7.5" fill="#6a7a9a">Pin layers: show / senior / nature</text>
+  <text x="440" y="591" font-size="7.5" fill="#6a7a9a">Dashed polyline tour connections</text>
+  <text x="440" y="605" font-size="7.5" fill="#6a7a9a">Click-to-drop admin pin editor</text>
+
+  <!-- Stripe -->
+  <rect x="640" y="534" width="192" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="648" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">Stripe</text>
+  <text x="744" y="550" font-size="7" fill="#3a5a7a">paid / key required</text>
+  <text x="648" y="565" font-size="7.5" fill="#6a7a9a">Checkout for merch + support tiers</text>
+  <text x="648" y="578" font-size="7.5" fill="#6a7a9a">One-time + recurring payments</text>
+  <text x="648" y="591" font-size="7.5" fill="#6a7a9a">stripe_price_id stored per item</text>
+  <text x="648" y="605" font-size="7.5" fill="#6a7a9a">Client: @stripe/stripe-js</text>
+
+  <!-- Unsplash -->
+  <rect x="848" y="534" width="192" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="856" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">Unsplash</text>
+  <text x="980" y="550" font-size="7" fill="#3a5a7a">free tier</text>
+  <text x="856" y="565" font-size="7.5" fill="#6a7a9a">Default hero image pool for regions</text>
+  <text x="856" y="578" font-size="7.5" fill="#6a7a9a">Admin pastes direct image URLs</text>
+  <text x="856" y="591" font-size="7.5" fill="#6a7a9a">Fallback: deterministic hash of</text>
+  <text x="856" y="604" font-size="7.5" fill="#6a7a9a">region name selects default photo</text>
+
+  <!-- Quill / vue-quill -->
+  <rect x="1056" y="534" width="192" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="1064" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">Quill / vue-quill</text>
+  <text x="1200" y="550" font-size="7" fill="#3a5a7a">MIT</text>
+  <text x="1064" y="565" font-size="7.5" fill="#6a7a9a">WYSIWYG rich text editor</text>
+  <text x="1064" y="578" font-size="7.5" fill="#6a7a9a">Used in custom_pages admin</text>
+  <text x="1064" y="591" font-size="7.5" fill="#6a7a9a">Outputs delta / block JSON stored</text>
+  <text x="1064" y="604" font-size="7.5" fill="#6a7a9a">in custom_pages.content (jsonb)</text>
+
+  <!-- Vercel -->
+  <rect x="1264" y="534" width="160" height="82" rx="4" fill="#0a0a16" stroke="#2a3a5a" stroke-width="1"/>
+  <text x="1272" y="550" font-size="9.5" fill="#8ab4f8" font-weight="bold">Vercel</text>
+  <text x="1340" y="550" font-size="7" fill="#3a5a7a">free tier</text>
+  <text x="1272" y="565" font-size="7.5" fill="#6a7a9a">Static SPA hosting</text>
+  <text x="1272" y="578" font-size="7.5" fill="#6a7a9a">quasar build → dist/spa/</text>
+  <text x="1272" y="591" font-size="7.5" fill="#6a7a9a">SPA catch-all routing</text>
+  <text x="1272" y="604" font-size="7.5" fill="#6a7a9a">No server, no Docker</text>
+
+  <!-- ════ DATA FLOW ANNOTATIONS ════ -->
+
+  <!-- site_settings → admin pages bidirectional note -->
+  <text x="409" y="460" text-anchor="middle" font-size="7.5" fill="#2a8a6a" font-style="italic">admin reads/writes all keys</text>
+  <text x="409" y="471" text-anchor="middle" font-size="7.5" fill="#2a8a6a" font-style="italic">public pages read with fallbacks</text>
+
+  <!-- nav_items optional FK to custom_pages -->
+  <path d="M 810,471 L 794,471 L 794,200 L 794,148 L 794,144" fill="none" stroke="#4dd0c4" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4" marker-end="url(#arrow-teal)"/>
+
+  <!-- Footer note -->
+  <text x="720" y="640" text-anchor="middle" font-size="8" fill="#2a2a4a">Stack: Vue 3 + Quasar 2 (Vite) · Supabase PostgreSQL · Leaflet.js · archive.org · Stripe · Vercel</text>
+  <text x="720" y="654" text-anchor="middle" font-size="7.5" fill="#1a1a36">All tables use UUID primary keys · timestamptz for all datetimes · RLS enabled on all tables · anon key safe for client</text>
+
+</svg>

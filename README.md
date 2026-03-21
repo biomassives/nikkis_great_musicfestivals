@@ -92,6 +92,12 @@ The site follows a traveling music festival circuit — documenting tour stops, 
 
 ---
 
+## Database & API Map
+
+![Database & API Architecture](./db-map.svg)
+
+---
+
 ## Architecture Notes
 
 **Content management pattern:** Nearly all editorial content is stored as `jsonb` in `site_settings` rows, keyed by a logical name (e.g. `homepage_content`, `region_hero_NNN`, `footer_sky_text`). The admin writes structured JSON; the frontend reads it with safe fallbacks. This means no schema migration is needed to add new configurable fields.
