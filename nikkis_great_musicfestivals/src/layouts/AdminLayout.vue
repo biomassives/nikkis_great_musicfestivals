@@ -31,6 +31,8 @@
         <q-btn flat dense :to="'/admin/home'"    icon="home"         label="Homepage"   class="nav-btn nav-btn--config" />
         <q-btn flat dense :to="'/admin/story'"   icon="auto_stories" label="Our Story"  class="nav-btn nav-btn--config" />
         <q-btn flat dense :to="'/admin/support'" icon="favorite"     label="Support"    class="nav-btn nav-btn--config" />
+        <q-btn flat dense :to="'/admin/nav'"     icon="menu"         label="Nav"        class="nav-btn nav-btn--config" />
+        <q-btn flat dense :to="'/admin/pages'"   icon="web"          label="Pages"      class="nav-btn nav-btn--config" />
       </div>
 
     </q-header>

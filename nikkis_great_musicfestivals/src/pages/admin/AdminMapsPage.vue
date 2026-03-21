@@ -17,10 +17,24 @@
       <div v-for="(region, i) in regions" :key="region.id" class="col-12 col-sm-6 col-md-4">
         <q-card class="admin-region-card">
 
-          <!-- Region image thumbnail (if set) -->
+          <!-- Region image thumbnail / placeholder -->
           <div v-if="region.image_url" class="region-thumb-wrap">
             <img :src="region.image_url" class="region-thumb" />
             <div class="region-thumb-label">{{ region.name }}</div>
+            <div class="region-thumb-actions">
+              <q-btn round dense size="xs" color="grey-9" icon="photo_camera"
+                :loading="uploadingQuickImg && quickImgRegionId === region.id"
+                @click.stop="triggerQuickImg(region.id)" title="Change preview image" />
+              <q-btn round dense size="xs" color="grey-9" icon="close"
+                @click.stop="clearRegionImage(region)" title="Remove preview image" class="q-ml-xs" />
+            </div>
+          </div>
+          <div v-else class="region-img-placeholder" @click.stop="triggerQuickImg(region.id)">
+            <q-icon name="add_photo_alternate" size="28px" color="teal-8" />
+            <div class="text-caption text-teal-8 q-mt-xs">Set preview image</div>
+            <q-inner-loading :showing="uploadingQuickImg && quickImgRegionId === region.id">
+              <q-spinner-orbit color="teal" size="24px" />
+            </q-inner-loading>
           </div>
 
           <!-- Reorder arrows -->
@@ -56,6 +70,9 @@
         No regions yet — add one to get started.
       </div>
     </div>
+
+    <!-- Hidden input for quick card image upload -->
+    <input ref="quickImgFileInput" type="file" accept="image/*" class="hidden" @change="handleQuickImgUpload" />
 
     <!-- Add / Edit Region Dialog -->
     <q-dialog v-model="dialog.open" persistent>
@@ -129,10 +146,13 @@ const router  = useRouter()
 const $q      = useQuasar()
 const loading = ref(true)
 const saving  = ref(false)
-const uploadingImg = ref(false)
+const uploadingImg      = ref(false)
+const uploadingQuickImg = ref(false)
+const quickImgRegionId  = ref('')
 const regions = ref<MapRegion[]>([])
 const counts  = ref<Record<string, { label: string; color: string }[]>>({})
-const imgFileInput = ref<HTMLInputElement | null>(null)
+const imgFileInput      = ref<HTMLInputElement | null>(null)
+const quickImgFileInput = ref<HTMLInputElement | null>(null)
 
 const dialog = ref({ open: false, isNew: true, editId: '' })
 const form   = reactive({
@@ -224,6 +244,46 @@ function editPoints(id: string) {
 
 function triggerImgUpload() { imgFileInput.value?.click() }
 
+function triggerQuickImg(regionId: string) {
+  quickImgRegionId.value = regionId
+  quickImgFileInput.value?.click()
+}
+
+async function handleQuickImgUpload(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file || !quickImgRegionId.value) return
+  uploadingQuickImg.value = true
+  const path = `map-regions/${Date.now()}.${file.name.split('.').pop() ?? 'jpg'}`
+  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  if (!error) {
+    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const imageUrl = data.publicUrl
+    const { error: dbErr } = await supabase.from('map_regions')
+      .update({ image_url: imageUrl })
+      .eq('id', quickImgRegionId.value)
+    if (!dbErr) {
+      const idx = regions.value.findIndex(r => r.id === quickImgRegionId.value)
+      if (idx !== -1) regions.value[idx]!.image_url = imageUrl
+      $q.notify({ message: 'Preview image updated', color: 'teal', position: 'top', icon: 'check' })
+    } else {
+      $q.notify({ message: `DB error: ${dbErr.message}`, color: 'negative', position: 'top' })
+    }
+  } else {
+    $q.notify({ message: `Upload error: ${error.message}`, color: 'negative', position: 'top' })
+  }
+  uploadingQuickImg.value = false
+  quickImgRegionId.value  = ''
+  if (quickImgFileInput.value) quickImgFileInput.value.value = ''
+}
+
+async function clearRegionImage(region: MapRegion) {
+  const { error } = await supabase.from('map_regions').update({ image_url: null }).eq('id', region.id)
+  if (!error) {
+    const idx = regions.value.findIndex(r => r.id === region.id)
+    if (idx !== -1) regions.value[idx]!.image_url = null
+  }
+}
+
 async function handleImgUpload(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
@@ -297,6 +357,21 @@ onMounted(() => { void loadData() })
   padding: 6px 10px;
   background: linear-gradient(transparent, rgba(0,0,0,0.65));
   color: white; font-size: 12px; font-weight: 600;
+}
+.region-thumb-actions {
+  position: absolute; top: 6px; right: 6px;
+  opacity: 0; transition: opacity 0.2s;
+  .region-thumb-wrap:hover & { opacity: 1; }
+}
+
+.region-img-placeholder {
+  height: 90px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-bottom: 1px dashed rgba(77,182,172,0.2);
+  cursor: pointer; position: relative;
+  transition: background 0.2s;
+  &:hover { background: rgba(77,182,172,0.06); }
 }
 
 .img-preview {

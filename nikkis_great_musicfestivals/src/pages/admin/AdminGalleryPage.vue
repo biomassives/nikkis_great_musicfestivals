@@ -345,7 +345,7 @@ async function handleUpload(e: Event) {
 }
 
 onMounted(async () => {
-  const { data } = await supabase.from('site_settings').select('key,value').eq('key', 'gallery_sections').single()
+  const { data } = await supabase.from('site_settings').select('key,value').eq('key', 'gallery_sections').maybeSingle()
   if (data?.value) sections.value = data.value as GallerySection[]
   tab.value = sections.value[0]?.slug ?? 'outdoor'
   void loadPhotos()

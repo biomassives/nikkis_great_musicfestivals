@@ -132,6 +132,8 @@ const pageSections = [
   { title: 'Homepage',         icon: 'home',              color: 'teal-3',        route: '/admin/home',       desc: 'Content, background image, and SEO meta tags' },
   { title: 'Our Story',        icon: 'auto_stories',      color: 'deep-purple-3', route: '/admin/story',      desc: 'Edit the full-screen story overlay text and image' },
   { title: 'Support Page',     icon: 'favorite',          color: 'red-4',         route: '/admin/support',    desc: 'Manage membership tiers, pricing, and perks' },
+  { title: 'Navigation',       icon: 'menu',              color: 'purple-3',      route: '/admin/nav',        desc: 'Rename links, add sub-pages, or reorder the nav' },
+  { title: 'Pages',            icon: 'web',               color: 'deep-purple-3', route: '/admin/pages',      desc: 'Build custom pages with images, video, embeds, and media links' },
 ]
 
 function fmtDate(d: string) {

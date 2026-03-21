@@ -84,7 +84,7 @@
     <q-card class="settings-card q-mb-lg">
       <q-card-section>
         <div class="text-caption text-grey-5 q-mb-md">
-          Each paragraph is rendered as a &lt;p&gt; block in the overlay.
+          Each paragraph supports rich text — bold, italic, links, lists.
         </div>
 
         <div v-for="(para, i) in form.paragraphs" :key="i" class="para-row q-mb-md">
@@ -95,13 +95,12 @@
             <q-btn flat dense round icon="arrow_downward" color="grey-5" size="sm" :disable="i === form.paragraphs.length - 1" @click="moveParagraph(i,  1)" />
             <q-btn flat dense round icon="delete"         color="red-4"  size="sm"                                             @click="removeParagraph(i)" />
           </div>
-          <q-input
-            v-model="form.paragraphs[i]"
-            type="textarea"
-            :rows="4"
-            autogrow
-            dark outlined label-color="teal-3" color="teal-3"
-            :label="`Paragraph ${i + 1}`"
+          <QuillEditor
+            :content="form.paragraphs[i] ?? ''"
+            content-type="html"
+            theme="snow"
+            class="story-wysiwyg"
+            @update:content="(v) => { form.paragraphs[i] = String(v) }"
           />
         </div>
 
@@ -127,6 +126,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const saving         = ref(false)
 const saved          = ref(false)
@@ -190,7 +191,7 @@ async function load() {
     .from('site_settings')
     .select('value')
     .eq('key', 'story_overlay')
-    .single()
+    .maybeSingle()
   if (data?.value && typeof data.value === 'object') {
     const v = data.value as Record<string, unknown>
     if (typeof v.image_url     === 'string') form.image_url     = v.image_url
@@ -240,4 +241,37 @@ onMounted(load)
 .img-preview { max-height: 160px; max-width: 100%; border-radius: 8px; object-fit: cover; }
 .para-row { padding: 12px; background: rgba(77,182,172,0.04); border: 1px solid rgba(77,182,172,0.12); border-radius: 8px; }
 .para-label { line-height: 28px; color: #4db6ac; min-width: 20px; }
+</style>
+
+<style>
+/* ── Dark Quill theme for Story editor ─────────────────────── */
+.story-wysiwyg .ql-toolbar {
+  background: #12122a;
+  border: 1px solid rgba(77,182,172,0.25) !important;
+  border-bottom: none !important;
+  border-radius: 6px 6px 0 0;
+}
+.story-wysiwyg .ql-toolbar .ql-stroke { stroke: rgba(255,255,255,0.55); }
+.story-wysiwyg .ql-toolbar .ql-fill  { fill:   rgba(255,255,255,0.55); }
+.story-wysiwyg .ql-toolbar .ql-picker-label { color: rgba(255,255,255,0.55); }
+.story-wysiwyg .ql-toolbar button:hover .ql-stroke,
+.story-wysiwyg .ql-toolbar .ql-active  .ql-stroke { stroke: #4db6ac; }
+.story-wysiwyg .ql-toolbar button:hover .ql-fill,
+.story-wysiwyg .ql-toolbar .ql-active  .ql-fill  { fill: #4db6ac; }
+.story-wysiwyg .ql-container {
+  background: #0e0e26;
+  border: 1px solid rgba(77,182,172,0.25) !important;
+  border-radius: 0 0 6px 6px;
+  min-height: 120px;
+}
+.story-wysiwyg .ql-editor {
+  color: rgba(255,255,255,0.82);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 120px;
+}
+.story-wysiwyg .ql-editor.ql-blank::before {
+  color: rgba(255,255,255,0.25);
+  font-style: italic;
+}
 </style>

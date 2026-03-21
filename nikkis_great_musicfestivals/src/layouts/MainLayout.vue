@@ -53,18 +53,31 @@
 
           <!-- nav links -->
           <ul class="flyout-links" role="list">
-            <li v-for="link in navLinks" :key="link.link">
-              <router-link
-                :to="link.link"
-                class="flyout-link"
-                :style="`--lc:${link.color}`"
-                @click="menuOpen = false"
-              >
-                <q-icon :name="link.icon" class="flyout-link-icon" />
-                <span class="flyout-link-label">{{ link.title }}</span>
-                <span class="flyout-link-arrow">›</span>
-              </router-link>
-            </li>
+            <template v-for="link in navLinks" :key="link.link">
+              <li>
+                <router-link
+                  :to="link.link"
+                  class="flyout-link"
+                  :style="`--lc:${link.color}`"
+                  @click="menuOpen = false"
+                >
+                  <q-icon :name="link.icon" class="flyout-link-icon" />
+                  <span class="flyout-link-label">{{ link.title }}</span>
+                  <span class="flyout-link-arrow">›</span>
+                </router-link>
+              </li>
+              <li v-for="child in link.children" :key="child.link" class="flyout-sublink-li">
+                <router-link
+                  :to="child.link"
+                  class="flyout-sublink"
+                  :style="`--lc:${link.color}`"
+                  @click="menuOpen = false"
+                >
+                  <span class="flyout-sublink-dot" :style="`background:${link.color}`" />
+                  {{ child.title }}
+                </router-link>
+              </li>
+            </template>
           </ul>
 
           <!-- newsletter quick-sub -->
@@ -136,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import SpirographLogo from 'src/components/SpirographLogo.vue'
@@ -148,14 +161,47 @@ const navEmail = ref('')
 const subMsg   = ref('')
 
 /* ── Nav ─────────────────────────────────────────────────────────── */
-const navLinks = [
-  { title: 'Home',        icon: 'auto_awesome', link: '/',            color: '#ffd600' },
-  { title: 'Photography', icon: 'camera',       link: '/photography', color: '#ff6d00' },
-  { title: 'Maps',        icon: 'explore',      link: '/maps',        color: '#00e676' },
-  { title: 'Support',     icon: 'favorite',     link: '/support',     color: '#ff4081' },
-  { title: 'Merch',       icon: 'style',        link: '/merch',       color: '#ce93d8' },
-  { title: 'News',        icon: 'forum',        link: '/news',        color: '#00b0ff' },
-]
+interface NavChild { title: string; link: string }
+interface NavItem  { title: string; icon: string; link: string; color: string; children: NavChild[] }
+
+const navLinks = ref<NavItem[]>([
+  { title: 'Home',        icon: 'auto_awesome', link: '/',            color: '#ffd600', children: [] },
+  { title: 'Photography', icon: 'camera',       link: '/photography', color: '#ff6d00', children: [] },
+  { title: 'Maps',        icon: 'explore',      link: '/maps',        color: '#00e676', children: [] },
+  { title: 'Support',     icon: 'favorite',     link: '/support',     color: '#ff4081', children: [] },
+  { title: 'Merch',       icon: 'style',        link: '/merch',       color: '#ce93d8', children: [] },
+  { title: 'News',        icon: 'forum',        link: '/news',        color: '#00b0ff', children: [] },
+])
+
+onMounted(async () => {
+  const [navRes, pagesRes] = await Promise.allSettled([
+    supabase.from('site_settings').select('value').eq('key', 'nav_config').maybeSingle(),
+    supabase.from('custom_pages').select('slug, title, nav_parent').eq('published', true),
+  ])
+
+  // Apply saved nav config
+  if (navRes.status === 'fulfilled') {
+    const navData = navRes.value.data
+    if (Array.isArray(navData?.value) && (navData?.value as unknown[]).length) {
+      navLinks.value = (navData?.value as NavItem[]).map(item => ({
+        ...item,
+        children: item.children ?? [],
+      }))
+    }
+  }
+
+  // Auto-inject published custom pages under their nav parent
+  if (pagesRes.status === 'fulfilled' && pagesRes.value.data) {
+    type PageRow = { slug: string; title: string; nav_parent: string | null }
+    for (const p of pagesRes.value.data as PageRow[]) {
+      if (!p.nav_parent) continue
+      const parent = navLinks.value.find(l => l.link === p.nav_parent)
+      if (parent && !parent.children.some(c => c.link === `/${p.slug}`)) {
+        parent.children.push({ title: p.title, link: `/${p.slug}` })
+      }
+    }
+  }
+})
 
 /* ── Newsletter ──────────────────────────────────────────────────── */
 async function subscribeNav() {
@@ -302,6 +348,25 @@ async function subscribeNav() {
 .flyout-link-arrow {
   font-size: 18px; opacity: 0; color: var(--lc, #ffd600);
   transition: opacity 0.18s, transform 0.18s;
+}
+
+/* Sub-links */
+.flyout-sublink-li { list-style: none; }
+.flyout-sublink {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 24px 7px 52px; text-decoration: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  &:hover, &.router-link-active {
+    background: rgba(255,255,255,0.04);
+    border-left-color: var(--lc, #ffd600);
+    color: rgba(255,255,255,0.85);
+  }
+}
+.flyout-sublink-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; opacity: 0.55;
 }
 
 /* Newsletter */

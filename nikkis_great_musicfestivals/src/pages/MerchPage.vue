@@ -159,7 +159,7 @@ function inquire(name: string) {
 onMounted(async () => {
   const [itemsRes, sectionsRes] = await Promise.all([
     supabase.from('merch_items').select('*').eq('published', true).order('display_order'),
-    supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').single(),
+    supabase.from('site_settings').select('key,value').eq('key', 'merch_sections').maybeSingle(),
   ])
   items.value = (itemsRes.data as MerchItem[]) ?? []
   if (sectionsRes.data?.value) sections.value = sectionsRes.data.value as MerchSection[]

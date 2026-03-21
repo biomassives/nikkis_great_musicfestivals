@@ -2,7 +2,7 @@
   <q-page class="home-page relative overflow-hidden">
     <PageBackground :variant="bgVariant" :opacity="bgOpacity" :imageUrl="bgImageUrl" />
 
-    <WelcomeOverlay />
+    <WelcomeOverlay @dismissed="onWelcomeDismissed" />
     <StoryOverlay v-model="showStory" />
 
     <div class="page-content q-pa-lg">
@@ -109,6 +109,13 @@
 
     </div>
   </q-page>
+
+  <!-- Blocks the homepage until the welcome overlay is dismissed -->
+  <Teleport to="body">
+    <Transition name="home-gate">
+      <div v-if="!welcomed" class="home-gate" />
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -122,6 +129,12 @@ import WelcomeOverlay  from 'src/components/WelcomeOverlay.vue'
 import StoryOverlay    from 'src/components/StoryOverlay.vue'
 
 const showStory = ref(false)
+
+// Gate: hide the homepage until the welcome overlay is dismissed.
+// If the user has already seen it this session the gate starts open.
+const SESSION_KEY = 'ngmf_welcomed_v1'
+const welcomed = ref<boolean>(!!sessionStorage.getItem(SESSION_KEY))
+function onWelcomeDismissed() { welcomed.value = true }
 
 // ── Settings loaded from Supabase (fallbacks = hardcoded defaults) ──────────
 const content = reactive({
@@ -318,6 +331,20 @@ async function subscribe() {
 </style>
 
 <style lang="scss">
+/* ── Welcome gate ─────────────────────────────────────────────────────────── */
+.home-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 8500; /* sits above page content, below WelcomeOverlay (9000) */
+  background:
+    linear-gradient(135deg, #07001a 0%, #1a0042 45%, #0a1230 100%);
+  pointer-events: none; /* overlay handles all clicks */
+}
+
+/* Fade out after welcome is dismissed — slight delay so overlay leaves first */
+.home-gate-leave-active { transition: opacity 0.6s ease 0.35s; }
+.home-gate-leave-to     { opacity: 0; }
+
 body.body--dark {
   .artist-accordion {
     background: rgba(13, 0, 30, 0.92) !important;

@@ -84,7 +84,7 @@ const slideshow = reactive({
 onMounted(async () => {
   const [photosRes, sectionsRes] = await Promise.all([
     supabase.from('gallery_photos').select('*').eq('published', true).order('display_order'),
-    supabase.from('site_settings').select('key,value').eq('key', 'gallery_sections').single(),
+    supabase.from('site_settings').select('key,value').eq('key', 'gallery_sections').maybeSingle(),
   ])
   photos.value   = (photosRes.data as GalleryPhoto[]) ?? []
   if (sectionsRes.data?.value) sections.value = sectionsRes.data.value as GallerySection[]

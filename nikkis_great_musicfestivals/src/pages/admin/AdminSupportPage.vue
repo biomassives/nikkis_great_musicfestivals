@@ -304,7 +304,7 @@ async function load() {
     .from('site_settings')
     .select('value')
     .eq('key', 'support_content')
-    .single()
+    .maybeSingle()
   if (data?.value && typeof data.value === 'object') {
     const v = data.value as Record<string, unknown>
     if (v.section_label !== undefined) header.section_label = v.section_label as string

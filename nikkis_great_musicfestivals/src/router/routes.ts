@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'support',       component: () => import('pages/SupportPage.vue') },
       { path: 'merch',         component: () => import('pages/MerchPage.vue') },
       { path: 'news',          component: () => import('pages/NewsPage.vue') },
+      { path: ':customSlug',   component: () => import('pages/CustomPage.vue') },
     ],
   },
 
@@ -30,6 +31,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'home',           component: () => import('pages/admin/AdminHomePage.vue') },
       { path: 'story',          component: () => import('pages/admin/AdminStoryPage.vue') },
       { path: 'support',        component: () => import('pages/admin/AdminSupportPage.vue') },
+      { path: 'nav',            component: () => import('pages/admin/AdminNavPage.vue') },
+      { path: 'pages',          component: () => import('pages/admin/AdminPagesPage.vue') },
       { path: 'reset-password', component: () => import('pages/admin/AdminResetPasswordPage.vue') },
     ],
   },

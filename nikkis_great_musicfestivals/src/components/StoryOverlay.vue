@@ -30,7 +30,9 @@
 
             <div class="story-body">
 
-              <p v-for="(para, i) in cfg.paragraphs" :key="i">{{ para }}</p>
+              <!-- Content is admin-authored only, not user-submitted -->
+              <div v-for="(para, i) in cfg.paragraphs" :key="i"
+                class="story-para" v-html="para" />
 
               <p class="story-closing">
                 {{ cfg.closing }}
@@ -84,7 +86,7 @@ onMounted(async () => {
     .from('site_settings')
     .select('value')
     .eq('key', 'story_overlay')
-    .single()
+    .maybeSingle()
   if (data?.value && typeof data.value === 'object') {
     const v = data.value as Record<string, unknown>
     if (typeof v.image_url     === 'string') cfg.image_url     = v.image_url
@@ -246,12 +248,25 @@ watch(() => props.modelValue, (open) => {
 .story-body {
   flex: 1;
 
-  p {
-    font-size: clamp(14px, 1.2vw, 17px);
-    line-height: 1.8;
-    color: rgba(255,255,255,0.72);
+  .story-para {
     margin-bottom: 24px;
-    font-weight: 300;
+
+    :deep(p) {
+      font-size: clamp(14px, 1.2vw, 17px);
+      line-height: 1.8;
+      color: rgba(255,255,255,0.72);
+      margin: 0 0 0.8em;
+      font-weight: 300;
+    }
+    :deep(strong) { color: #fff; }
+    :deep(em)     { color: rgba(255,215,0,0.8); }
+    :deep(a)      { color: #80cbc4; text-decoration: underline; }
+    :deep(ul), :deep(ol) {
+      padding-left: 1.5em;
+      font-size: clamp(14px, 1.2vw, 17px);
+      line-height: 1.8;
+      color: rgba(255,255,255,0.72);
+    }
   }
 
   .story-closing {
