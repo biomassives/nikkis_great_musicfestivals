@@ -14,71 +14,26 @@
           <div class="story-img-panel">
             <img
               class="story-img"
-              src="https://picsum.photos/seed/mountain-evening/900/1400"
+              :src="cfg.image_url"
               alt="A beautiful evening in nature"
             />
             <div class="story-img-overlay" />
-            <div class="story-img-caption">On the road</div>
+            <div class="story-img-caption">{{ cfg.image_caption }}</div>
           </div>
 
           <!-- ── Text panel ───────────────────────────────────────── -->
           <div class="story-text-panel" ref="textPanel">
 
-            <div class="story-eyebrow">Our Full Story</div>
-            <h1 class="story-title">The Music<br />Never Stopped</h1>
+            <div class="story-eyebrow">{{ cfg.eyebrow }}</div>
+            <h1 class="story-title" style="white-space: pre-line">{{ cfg.title }}</h1>
             <div class="story-divider" />
 
             <div class="story-body">
 
-              <p>
-                We first followed the circus in the summer of 1991, somewhere between Buckeye
-                Lake and Deer Creek, when the corn was high and the highway smelled of rain and
-                burning sage. By the time the boys kicked into the second set, ten thousand souls
-                had abandoned their ordinary selves in the grass — trading the weight of the week
-                for something the setlist could never quite contain. A door swinging open in the
-                middle of a Tuesday in July.
-              </p>
-
-              <p>
-                Nikki's Great Music Festivals grew out of that first lot. Not the parking lot
-                exactly — that particular sacred, chaotic marketplace of grilled cheese and
-                miracles — but the feeling it generated: that community is not a thing you join
-                but a thing you build, stake by stake, set by set, across the geography of a
-                country that reveals itself differently from the back of a tour bus than it does
-                from an office window.
-              </p>
-
-              <p>
-                The mission was never complicated. Get people to the music. Get the music to
-                people who couldn't get to it on their own. Senior communities in rural Tennessee
-                deserve to hear live bluegrass with the same urgency as a festival field in
-                Colorado. The joy is not scarce. It only needs moving.
-              </p>
-
-              <p>
-                We have now logged eleven summers, forty-two states, and more campground
-                friendships than any spreadsheet could hold. The artists who have let us carry
-                their work into living rooms and rec halls and outdoor stages cut into hillsides —
-                Billy Strings reeling off a twenty-minute reprise at elevation, Leftover Salmon
-                burning through "Euphoria" while lightning flickered on the western ridge, the
-                Stringdusters playing an unannounced third set because nobody wanted to go home —
-                these are the facts our calendar doesn't quite capture.
-              </p>
-
-              <p>
-                Every trail we walk and every show we document feeds back into the same current.
-                The photography is evidence. The maps are memory. The newsletter is the letter you
-                write home when home has temporarily relocated to a meadow in the mountains.
-              </p>
-
-              <p>
-                What the calendar does capture is this: we keep going. The road is the purpose.
-                The faces at the front of the stage and the back of the lot are the same faces —
-                wide open, ears out, looking for the note that unlocks whatever needed unlocking.
-              </p>
+              <p v-for="(para, i) in cfg.paragraphs" :key="i">{{ para }}</p>
 
               <p class="story-closing">
-                Come with us.
+                {{ cfg.closing }}
               </p>
 
             </div>
@@ -98,12 +53,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, reactive, onMounted } from 'vue'
+import { supabase } from 'src/lib/supabase'
 
 const props = defineProps<{ modelValue: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 
 const textPanel = ref<HTMLElement | null>(null)
+
+const DEFAULT_PARAGRAPHS: string[] = [
+  'We first followed the circus in the summer of 1991, somewhere between Buckeye Lake and Deer Creek, when the corn was high and the highway smelled of rain and burning sage. By the time the boys kicked into the second set, ten thousand souls had abandoned their ordinary selves in the grass — trading the weight of the week for something the setlist could never quite contain. A door swinging open in the middle of a Tuesday in July.',
+  "Nikki's Great Music Festivals grew out of that first lot. Not the parking lot exactly — that particular sacred, chaotic marketplace of grilled cheese and miracles — but the feeling it generated: that community is not a thing you join but a thing you build, stake by stake, set by set, across the geography of a country that reveals itself differently from the back of a tour bus than it does from an office window.",
+  "The mission was never complicated. Get people to the music. Get the music to people who couldn't get to it on their own. Senior communities in rural Tennessee deserve to hear live bluegrass with the same urgency as a festival field in Colorado. The joy is not scarce. It only needs moving.",
+  'We have now logged eleven summers, forty-two states, and more campground friendships than any spreadsheet could hold. The artists who have let us carry their work into living rooms and rec halls and outdoor stages cut into hillsides — Billy Strings reeling off a twenty-minute reprise at elevation, Leftover Salmon burning through \u201cEuphoria\u201d while lightning flickered on the western ridge, the Stringdusters playing an unannounced third set because nobody wanted to go home — these are the facts our calendar doesn\u2019t quite capture.',
+  'Every trail we walk and every show we document feeds back into the same current. The photography is evidence. The maps are memory. The newsletter is the letter you write home when home has temporarily relocated to a meadow in the mountains.',
+  'What the calendar does capture is this: we keep going. The road is the purpose. The faces at the front of the stage and the back of the lot are the same faces — wide open, ears out, looking for the note that unlocks whatever needed unlocking.',
+]
+
+const cfg = reactive({
+  image_url:     'https://picsum.photos/seed/mountain-evening/900/1400',
+  image_caption: 'On the road',
+  eyebrow:       'Our Full Story',
+  title:         'The Music\nNever Stopped',
+  paragraphs:    [...DEFAULT_PARAGRAPHS] as string[],
+  closing:       'Come with us.',
+})
+
+onMounted(async () => {
+  const { data } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'story_overlay')
+    .single()
+  if (data?.value && typeof data.value === 'object') {
+    const v = data.value as Record<string, unknown>
+    if (typeof v.image_url     === 'string') cfg.image_url     = v.image_url
+    if (typeof v.image_caption === 'string') cfg.image_caption = v.image_caption
+    if (typeof v.eyebrow       === 'string') cfg.eyebrow       = v.eyebrow
+    if (typeof v.title         === 'string') cfg.title         = v.title
+    if (typeof v.closing       === 'string') cfg.closing       = v.closing
+    if (Array.isArray(v.paragraphs) && (v.paragraphs as unknown[]).length > 0) {
+      cfg.paragraphs = v.paragraphs as string[]
+    }
+  }
+})
 
 function close() {
   emit('update:modelValue', false)

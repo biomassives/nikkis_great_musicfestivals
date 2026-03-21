@@ -38,10 +38,27 @@
       </div>
     </div>
 
-    <!-- Section cards -->
-    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-md">Manage Content</div>
-    <div class="row q-col-gutter-lg">
-      <div class="col-12 col-sm-6 col-lg-4" v-for="section in sections" :key="section.route">
+    <!-- Content sections -->
+    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-md">Content</div>
+    <div class="row q-col-gutter-lg q-mb-xl">
+      <div class="col-12 col-sm-6 col-lg-4" v-for="section in contentSections" :key="section.route">
+        <q-card class="section-card" @click="$router.push(section.route)">
+          <q-card-section class="row items-center q-pa-lg gap-md">
+            <q-icon :name="section.icon" :color="section.color" size="36px" class="q-mr-md" />
+            <div class="col">
+              <div class="text-h6 text-white text-weight-bold">{{ section.title }}</div>
+              <div class="text-caption text-grey-5">{{ section.desc }}</div>
+            </div>
+            <q-icon name="chevron_right" color="grey-6" size="20px" />
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Pages sections -->
+    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-md">Pages</div>
+    <div class="row q-col-gutter-lg q-mb-xl">
+      <div class="col-12 col-sm-6 col-lg-4" v-for="section in pageSections" :key="section.route">
         <q-card class="section-card" @click="$router.push(section.route)">
           <q-card-section class="row items-center q-pa-lg gap-md">
             <q-icon :name="section.icon" :color="section.color" size="36px" class="q-mr-md" />
@@ -103,14 +120,18 @@ const stats = [
   { label: 'Merch',       icon: 'style',         color: 'pink-4',        route: '/admin/merch',      get value() { return counts.value.merch } },
 ]
 
-const sections = [
+const contentSections = [
   { title: 'Festival Maps',    icon: 'explore',           color: 'teal-4',        route: '/admin/maps',       desc: 'Add shows, senior facilities, and nature spots' },
   { title: 'Photo Gallery',    icon: 'photo_library',     color: 'amber-4',       route: '/admin/gallery',    desc: 'Upload and organise photos by category' },
   { title: 'Newsletter',       icon: 'mark_email_unread', color: 'light-blue-4',  route: '/admin/newsletter', desc: 'Compose newsletters and view subscribers' },
   { title: 'News & Updates',   icon: 'newspaper',         color: 'green-4',       route: '/admin/news',       desc: 'Write tour stories and event recaps' },
   { title: 'Merch & Goods',    icon: 'style',             color: 'pink-4',        route: '/admin/merch',      desc: 'Manage art, photo prints, and other items' },
+]
+
+const pageSections = [
   { title: 'Homepage',         icon: 'home',              color: 'teal-3',        route: '/admin/home',       desc: 'Content, background image, and SEO meta tags' },
-  { title: 'View Public Site', icon: 'open_in_new',       color: 'grey-4',        route: '/',                 desc: 'See how the site looks to visitors' },
+  { title: 'Our Story',        icon: 'auto_stories',      color: 'deep-purple-3', route: '/admin/story',      desc: 'Edit the full-screen story overlay text and image' },
+  { title: 'Support Page',     icon: 'favorite',          color: 'red-4',         route: '/admin/support',    desc: 'Manage membership tiers, pricing, and perks' },
 ]
 
 function fmtDate(d: string) {

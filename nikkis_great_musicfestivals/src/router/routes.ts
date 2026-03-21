@@ -28,6 +28,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'news',           component: () => import('pages/admin/AdminNewsPage.vue') },
       { path: 'merch',          component: () => import('pages/admin/AdminMerchPage.vue') },
       { path: 'home',           component: () => import('pages/admin/AdminHomePage.vue') },
+      { path: 'story',          component: () => import('pages/admin/AdminStoryPage.vue') },
+      { path: 'support',        component: () => import('pages/admin/AdminSupportPage.vue') },
       { path: 'reset-password', component: () => import('pages/admin/AdminResetPasswordPage.vue') },
     ],
   },

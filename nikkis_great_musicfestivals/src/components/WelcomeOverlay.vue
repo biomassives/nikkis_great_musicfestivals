@@ -44,7 +44,7 @@ import { supabase } from 'src/lib/supabase'
 const emit = defineEmits<{ dismissed: [] }>()
 
 const SESSION_KEY = 'ngmf_welcomed_v1'
-const visible = ref(!sessionStorage.getItem(SESSION_KEY))
+const visible = ref(false)   // stays hidden until config is loaded
 
 const cfg = reactive({
   image_url:    'https://picsum.photos/seed/bluegrass-evening/1920/1080',
@@ -56,13 +56,17 @@ const cfg = reactive({
 })
 
 onMounted(async () => {
-  if (!visible.value) return  // already dismissed this session — skip fetch
+  if (sessionStorage.getItem(SESSION_KEY)) return  // already seen this session — never show
+
+  // Load saved config first, then reveal — prevents old default image flashing
   const { data } = await supabase
     .from('site_settings')
     .select('value')
     .eq('key', 'welcome_overlay')
     .single()
   if (data?.value) Object.assign(cfg, data.value as object)
+
+  visible.value = true   // show only after the correct image URL is in place
 })
 
 function dismiss() {
