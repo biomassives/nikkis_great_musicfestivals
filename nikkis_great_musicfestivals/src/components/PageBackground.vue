@@ -8,20 +8,29 @@
     <!-- Optional photo background -->
     <img v-if="imageUrl" :src="imageUrl" class="bg-photo absolute-full" alt="" />
 
-    <!-- HOME: Mardi-Gras spiral -->
-    <svg v-if="variant === 'home'" class="absolute-full" width="100%" height="100%">
+    <!-- HOME: Spirograph mosaic — 20 replications in a 5×4 geometric grid.
+         Each instance is rotated 18° more than the previous (360°/20),
+         so the full set makes one complete rotational cycle across the page. -->
+    <svg v-if="variant === 'home'" class="absolute-full" width="100%" height="100%"
+      viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <radialGradient id="pgGradHome" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stop-color="#4b0082" />
-          <stop offset="50%"  stop-color="#ffd700" />
-          <stop offset="100%" stop-color="#008f39" />
-        </radialGradient>
-        <pattern id="pgPatHome" patternUnits="userSpaceOnUse" width="150" height="150">
-          <path d="M75,75 a37.5,37.5 0 1,0 37.5,37.5 a18.75,18.75 0 1,0 -18.75,-18.75 a9.375,9.375 0 1,0 9.375,9.375"
-            fill="none" stroke="url(#pgGradHome)" stroke-width="2.5" />
-        </pattern>
+        <!-- The spirograph symbol — all 4 layered traces, no background fill -->
+        <symbol id="pgSpiroSym" viewBox="0 0 100 100" overflow="visible">
+          <path :d="SPIRO_P1" fill="none" stroke="#ffb300" stroke-width="0.7"  opacity="0.9" />
+          <path :d="SPIRO_P2" fill="none" stroke="#e040fb" stroke-width="0.65" opacity="0.85" />
+          <path :d="SPIRO_P3" fill="none" stroke="#00bcd4" stroke-width="0.55" opacity="0.8" />
+          <path :d="SPIRO_P4" fill="none" stroke="#ff6d00" stroke-width="0.6"  opacity="0.85" />
+        </symbol>
       </defs>
-      <rect width="100%" height="100%" fill="url(#pgPatHome)" :opacity="opacity" />
+      <!-- 20 instances: 5 columns × 4 rows, each rotated i×18° around its centre -->
+      <g :opacity="opacity">
+        <g
+          v-for="(p, i) in SPIRO_GRID" :key="i"
+          :transform="`translate(${p.cx}, ${p.cy}) rotate(${p.angle}) translate(-50, -50)`"
+        >
+          <use href="#pgSpiroSym" x="0" y="0" width="100" height="100" />
+        </g>
+      </g>
     </svg>
 
     <!-- SUPPORT: Soundwave / heartbeat rings -->
@@ -113,7 +122,18 @@
 </template>
 
 <script setup lang="ts">
+import { SPIRO_P1, SPIRO_P2, SPIRO_P3, SPIRO_P4 } from 'src/lib/spirograph'
+
 withDefaults(defineProps<{ variant: string; opacity?: number; imageUrl?: string | null }>(), { opacity: 0.09 })
+
+// 5 columns × 4 rows = 20 instances.
+// cx/cy are cell centres in the 500×400 viewBox.
+// Each instance is rotated i×18° (360°/20) around its own centre.
+const SPIRO_GRID = Array.from({ length: 20 }, (_, i) => ({
+  cx:    (i % 5) * 100 + 50,
+  cy:    Math.floor(i / 5) * 100 + 50,
+  angle: i * 18,
+}))
 </script>
 
 <style scoped>

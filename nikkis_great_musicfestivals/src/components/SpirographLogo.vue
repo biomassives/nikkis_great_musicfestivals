@@ -1,7 +1,7 @@
 <!--
   SpirographLogo — reusable animated spirograph identity mark.
   Uses hypotrochoid geometry with sinusoidal helical orbit modulation.
-  mix-blend-mode: multiply on a cream radial-gradient circle gives the
+  mix-blend-mode: multiply on the orange→gold radial backdrop gives the
   classic colour-burn intersection effect on all 4 layered traces.
 
   Props:
@@ -19,13 +19,26 @@
     aria-hidden="true"
   >
     <defs>
+      <!-- transparent edge → gold → orange at centre -->
       <radialGradient :id="`sbg-${vid}`" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#ff6d00" stop-opacity="0.88" />
+        <stop offset="52%"  stop-color="#ffd700" stop-opacity="0.60" />
+        <stop offset="100%" stop-color="#0d0028" stop-opacity="0"    />
+      </radialGradient>
+      <!-- campfire flame: base orange → tip gold -->
+      <linearGradient :id="`fire-${vid}`" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%"   stop-color="#ff4500" />
+        <stop offset="55%"  stop-color="#ff8c00" />
+        <stop offset="100%" stop-color="#ffd700" />
+      </linearGradient>
+      <!-- moon lit-face: soft cream highlight → gold limb -->
+      <radialGradient :id="`moon-${vid}`" cx="38%" cy="30%" r="70%">
         <stop offset="0%"   stop-color="#fffde7" />
-        <stop offset="100%" stop-color="#f3e5f5" />
+        <stop offset="100%" stop-color="#ffd700" />
       </radialGradient>
     </defs>
 
-    <!-- cream disc — colour-burn backdrop -->
+    <!-- orange→gold radial backdrop (colour-burn base for spiral traces) -->
     <circle cx="50" cy="50" r="48" :fill="`url(#sbg-${vid})`" />
 
     <!-- 5-petal helical gold -->
@@ -41,52 +54,121 @@
     <path :d="p4" fill="none" stroke="#ff6d00" stroke-width="0.6"
           style="mix-blend-mode:multiply" opacity="0.85" />
 
-    <!-- frog centre glyph -->
-    <circle cx="50" cy="50" r="7"   fill="none" stroke="#1a0a2e" stroke-width="1.2" />
-    <circle cx="47" cy="48" r="1.2" fill="#1a0a2e" />
-    <circle cx="53" cy="48" r="1.2" fill="#1a0a2e" />
-    <path d="M47 52 Q50 55 53 52" fill="none" stroke="#1a0a2e"
-          stroke-width="1" stroke-linecap="round"/>
+    <!-- ── 8 moon phases in orbital ring ── -->
+    <g v-for="m in MOON_RING" :key="m.phase"
+       :transform="`translate(${m.cx}, ${m.cy})`">
+      <!-- unlit disc -->
+      <circle r="4" fill="#1a0a2e" opacity="0.82" />
+      <!-- lit face (absent for new moon) -->
+      <path v-if="m.litPath" :d="m.litPath"
+            :fill="`url(#moon-${vid})`" opacity="0.95" />
+      <!-- thin limb ring -->
+      <circle r="4" fill="none" stroke="#ffd700" stroke-width="0.35" opacity="0.55" />
+    </g>
 
-    <!-- outer dashed border ring -->
-    <circle cx="50" cy="50" r="48" fill="none" stroke="#1a0a2e"
-            stroke-width="0.4" stroke-dasharray="3 2" />
+    <!-- ── Campfire at centre ── -->
+    <g transform="translate(50, 51)">
+      <!-- crossed logs -->
+      <line x1="-7" y1="4.5" x2="7"  y2="2.5" stroke="#7b3810" stroke-width="2"   stroke-linecap="round" />
+      <line x1="-6" y1="2.5" x2="6"  y2="4.5" stroke="#5c2a0e" stroke-width="2"   stroke-linecap="round" />
+      <!-- left flame -->
+      <path d="M-2,3 C-4.5,-1 -3.5,-6 -1.5,-7.5 C-0.8,-5 -1.2,-1 -2,3 Z"
+            :fill="`url(#fire-${vid})`" opacity="0.88" />
+      <!-- right flame -->
+      <path d="M2,3 C4.5,-1 3.5,-6 1.5,-7.5 C0.8,-5 1.2,-1 2,3 Z"
+            :fill="`url(#fire-${vid})`" opacity="0.88" />
+      <!-- centre flame (tallest) -->
+      <path d="M0,3 C-3,-2 -2.5,-7 0,-10.5 C2.5,-7 3,-2 0,3 Z"
+            :fill="`url(#fire-${vid})`" opacity="0.96" />
+      <!-- incandescent core -->
+      <ellipse cx="0" cy="-1.5" rx="1.6" ry="2.4" fill="#fffde7" opacity="0.75" />
+    </g>
+
+    <!-- ── Sinusoidal mandala ring (replaces dashed circle) ── -->
+    <path :d="ringPath" fill="none" stroke="#1a0a2e" stroke-width="0.45" opacity="0.8" />
   </svg>
 </template>
 
 <script setup lang="ts">
+import { SPIRO_P1, SPIRO_P2, SPIRO_P3, SPIRO_P4 } from 'src/lib/spirograph'
+
 withDefaults(
   defineProps<{ size?: number | string; spin?: boolean; shadow?: boolean }>(),
   { size: 120, spin: false, shadow: false }
 )
 
-/* unique gradient ID per instance avoids SVG defs collisions */
+/* unique gradient / symbol IDs per instance — avoids SVG defs collisions */
 const vid = Math.random().toString(36).slice(2, 8)
 
-/* ── Hypotrochoid with sinusoidal helical arm modulation ──────────
-   x = (R-r)·cos(t) + d·cos((R-r)/r · t)
-   y = (R-r)·sin(t) − d·sin((R-r)/r · t)
-   where d = dBase + sinAmp·sin(sinFreq·t)  ← helical wobble
-─────────────────────────────────────────────────────────────────── */
-function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b) }
+const p1 = SPIRO_P1
+const p2 = SPIRO_P2
+const p3 = SPIRO_P3
+const p4 = SPIRO_P4
 
-function spiro(R: number, r: number, d: number, amp = 0, freq = 0, n = 500): string {
-  const loops = R / gcd(R, r)
-  const pts: string[] = []
-  for (let i = 0; i <= n; i++) {
-    const t  = (i / n) * loops * 2 * Math.PI
-    const dv = d + amp * Math.sin(freq * t)
-    const x  = (R - r) * Math.cos(t) + dv * Math.cos(((R - r) / r) * t)
-    const y  = (R - r) * Math.sin(t) - dv * Math.sin(((R - r) / r) * t)
-    pts.push(`${(x + 50).toFixed(1)},${(y + 50).toFixed(1)}`)
+// ── Moon phase lit-face paths ─────────────────────────────────────────────────
+// Radius 4, centred at origin.
+// Outer arc traces the lit semicircle; terminator arc closes the crescent/gibbous.
+// Phase 0 = new moon (no lit path), phase 4 = full moon.
+function moonLitPath(phase: number): string {
+  const r  = 4
+  // rx of terminator ellipse = r·|cos(45°)| for crescent and gibbous phases
+  const rx = parseFloat((r * Math.SQRT1_2).toFixed(2))
+
+  if (phase === 0) return ''
+  if (phase === 4) {
+    // full circle via two semicircular arcs
+    return `M 0,${-r} A ${r},${r} 0 0 1 0,${r} A ${r},${r} 0 0 1 0,${-r}`
   }
-  return 'M' + pts.join('L')
+
+  const waxing    = phase < 4
+  const termPhase = waxing ? phase : 8 - phase   // normalised 1–3
+  const outerSweep = waxing ? 1 : 0              // CW for right-lit, CCW for left-lit
+
+  if (termPhase === 2) {
+    // quarter moons: straight vertical terminator
+    return `M 0,${-r} A ${r},${r} 0 0 ${outerSweep} 0,${r} L 0,${-r}`
+  }
+
+  // crescent (termPhase=1): terminator sweeps 0 (CCW, curves toward dark side)
+  // gibbous  (termPhase=3): terminator sweeps 1 (CW,  curves toward lit side)
+  const termSweep = termPhase === 3 ? 1 : 0
+  return `M 0,${-r} A ${r},${r} 0 0 ${outerSweep} 0,${r} A ${rx},${r} 0 0 ${termSweep} 0,${-r}`
 }
 
-const p1 = spiro(40,  8, 34, 3, 5,  600)   // 5-petal gold
-const p2 = spiro(42, 14, 36, 2, 9,  450)   // 3-petal magenta
-const p3 = spiro(35,  5, 30, 2, 7,  700)   // 7-petal cyan
-const p4 = spiro(36,  9, 28, 3, 4,  480)   // 4-petal orange
+// 8 moons evenly spaced in a circular orbit, new moon at top, clockwise
+const ORBIT_R = 22
+const MOON_RING = Array.from({ length: 8 }, (_, i) => {
+  const theta = (i * Math.PI * 2) / 8
+  return {
+    phase:   i,
+    cx:      parseFloat((50 + ORBIT_R * Math.sin(theta)).toFixed(2)),
+    cy:      parseFloat((50 - ORBIT_R * Math.cos(theta)).toFixed(2)),
+    litPath: moonLitPath(i),
+  }
+})
+
+// ── Sinusoidal ring path ──────────────────────────────────────────────────────
+// Traces a circle of radius R with a sinusoidal radial perturbation:
+//   r(t) = R + amp·sin(waves·t)
+// giving a mandala-like wavy border instead of the original dashed circle.
+function sinusoidalRing(
+  cx: number, cy: number,
+  R: number, amp: number, waves: number,
+  pts = 360,
+): string {
+  const coords: string[] = []
+  for (let i = 0; i <= pts; i++) {
+    const t = (i / pts) * 2 * Math.PI
+    const r = R + amp * Math.sin(waves * t)
+    coords.push(
+      `${(cx + r * Math.cos(t)).toFixed(2)},${(cy + r * Math.sin(t)).toFixed(2)}`,
+    )
+  }
+  return 'M' + coords.join('L') + 'Z'
+}
+
+// 28 sinusoidal waves, ±2 unit amplitude, centred on the original r=48 circle
+const ringPath = sinusoidalRing(50, 50, 48, 2, 28, 360)
 </script>
 
 <style>

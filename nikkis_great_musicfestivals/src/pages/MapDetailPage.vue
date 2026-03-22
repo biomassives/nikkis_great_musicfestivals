@@ -85,15 +85,25 @@
         </template>
       </q-carousel>
 
-      <!-- Archive.org show player -->
-      <div class="hero-player">
+      <!-- Hero show player (YouTube or Archive.org) -->
+      <div class="hero-player" :class="{ 'hero-player--video': customYoutubeId }">
         <div class="player-meta">
           <span class="player-live" />
           <div class="player-info">
-            <div class="player-title">{{ currentArchiveShow.label }}</div>
-            <div class="player-sub">archive.org · Live Recording</div>
+            <div class="player-title">{{ customYoutubeId ? customYoutubeLabel : currentArchiveShow.label }}</div>
+            <div class="player-sub">{{ customYoutubeId ? 'YouTube · Live Show Video' : 'archive.org · Live Recording' }}</div>
           </div>
           <a
+            v-if="customYoutubeId"
+            :href="`https://www.youtube.com/watch?v=${customYoutubeId}`"
+            target="_blank" rel="noopener noreferrer"
+            class="player-popout"
+          >
+            <q-icon name="open_in_new" size="13px" />
+            YouTube
+          </a>
+          <a
+            v-else
             :href="`https://archive.org/details/${currentArchiveShow.id}`"
             target="_blank" rel="noopener noreferrer"
             class="player-popout"
@@ -103,6 +113,16 @@
           </a>
         </div>
         <iframe
+          v-if="customYoutubeId"
+          :src="`https://www.youtube.com/embed/${customYoutubeId}?start=${customYoutubeStart}`"
+          class="player-frame"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"
+        />
+        <iframe
+          v-else
           :src="`https://archive.org/embed/${currentArchiveShow.id}`"
           class="player-frame"
           frameborder="0"
@@ -287,16 +307,53 @@ const showMarkerRefs  = new Map<string, L.Marker>()
 const pointMarkerRefs = new Map<string, L.Marker>()
 
 /* ── Hero carousel + archive player ─────────────────────────────── */
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80',
-]
+
+// Per-region curated fallback images (outdoors + music by campfire)
+// Used when no custom images are saved in site_settings for the region.
+const REGION_HERO_IMAGES: Record<string, string[]> = {
+  'mountain-west': [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80', // Rockies peak
+    'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=1600&q=80', // mountain trail
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80', // wilderness
+    'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1600&q=80', // campfire
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80', // guitar outdoors
+  ],
+  'southwest': [
+    'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80', // desert landscape
+    'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=1600&q=80', // desert cactus sunset
+    'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1600&q=80', // starry desert night
+    'https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=80', // campfire
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80', // guitar outdoors
+  ],
+  'pacific-northwest': [
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80', // dense green forest
+    'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=80', // tall forest pines
+    'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80', // forest light rays
+    'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1600&q=80', // campfire
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80', // guitar outdoors
+  ],
+  'great-lakes': [
+    'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1600&q=80', // lake sunset
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80', // wilderness
+    'https://images.unsplash.com/photo-1519659528534-7fd733a832a0?auto=format&fit=crop&w=1600&q=80', // outdoor evening
+    'https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=80', // campfire
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80', // guitar outdoors
+  ],
+  'southeast': [
+    'https://images.unsplash.com/photo-1504198322253-cfa87a0ff25f?auto=format&fit=crop&w=1600&q=80', // Blue Ridge / Appalachians
+    'https://images.unsplash.com/photo-1530973428-5bf2db2e4d71?auto=format&fit=crop&w=1600&q=80', // southern nature
+    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1600&q=80', // performer
+    'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1600&q=80', // campfire
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80', // guitar outdoors
+  ],
+  'northeast': [
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1600&q=80', // autumn forest
+    'https://images.unsplash.com/photo-1569587112025-0d460e81a126?auto=format&fit=crop&w=1600&q=80', // New England fall
+    'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80', // outdoor
+    'https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=80', // campfire
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80', // guitar outdoors
+  ],
+}
 
 // Curated archive.org recordings — freely streamable
 const ARCHIVE_SHOWS = [
@@ -311,13 +368,15 @@ const ARCHIVE_SHOWS = [
 
 const currentSlide      = ref(0)
 const customHeroImages  = ref<string[]>([])
-const customArchiveShow = ref<{ id: string; label: string } | null>(null)
+const customArchiveShow  = ref<{ id: string; label: string } | null>(null)
+const customYoutubeId    = ref<string | null>(null)
+const customYoutubeStart = ref(0)
+const customYoutubeLabel = ref('Live Show')
 
 const heroImages = computed(() => {
   if (customHeroImages.value.length >= 2) return customHeroImages.value
-  const hash = (region.value?.name ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-  const start = hash % HERO_IMAGES.length
-  return Array.from({ length: 5 }, (_, i) => HERO_IMAGES[(start + i) % HERO_IMAGES.length]!)
+  const regionId = region.value?.id ?? ''
+  return REGION_HERO_IMAGES[regionId] ?? Object.values(REGION_HERO_IMAGES)[0]!
 })
 
 const currentArchiveShow = computed(() => {
@@ -483,6 +542,13 @@ onMounted(async () => {
         id:    heroVal.archive_id,
         label: typeof heroVal.archive_label === 'string' ? heroVal.archive_label : heroVal.archive_id,
       }
+    }
+    if (typeof heroVal.youtube_id === 'string' && heroVal.youtube_id) {
+      customYoutubeId.value    = heroVal.youtube_id
+      customYoutubeStart.value = typeof heroVal.youtube_start === 'number' ? heroVal.youtube_start : 0
+      customYoutubeLabel.value = typeof heroVal.youtube_label === 'string' && heroVal.youtube_label
+        ? heroVal.youtube_label
+        : 'Live Show'
     }
   }
   const points: MapPoint[] = (pts as MapPoint[]) ?? []
@@ -879,6 +945,7 @@ onMounted(async () => {
   &:hover { color: #d0b4ff; border-color: rgba(124,77,255,0.7); }
 }
 .player-frame { width: 100%; height: 110px; display: block; border: none; }
+.hero-player--video .player-frame { height: 200px; }
 
 /* ══ Light-mode overrides ════════════════════════════════════════ */
 .mdp--light {
