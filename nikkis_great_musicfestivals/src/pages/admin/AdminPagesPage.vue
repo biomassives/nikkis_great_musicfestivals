@@ -151,36 +151,82 @@
 
     <!-- ── Image Insert Dialog ──────────────────────────────────────────── -->
     <q-dialog v-model="imgDialog.show" persistent>
-      <q-card style="min-width:420px;max-width:600px;width:100%" dark class="dialog-card">
+      <q-card style="min-width:480px;max-width:700px;width:100%" dark class="dialog-card">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6 text-purple-3">Insert Image</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
-        <q-card-section class="q-gutter-md">
-          <div class="row q-col-gutter-sm items-center">
-            <div class="col">
-              <q-input v-model="imgDialog.url" label="Image URL"
-                dark outlined dense label-color="purple-3" color="purple-3"
-                placeholder="https://…" clearable />
+        <q-card-section class="q-pt-sm q-pb-none q-px-md">
+
+          <!-- ── Gallery Picker ── -->
+          <div class="gallery-picker-section">
+            <div class="row items-center q-mb-xs">
+              <span class="text-caption text-uppercase text-purple-4 gallery-picker-label">From Gallery</span>
+              <q-space />
+              <q-spinner-dots v-if="galleryLoading" color="purple-4" size="16px" />
             </div>
-            <div class="col-auto">
-              <q-btn color="purple-8" icon="upload" label="Upload" unelevated size="sm"
-                :loading="imgDialog.uploading" @click="triggerImgUpload" />
+
+            <q-input v-model="gallerySearch" dense dark outlined color="purple-3" label-color="purple-3"
+              placeholder="Search by caption…" clearable class="q-mb-xs">
+              <template #prepend><q-icon name="search" size="16px" color="grey-5" /></template>
+            </q-input>
+
+            <div v-if="galleryCategories.length" class="gallery-cat-row q-mb-xs">
+              <q-chip v-for="cat in galleryCategories" :key="cat"
+                :color="galleryActiveCategory === cat ? 'purple-6' : 'grey-9'"
+                :text-color="galleryActiveCategory === cat ? 'white' : 'grey-5'"
+                dense clickable size="sm"
+                @click="galleryActiveCategory = galleryActiveCategory === cat ? '' : cat">
+                {{ cat }}
+              </q-chip>
+            </div>
+
+            <div class="gallery-picker-grid">
+              <div v-if="filteredGallery.length === 0 && !galleryLoading"
+                class="text-grey-6 text-caption text-center q-py-sm gallery-picker-empty">
+                No photos found.
+              </div>
+              <div v-for="photo in filteredGallery" :key="photo.id"
+                class="gallery-picker-thumb"
+                :class="{ 'gallery-picker-thumb--selected': imgDialog.url === photo.url }"
+                :title="photo.caption || photo.category"
+                @click="selectGalleryPhoto(photo)">
+                <img :src="photo.url" :alt="photo.caption" loading="lazy" />
+                <q-icon v-if="imgDialog.url === photo.url" name="check_circle" class="gallery-picker-check" />
+              </div>
             </div>
           </div>
 
-          <div v-if="imgDialog.url" class="img-preview-wrap">
-            <img :src="imgDialog.url" class="img-preview" />
+          <q-separator dark class="q-my-md" />
+
+          <!-- ── Manual URL / Upload ── -->
+          <div class="q-gutter-md q-pb-md">
+            <div class="row q-col-gutter-sm items-center">
+              <div class="col">
+                <q-input v-model="imgDialog.url" label="Image URL"
+                  dark outlined dense label-color="purple-3" color="purple-3"
+                  placeholder="https://…" clearable />
+              </div>
+              <div class="col-auto">
+                <q-btn color="purple-8" icon="upload" label="Upload" unelevated size="sm"
+                  :loading="imgDialog.uploading" @click="triggerImgUpload" />
+              </div>
+            </div>
+
+            <div v-if="imgDialog.url" class="img-preview-wrap">
+              <img :src="imgDialog.url" class="img-preview" />
+            </div>
+
+            <q-input v-model="imgDialog.caption" label="Caption (optional)"
+              dark outlined dense label-color="purple-3" color="purple-3" />
+
+            <q-input v-model="imgDialog.link" label="Link when clicked (optional)"
+              dark outlined dense label-color="purple-3" color="purple-3"
+              hint="e.g. full-size image URL or a gallery page — leave blank for no link" />
           </div>
 
-          <q-input v-model="imgDialog.caption" label="Caption (optional)"
-            dark outlined dense label-color="purple-3" color="purple-3" />
-
-          <q-input v-model="imgDialog.link" label="Link when clicked (optional)"
-            dark outlined dense label-color="purple-3" color="purple-3"
-            hint="e.g. full-size image URL or a gallery page — leave blank for no link" />
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
@@ -199,7 +245,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import { QuillEditor } from '@vueup/vue-quill'
@@ -208,6 +254,15 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 const $q = useQuasar()
 
 // ── Types ──────────────────────────────────────────────────────────────────
+interface GalleryPhoto {
+  id:            string
+  category:      string
+  url:           string
+  caption:       string
+  display_order: number
+  published:     boolean
+}
+
 interface Page {
   id?:        string
   slug:       string
@@ -274,15 +329,62 @@ const imgDialog = reactive({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pendingQuill: any = null
 
+// ── Gallery picker ─────────────────────────────────────────────────────────
+const galleryPhotos         = ref<GalleryPhoto[]>([])
+const galleryLoaded         = ref(false)
+const galleryLoading        = ref(false)
+const gallerySearch         = ref('')
+const galleryActiveCategory = ref('')
+
+const galleryCategories = computed(() => {
+  const cats = new Set(galleryPhotos.value.map(p => p.category).filter(Boolean))
+  return Array.from(cats).sort()
+})
+
+const filteredGallery = computed(() => {
+  let photos = galleryPhotos.value
+  if (galleryActiveCategory.value) {
+    photos = photos.filter(p => p.category === galleryActiveCategory.value)
+  }
+  const q = gallerySearch.value.trim().toLowerCase()
+  if (q) {
+    photos = photos.filter(p =>
+      p.caption?.toLowerCase().includes(q) ||
+      p.category?.toLowerCase().includes(q)
+    )
+  }
+  return photos
+})
+
+async function loadGallery() {
+  if (galleryLoaded.value || galleryLoading.value) return
+  galleryLoading.value = true
+  const { data } = await supabase
+    .from('gallery_photos')
+    .select('id, category, url, caption, display_order, published')
+    .eq('published', true)
+    .order('category')
+    .order('display_order')
+  if (data) galleryPhotos.value = data as GalleryPhoto[]
+  galleryLoaded.value  = true
+  galleryLoading.value = false
+}
+
+function selectGalleryPhoto(photo: GalleryPhoto) {
+  imgDialog.url     = photo.url
+  imgDialog.caption = photo.caption || ''
+}
+
 // Called by QuillEditor @ready — wire the image toolbar button
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function onEditorReady(quill: any) {
   quill.getModule('toolbar').addHandler('image', () => {
-    pendingQuill    = quill
+    pendingQuill      = quill
     imgDialog.url     = ''
     imgDialog.caption = ''
     imgDialog.link    = ''
     imgDialog.show    = true
+    void loadGallery()
   })
 }
 
@@ -542,6 +644,51 @@ code {
   background: rgba(255,255,255,0.08); padding: 1px 5px;
   border-radius: 3px; font-size: 11px; color: #b39ddb;
 }
+
+/* ── Gallery picker ── */
+.gallery-picker-label { letter-spacing: 1.5px; font-size: 11px; }
+
+.gallery-cat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.gallery-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  max-height: 192px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(179,157,219,0.3) transparent;
+}
+
+.gallery-picker-empty { grid-column: 1 / -1; }
+
+.gallery-picker-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, transform 0.1s;
+
+  img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  &:hover { border-color: rgba(179,157,219,0.55); transform: scale(1.03); }
+  &--selected { border-color: #7c4dff; }
+}
+
+.gallery-picker-check {
+  position: absolute;
+  top: 3px; right: 3px;
+  color: #b39ddb;
+  font-size: 16px;
+  filter: drop-shadow(0 0 3px #000);
+}
 </style>
 
 <!-- Quill Snow dark-theme overrides — unscoped to reach injected DOM -->
@@ -611,7 +758,7 @@ code {
       a { color: #b39ddb; }
       img { max-width: 100%; border-radius: 8px; display: block; margin: 8px 0; }
 
-      &.ql-blank::before { color: rgba(255,255,255,0.25); font-style: italic; }
+      &.ql-blank::before { color: rgba(255,255,255,0.42) !important; font-style: italic; }
     }
   }
 }

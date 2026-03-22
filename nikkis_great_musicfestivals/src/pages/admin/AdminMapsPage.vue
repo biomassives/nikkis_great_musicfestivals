@@ -22,7 +22,7 @@
             <div class="region-mondrian" v-html="cardMondrianSvg(region.id)" />
             <div class="region-mondrian-overlay">
               <q-icon name="palette" size="22px" color="white" />
-              <div class="text-caption text-white q-mt-xs" style="font-weight:700;letter-spacing:.5px">Style Collage</div>
+              <div class="text-caption text-white q-mt-xs" style="font-weight:700;letter-spacing:.5px">Header Design</div>
             </div>
             <div class="region-mondrian-name">{{ region.name }}</div>
           </div>
@@ -67,7 +67,7 @@
       <q-card style="min-width:380px; max-width:460px; background:#1a1a2e; border:1px solid rgba(77,182,172,0.3)">
         <q-card-section>
           <div class="text-h6 text-teal-3">{{ dialog.isNew ? 'Add Region' : 'Edit Region' }}</div>
-          <div class="text-caption text-grey-5">Map position &amp; labels — use the Style button to customise the collage card</div>
+          <div class="text-caption text-grey-5">Map position &amp; labels — use the Header Design button to customise the section header</div>
         </q-card-section>
         <q-card-section class="q-gutter-md">
 
@@ -105,7 +105,7 @@
       <q-card style="min-width:460px; max-width:560px; background:#1a1a2e; border:1px solid rgba(77,182,172,0.3)">
         <q-card-section class="row items-center">
           <div>
-            <div class="text-h6 text-teal-3">Collage Style</div>
+            <div class="text-h6 text-teal-3">Map section header design</div>
             <div class="text-caption text-grey-5">{{ mondrianDialog.regionName }}</div>
           </div>
           <q-space />
@@ -166,19 +166,29 @@
             </div>
           </div>
 
-          <!-- ── Featured images in collage ───────────────── -->
+          <!-- ── Photos in Collage ───────────────────────── -->
           <div v-if="heroForm.images.some(Boolean)">
             <div class="text-caption text-teal-5 text-uppercase q-mb-xs" style="letter-spacing:1.5px">Photos in Collage</div>
             <div class="text-caption text-grey-6 q-mb-sm">
-              <span class="text-teal-4">{{ featuredLabel }}</span> featured — click to include / exclude from the Mondrian slots
+              <span class="text-teal-4">{{ featuredLabel }}</span> featured ·
+              click to include/exclude · <q-icon name="drag_indicator" size="12px" /> drag to reorder
             </div>
             <div class="row q-gutter-xs">
               <template v-for="(img, idx) in heroForm.images" :key="idx">
                 <div
                   v-if="img"
                   class="featured-slot"
-                  :class="{ 'featured-slot--off': !isFeatured(idx) }"
+                  :class="{
+                    'featured-slot--off':        !isFeatured(idx),
+                    'featured-slot--dragging':   photoDragSrc === idx,
+                    'featured-slot--drag-over':  photoDragOver === idx,
+                  }"
+                  draggable="true"
                   @click="toggleFeatured(idx)"
+                  @dragstart="onPhotoDragStart(idx)"
+                  @dragover.prevent="onPhotoDragOver(idx)"
+                  @dragleave="onPhotoDragLeave"
+                  @drop.prevent="onPhotoDrop(idx)"
                   :title="isFeatured(idx) ? 'In collage — click to exclude' : 'Excluded — click to include'"
                 >
                   <img :src="img" class="featured-thumb" />
@@ -188,6 +198,9 @@
                       :color="isFeatured(idx) ? 'teal-4' : 'grey-5'"
                       size="14px"
                     />
+                  </div>
+                  <div class="featured-drag-handle">
+                    <q-icon name="drag_indicator" size="14px" color="white" />
                   </div>
                 </div>
               </template>
@@ -233,7 +246,7 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="grey-5" v-close-popup />
-          <q-btn unelevated label="Save Collage" color="teal" icon="save"
+          <q-btn unelevated label="Save Design" color="teal" icon="save"
             :loading="savingHero" @click="saveMondrianSettings" />
         </q-card-actions>
       </q-card>
@@ -322,7 +335,7 @@ async function saveRegion() {
   dialog.value.open = false
 }
 
-// ── Mondrian / collage style modal ───────────────────────────────────────────
+// ── Mondrian / header design modal ───────────────────────────────────────────
 const mondrianDialog = ref({ open: false, regionId: '', regionName: '' })
 
 const heroForm = reactive({
@@ -367,6 +380,46 @@ function toggleFeatured(i: number) {
   else heroForm.mondrian_featured.splice(pos, 1)
   const filled = heroForm.images.filter(Boolean).length
   if (heroForm.mondrian_featured.length === filled) heroForm.mondrian_featured = []
+}
+
+// ── Photo drag-to-reorder ─────────────────────────────────────────────────────
+const photoDragSrc  = ref(-1)
+const photoDragOver = ref(-1)
+
+function onPhotoDragStart(idx: number) {
+  photoDragSrc.value = idx
+}
+function onPhotoDragOver(idx: number) {
+  if (photoDragSrc.value !== -1 && photoDragSrc.value !== idx) photoDragOver.value = idx
+}
+function onPhotoDragLeave() {
+  photoDragOver.value = -1
+}
+function onPhotoDrop(idx: number) {
+  const from = photoDragSrc.value
+  photoDragSrc.value  = -1
+  photoDragOver.value = -1
+  if (from === -1 || from === idx) return
+  reorderImages(from, idx)
+}
+
+function reorderImages(from: number, to: number) {
+  // Splice a copy, write back element-by-element to preserve Vue reactivity
+  const imgs = [...heroForm.images]
+  const [moved] = imgs.splice(from, 1)
+  imgs.splice(to, 0, moved!)
+  while (imgs.length < 5) imgs.push('')
+  for (let i = 0; i < 5; i++) heroForm.images[i] = imgs[i] ?? ''
+
+  // Remap mondrian_featured indices to follow their images
+  if (heroForm.mondrian_featured.length) {
+    heroForm.mondrian_featured = heroForm.mondrian_featured.map(fi => {
+      if (fi === from)                                  return to
+      if (from < to && fi > from && fi <= to) return fi - 1
+      if (from > to && fi >= to  && fi <  from) return fi + 1
+      return fi
+    })
+  }
 }
 
 async function openMondrianDialog(region: MapRegion) {
@@ -443,7 +496,7 @@ async function saveMondrianSettings() {
 
   savingHero.value = false
   mondrianDialog.value.open = false
-  $q.notify({ message: 'Collage saved', color: 'teal', icon: 'check', position: 'top' })
+  $q.notify({ message: 'Header design saved', color: 'teal', icon: 'check', position: 'top' })
 }
 
 // ── Shared helpers ───────────────────────────────────────────────────────────
@@ -599,16 +652,30 @@ onMounted(() => { void loadData() })
 
 .featured-slot {
   position: relative; width: 54px; height: 54px;
-  border-radius: 6px; overflow: hidden; cursor: pointer;
+  border-radius: 6px; overflow: hidden; cursor: grab;
   border: 2px solid rgba(77,182,172,0.45);
-  transition: opacity 0.2s, border-color 0.2s, transform 0.15s;
+  transition: opacity 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.15s;
   &:hover { border-color: #4dd0c4; transform: scale(1.06); }
+  &:active { cursor: grabbing; }
   &--off { opacity: 0.3; border-color: rgba(255,255,255,0.1); }
+  &--dragging { opacity: 0.35; transform: scale(0.95); }
+  &--drag-over {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 10px rgba(255,215,0,0.45);
+    transform: scale(1.12) !important;
+  }
 }
 .featured-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
 .featured-badge {
   position: absolute; bottom: 2px; right: 2px;
   background: rgba(0,0,0,0.55); border-radius: 50%; line-height: 1;
+}
+.featured-drag-handle {
+  position: absolute; top: 2px; left: 2px;
+  background: rgba(0,0,0,0.45); border-radius: 3px;
+  line-height: 1; padding: 1px;
+  opacity: 0; transition: opacity 0.15s;
+  .featured-slot:hover & { opacity: 1; }
 }
 
 .hidden { display: none; }
