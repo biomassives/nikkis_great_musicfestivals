@@ -1,0 +1,7 @@
+# Copy this to scripts/.test-env and fill in your values.
+# .test-env is gitignored — safe to put real secrets here.
+
+SITE_URL=https://nikkisgreatmusicfestivals.vercel.app
+ADMIN_SECRET=your-admin-secret-here
+EMAIL_1=you@example.com
+EMAIL_2=you+alias@example.com

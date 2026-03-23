@@ -31,4 +31,7 @@ yarn-error.log*
 
 # local .env files
 .env.local*
+
+# Newsletter test secrets
+scripts/.test-env
 .vercel
