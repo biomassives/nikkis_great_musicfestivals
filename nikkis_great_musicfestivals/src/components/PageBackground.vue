@@ -8,21 +8,55 @@
     <!-- Optional photo background -->
     <img v-if="imageUrl" :src="imageUrl" class="bg-photo absolute-full" alt="" />
 
-    <!-- HOME: Spirograph mosaic — 20 replications in a 5×4 geometric grid.
-         Each instance is rotated 18° more than the previous (360°/20),
-         so the full set makes one complete rotational cycle across the page. -->
+    <!-- HOME: Sky atmosphere + cloud shapes + spirograph mosaic.
+         5×4 geometric grid of spirographs, each rotated 18° more than the previous. -->
     <svg v-if="variant === 'home'" class="absolute-full" width="100%" height="100%"
       viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <!-- The spirograph symbol — all 4 layered traces, no background fill -->
+        <!-- Sky atmosphere gradient — fades from tint at top to transparent -->
+        <linearGradient id="pgHomeSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   :stop-color="skyTint" stop-opacity="0.58" />
+          <stop offset="65%"  :stop-color="skyTint" stop-opacity="0.12" />
+          <stop offset="100%" :stop-color="skyTint" stop-opacity="0" />
+        </linearGradient>
+        <!-- Spirograph symbol — 4 layered traces with custom sky-harmonious colors -->
         <symbol id="pgSpiroSym" viewBox="0 0 100 100" overflow="visible">
-          <path :d="SPIRO_P1" fill="none" stroke="#ffb300" stroke-width="0.7"  opacity="0.9" />
-          <path :d="SPIRO_P2" fill="none" stroke="#e040fb" stroke-width="0.65" opacity="0.85" />
-          <path :d="SPIRO_P3" fill="none" stroke="#00bcd4" stroke-width="0.55" opacity="0.8" />
-          <path :d="SPIRO_P4" fill="none" stroke="#ff6d00" stroke-width="0.6"  opacity="0.85" />
+          <path :d="SPIRO_P1" fill="none" :stroke="c1" stroke-width="0.7"  opacity="0.9" />
+          <path :d="SPIRO_P2" fill="none" :stroke="c2" stroke-width="0.65" opacity="0.85" />
+          <path :d="SPIRO_P3" fill="none" :stroke="c3" stroke-width="0.55" opacity="0.8" />
+          <path :d="SPIRO_P4" fill="none" :stroke="c4" stroke-width="0.6"  opacity="0.85" />
         </symbol>
       </defs>
-      <!-- 20 instances: 5 columns × 4 rows, each rotated i×18° around its centre -->
+
+      <!-- ① Sky atmosphere wash -->
+      <rect width="500" height="400" fill="url(#pgHomeSky)" />
+
+      <!-- ② Soft cloud layers — overlapping ellipses grouped into 3 clouds -->
+      <g :opacity="cloudsOpacity">
+        <!-- Cloud A — large, left-of-center -->
+        <g fill="white">
+          <ellipse cx="115" cy="72" rx="82" ry="17" />
+          <ellipse cx="78"  cy="56" rx="34" ry="27" />
+          <ellipse cx="115" cy="52" rx="31" ry="26" />
+          <ellipse cx="152" cy="58" rx="33" ry="23" />
+        </g>
+        <!-- Cloud B — medium, far right -->
+        <g fill="white">
+          <ellipse cx="415" cy="50" rx="68" ry="14" />
+          <ellipse cx="388" cy="38" rx="27" ry="21" />
+          <ellipse cx="415" cy="34" rx="29" ry="22" />
+          <ellipse cx="443" cy="41" rx="31" ry="18" />
+        </g>
+        <!-- Cloud C — wispy, upper center -->
+        <g fill="white">
+          <ellipse cx="268" cy="26" rx="95" ry="10" />
+          <ellipse cx="248" cy="19" rx="23" ry="17" />
+          <ellipse cx="271" cy="16" rx="25" ry="18" />
+          <ellipse cx="300" cy="22" rx="21" ry="14" />
+        </g>
+      </g>
+
+      <!-- ③ Spirograph grid — 20 instances at i×18° -->
       <g :opacity="opacity">
         <g
           v-for="(p, i) in SPIRO_GRID" :key="i"
@@ -122,9 +156,28 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { SPIRO_P1, SPIRO_P2, SPIRO_P3, SPIRO_P4 } from 'src/lib/spirograph'
 
-withDefaults(defineProps<{ variant: string; opacity?: number; imageUrl?: string | null }>(), { opacity: 0.09 })
+const props = withDefaults(defineProps<{
+  variant:       string
+  opacity?:      number
+  imageUrl?:     string | null
+  spiroColors?:  string[]
+  skyTint?:      string
+  cloudsOpacity?: number
+}>(), {
+  opacity:       0.09,
+  spiroColors:   () => ['#f5a623', '#b39ddb', '#5ba3c9', '#e8956c'],
+  skyTint:       '#c8dff0',
+  cloudsOpacity: 0.55,
+})
+
+// Sky-harmonious defaults: warm amber, soft lavender, steel sky-blue, sunset peach
+const c1 = computed(() => props.spiroColors[0] ?? '#f5a623')
+const c2 = computed(() => props.spiroColors[1] ?? '#b39ddb')
+const c3 = computed(() => props.spiroColors[2] ?? '#5ba3c9')
+const c4 = computed(() => props.spiroColors[3] ?? '#e8956c')
 
 // 5 columns × 4 rows = 20 instances.
 // cx/cy are cell centres in the 500×400 viewBox.

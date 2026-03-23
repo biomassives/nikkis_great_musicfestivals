@@ -566,8 +566,8 @@ CREATE TABLE IF NOT EXISTS custom_pages (
 ALTER TABLE custom_pages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public reads published pages"
   ON custom_pages FOR SELECT USING (published = true);
-CREATE POLICY "Auth manages all pages"
-  ON custom_pages FOR ALL USING (auth.role() = 'authenticated');`
+CREATE POLICY "Anon manages all pages"
+  ON custom_pages FOR ALL USING (true) WITH CHECK (true);`
 
 async function copySetupSql() {
   await navigator.clipboard.writeText(SETUP_SQL)

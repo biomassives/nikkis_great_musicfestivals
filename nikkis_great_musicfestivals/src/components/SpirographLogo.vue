@@ -25,12 +25,6 @@
         <stop offset="52%"  stop-color="#ffd700" stop-opacity="0.60" />
         <stop offset="100%" stop-color="#0d0028" stop-opacity="0"    />
       </radialGradient>
-      <!-- campfire flame: base orange → tip gold -->
-      <linearGradient :id="`fire-${vid}`" x1="0%" y1="100%" x2="0%" y2="0%">
-        <stop offset="0%"   stop-color="#ff4500" />
-        <stop offset="55%"  stop-color="#ff8c00" />
-        <stop offset="100%" stop-color="#ffd700" />
-      </linearGradient>
       <!-- moon lit-face: soft cream highlight → gold limb -->
       <radialGradient :id="`moon-${vid}`" cx="38%" cy="30%" r="70%">
         <stop offset="0%"   stop-color="#fffde7" />
@@ -66,22 +60,22 @@
       <circle r="4" fill="none" stroke="#ffd700" stroke-width="0.35" opacity="0.55" />
     </g>
 
-    <!-- ── Campfire at centre ── -->
-    <g transform="translate(50, 51)">
-      <!-- crossed logs -->
-      <line x1="-7" y1="4.5" x2="7"  y2="2.5" stroke="#7b3810" stroke-width="2"   stroke-linecap="round" />
-      <line x1="-6" y1="2.5" x2="6"  y2="4.5" stroke="#5c2a0e" stroke-width="2"   stroke-linecap="round" />
-      <!-- left flame -->
-      <path d="M-2,3 C-4.5,-1 -3.5,-6 -1.5,-7.5 C-0.8,-5 -1.2,-1 -2,3 Z"
-            :fill="`url(#fire-${vid})`" opacity="0.88" />
-      <!-- right flame -->
-      <path d="M2,3 C4.5,-1 3.5,-6 1.5,-7.5 C0.8,-5 1.2,-1 2,3 Z"
-            :fill="`url(#fire-${vid})`" opacity="0.88" />
-      <!-- centre flame (tallest) -->
-      <path d="M0,3 C-3,-2 -2.5,-7 0,-10.5 C2.5,-7 3,-2 0,3 Z"
-            :fill="`url(#fire-${vid})`" opacity="0.96" />
-      <!-- incandescent core -->
-      <ellipse cx="0" cy="-1.5" rx="1.6" ry="2.4" fill="#fffde7" opacity="0.75" />
+    <!-- ── Bright sun at centre — 16-fold symmetry for clean rotation ── -->
+    <g transform="translate(50, 50)">
+      <!-- Outer corona wash -->
+      <circle r="17" :fill="`url(#sbg-${vid})`" opacity="0.52" />
+      <!-- 8 long primary rays at 0°, 45°, 90°, 135°… -->
+      <g v-for="n in 8" :key="`sr${n}`" :transform="`rotate(${(n-1)*45})`">
+        <rect x="-1.5" y="8" width="3" height="10.5" rx="1.5" fill="#ffd700" opacity="0.92" />
+      </g>
+      <!-- 8 short secondary rays at 22.5°, 67.5°, 112.5°… -->
+      <g v-for="n in 8" :key="`mr${n}`" :transform="`rotate(${22.5 + (n-1)*45})`">
+        <rect x="-0.9" y="9" width="1.8" height="6.5" rx="0.9" fill="#ffb300" opacity="0.72" />
+      </g>
+      <!-- Sun disc — three layers, warm white core -->
+      <circle r="7"   fill="#fff8c0" opacity="0.98" />
+      <circle r="5"   fill="#ffe566" opacity="0.96" />
+      <circle r="2.8" fill="white"   opacity="0.92" />
     </g>
 
     <!-- ── Sinusoidal mandala ring (replaces dashed circle) ── -->

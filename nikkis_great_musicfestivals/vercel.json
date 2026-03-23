@@ -4,6 +4,10 @@
   "installCommand": "npm install",
   "framework": null,
   "routes": [
+    { "src": "/api/newsletter/subscribe",     "dest": "/api/newsletter/subscribe.ts"     },
+    { "src": "/api/newsletter/unsubscribe",   "dest": "/api/newsletter/unsubscribe.ts"   },
+    { "src": "/api/newsletter/send",          "dest": "/api/newsletter/send.ts"          },
+    { "src": "/api/newsletter/send-cuteness", "dest": "/api/newsletter/send-cuteness.ts" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]

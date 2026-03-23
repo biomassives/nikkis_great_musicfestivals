@@ -169,7 +169,7 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.merch-page   { min-height: 100vh; background: #faf8f2; }
+.merch-page   { min-height: 100vh; }
 .page-content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
 
 .section-label {

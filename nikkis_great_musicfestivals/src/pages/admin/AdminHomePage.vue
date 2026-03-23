@@ -253,6 +253,54 @@
             </q-item>
 
             <q-separator dark class="q-my-sm" />
+            <div class="text-caption text-teal-5 text-uppercase ls-1">SVG Art Colors</div>
+            <div class="text-caption text-grey-6 q-mb-sm">Tune the spirograph stroke colors and sky atmosphere — changes preview live below.</div>
+
+            <!-- Sky tint + clouds -->
+            <div class="row q-col-gutter-md items-center q-mb-sm">
+              <div class="col-auto column items-center" style="gap:4px">
+                <div class="text-caption text-grey-5" style="font-size:10px">Sky Tint</div>
+                <input type="color" :value="appearance.sky_tint"
+                  @input="appearance.sky_tint = ($event.target as HTMLInputElement).value"
+                  class="color-picker" title="Sky atmosphere hue" />
+              </div>
+              <div class="col">
+                <q-item dark dense class="q-pa-none">
+                  <q-item-section>
+                    <q-item-label class="text-grey-3">Cloud softness</q-item-label>
+                    <q-item-label caption class="text-grey-6">{{ Math.round(appearance.clouds_opacity * 100) }}%</q-item-label>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-slider v-model="appearance.clouds_opacity" :min="0" :max="1" :step="0.05" color="teal-3" dark />
+                  </q-item-section>
+                </q-item>
+              </div>
+            </div>
+
+            <!-- 4 spirograph stroke color pickers -->
+            <div class="row q-gutter-md items-end q-mb-md">
+              <div v-for="(label, idx) in ['Stroke 1 (Sun)', 'Stroke 2 (Sky)', 'Stroke 3 (Haze)', 'Stroke 4 (Dusk)']" :key="idx"
+                class="column items-center" style="gap:4px">
+                <div class="text-caption text-grey-5" style="font-size:10px">{{ label }}</div>
+                <input type="color" :value="appearance.spiro_colors[idx]"
+                  @input="appearance.spiro_colors.splice(idx, 1, ($event.target as HTMLInputElement).value)"
+                  class="color-picker" :title="label" />
+              </div>
+            </div>
+
+            <!-- Live preview -->
+            <div class="text-caption text-grey-5 q-mb-xs">Live Preview</div>
+            <div class="spiro-preview-wrap">
+              <PageBackground
+                variant="home"
+                :opacity="appearance.bg_opacity"
+                :spiroColors="appearance.spiro_colors"
+                :skyTint="appearance.sky_tint"
+                :cloudsOpacity="appearance.clouds_opacity"
+              />
+            </div>
+
+            <q-separator dark class="q-my-sm" />
             <div class="text-caption text-teal-5 text-uppercase ls-1">Footer Scene</div>
             <q-toggle v-model="appearance.footer_default_night" label="Default to night scene on load" color="teal-3" dark />
             <div class="text-caption text-grey-6">Day/night still follows the dark-mode toggle; this controls the initial state for visitors whose preference is unknown.</div>
@@ -496,6 +544,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
 import type { HomepageArtist } from 'src/lib/supabase'
+import PageBackground from 'src/components/PageBackground.vue'
 
 // ── Upload refs ──────────────────────────────────────────────────────────────
 const uploadingBg      = ref(false)
@@ -600,6 +649,10 @@ const appearance = reactive({
   bg_variant:           'home',
   bg_opacity:           0.09,
   footer_default_night: false,
+  // SVG art tuner
+  spiro_colors:   ['#f5a623', '#b39ddb', '#5ba3c9', '#e8956c'] as string[],
+  sky_tint:        '#c8dff0',
+  clouds_opacity:  0.55,
 })
 
 const skyText = reactive({
@@ -799,6 +852,14 @@ onMounted(loadSettings)
 .ls-1 { letter-spacing: 1.5px; }
 .hidden { display: none; }
 .bg-preview { max-height: 120px; max-width: 100%; border-radius: 8px; object-fit: cover; }
+.spiro-preview-wrap {
+  position: relative;
+  height: 180px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #d0eaff 0%, #f5f0ff 100%);
+  border: 1px solid rgba(255,255,255,0.18);
+}
 .og-preview-wrap { max-width: 480px; }
 .og-preview { width: 100%; border-radius: 8px; aspect-ratio: 1200/630; object-fit: cover; }
 .color-picker {

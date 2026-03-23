@@ -119,7 +119,7 @@ const upcomingStops = [
 </script>
 
 <style lang="scss" scoped>
-.news-page    { min-height: 100vh; background: #f0f4fa; }
+.news-page    { min-height: 100vh; }
 .page-content { position: relative; z-index: 1; }
 
 .section-label {

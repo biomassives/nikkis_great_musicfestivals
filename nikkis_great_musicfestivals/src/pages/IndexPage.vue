@@ -1,6 +1,7 @@
 <template>
   <q-page class="home-page">
-    <PageBackground :variant="bgVariant" :opacity="bgOpacity" :imageUrl="bgImageUrl" />
+    <PageBackground :variant="bgVariant" :opacity="bgOpacity" :imageUrl="bgImageUrl"
+      :spiroColors="bgSpiroColors" :skyTint="bgSkyTint" :cloudsOpacity="bgCloudsOpacity" />
     <WelcomeOverlay @dismissed="onWelcomeDismissed" />
     <StoryOverlay v-model="showStory" />
 
@@ -248,9 +249,12 @@ const content = reactive({
 const artists = ref<Artist[]>(ARTISTS.filter(a => a.featured))
 
 // ── Background / SEO ─────────────────────────────────────────────────────────
-const bgImageUrl = ref<string | null>(null)
-const bgVariant  = ref<'home'|'support'|'news'|'photography'|'maps'|'merch'>('home')
-const bgOpacity  = ref(0.09)
+const bgImageUrl     = ref<string | null>(null)
+const bgVariant      = ref<'home'|'support'|'news'|'photography'|'maps'|'merch'>('home')
+const bgOpacity      = ref(0.09)
+const bgSpiroColors  = ref<string[]>(['#f5a623', '#b39ddb', '#5ba3c9', '#e8956c'])
+const bgSkyTint      = ref('#c8dff0')
+const bgCloudsOpacity = ref(0.55)
 
 const seo = reactive({
   og_title: "Nikki's Great Music Festivals — Tour Maps, Live Music & Community",
@@ -320,9 +324,12 @@ async function loadSettings() {
     if (row.key === 'homepage_seo')        Object.assign(seo, row.value as object)
     if (row.key === 'homepage_appearance') {
       const v = row.value as Record<string, unknown>
-      if (v['bg_image_url'] != null) bgImageUrl.value = v['bg_image_url'] as string
-      if (v['bg_variant']   != null) bgVariant.value  = v['bg_variant'] as typeof bgVariant.value
-      if (v['bg_opacity']   != null) bgOpacity.value  = v['bg_opacity'] as number
+      if (v['bg_image_url']     != null) bgImageUrl.value      = v['bg_image_url'] as string
+      if (v['bg_variant']       != null) bgVariant.value       = v['bg_variant'] as typeof bgVariant.value
+      if (v['bg_opacity']       != null) bgOpacity.value       = v['bg_opacity'] as number
+      if (v['spiro_colors']     != null) bgSpiroColors.value   = v['spiro_colors'] as string[]
+      if (v['sky_tint']         != null) bgSkyTint.value       = v['sky_tint'] as string
+      if (v['clouds_opacity']   != null) bgCloudsOpacity.value = v['clouds_opacity'] as number
     }
     if (row.key === 'homepage_artists' && Array.isArray(row.value) && (row.value as unknown[]).length) {
       artists.value = row.value as Artist[]

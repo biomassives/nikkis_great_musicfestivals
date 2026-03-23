@@ -263,6 +263,96 @@
         <path d="M982,218 Q981,210 984,203 Q987,197 989,201 Q991,196 993,201 Q994,208 992,218 Z" fill="#ffcc02" />
       </g>
 
+      <!-- ═══ CAMPFIRE COMPANIONS (day) ════════════════════════════════════ -->
+
+      <!-- COOLER — Set 2: Deep Forest lid + Clear Sky body -->
+      <g>
+        <path d="M907,221 Q910,217 914,221" fill="none" stroke="#1e4530" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="898" y="221" width="28" height="5"  rx="2.5" fill="#2D6A4F"/>
+        <rect x="900" y="225" width="24" height="14" rx="3"   fill="#48CAE4"/>
+        <rect x="903" y="228" width="18" height="2.5" rx="1.2" fill="white" opacity="0.30"/>
+        <rect x="909" y="222" width="5"  height="3"  rx="1.2" fill="#1e4530"/>
+        <rect x="901" y="237" width="6"  height="3"  rx="1.5" fill="#1a3040"/>
+        <rect x="916" y="237" width="6"  height="3"  rx="1.5" fill="#1a3040"/>
+      </g>
+
+      <!-- PERSON 1 — left of fire · Set 1: Electric Ember + Festival Violet + Sun Gold -->
+      <g>
+        <!-- hat -->
+        <rect x="938" y="191" width="16" height="12" rx="3"   fill="#8338EC"/>
+        <rect x="934" y="201" width="24" height="4"  rx="2"   fill="#8338EC"/>
+        <rect x="938" y="199" width="16" height="3"           fill="#FFB703"/>
+        <!-- head + face -->
+        <circle cx="946" cy="210" r="8.5" fill="#f4a261"/>
+        <circle cx="943" cy="209" r="1.3" fill="#2a1408"/>
+        <circle cx="949" cy="209" r="1.3" fill="#2a1408"/>
+        <path d="M943,213 Q946,215 949,213" fill="none" stroke="#2a1408" stroke-width="1" stroke-linecap="round"/>
+        <!-- jacket + collar scarf -->
+        <rect x="937" y="218" width="18" height="16" rx="3"   fill="#E85D04"/>
+        <rect x="937" y="218" width="18" height="5"  rx="2"   fill="#FFB703"/>
+        <!-- arms -->
+        <rect x="951" y="220" width="5" height="13" rx="2.5" fill="#E85D04" transform="rotate(-28,953,221)"/>
+        <rect x="929" y="222" width="5" height="10" rx="2.5" fill="#E85D04" transform="rotate(14,931,223)"/>
+        <!-- lap + feet -->
+        <rect x="930" y="231" width="32" height="9" rx="4.5" fill="#3d2b1a"/>
+        <rect x="929" y="237" width="12" height="6" rx="3"   fill="#1e1008"/>
+        <rect x="944" y="237" width="12" height="6" rx="3"   fill="#1e1008"/>
+      </g>
+
+      <!-- PERSON 2 — right of fire · Set 2: Canyon Terra jacket + Deep Forest hat + Clear Sky accent -->
+      <g>
+        <!-- hat -->
+        <rect x="1030" y="188" width="16" height="12" rx="3"  fill="#2D6A4F"/>
+        <rect x="1026" y="198" width="24" height="4"  rx="2"  fill="#2D6A4F"/>
+        <rect x="1030" y="196" width="16" height="3"          fill="#48CAE4"/>
+        <!-- head + face -->
+        <circle cx="1038" cy="207" r="8.5" fill="#e09878"/>
+        <circle cx="1034" cy="206" r="1.3" fill="#2a1408"/>
+        <circle cx="1041" cy="206" r="1.3" fill="#2a1408"/>
+        <path d="M1035,210 Q1038,212 1041,210" fill="none" stroke="#2a1408" stroke-width="1" stroke-linecap="round"/>
+        <!-- jacket + collar -->
+        <rect x="1029" y="215" width="18" height="16" rx="3"  fill="#F4845F"/>
+        <rect x="1029" y="215" width="18" height="5"  rx="2"  fill="#2D6A4F"/>
+        <!-- left arm + enamel mug -->
+        <rect x="1018" y="218" width="11" height="4"  rx="2"  fill="#e09878"/>
+        <rect x="1008" y="215" width="9"  height="8"  rx="2"  fill="#48CAE4"/>
+        <path d="M1017,218 Q1021,218 1021,221 Q1021,224 1017,224" fill="none" stroke="#48CAE4" stroke-width="1.6"/>
+        <rect x="1009" y="215" width="9"  height="2"  rx="1"  fill="#2D6A4F"/>
+        <!-- right arm -->
+        <rect x="1043" y="220" width="5" height="10" rx="2.5" fill="#F4845F" transform="rotate(12,1045,220)"/>
+        <!-- lap + feet -->
+        <rect x="1023" y="228" width="32" height="9" rx="4.5" fill="#264653"/>
+        <rect x="1022" y="234" width="12" height="6" rx="3"   fill="#1e2a30"/>
+        <rect x="1037" y="235" width="12" height="6" rx="3"   fill="#1e2a30"/>
+      </g>
+
+      <!-- DOG — lying beside fire, right side · warm tan + brown markings -->
+      <g>
+        <!-- curled tail arching up behind body -->
+        <path d="M1072,233 C1063,228 1060,219 1065,213 C1070,208 1077,213 1073,221"
+              fill="none" stroke="#D4A574" stroke-width="6" stroke-linecap="round"/>
+        <!-- body -->
+        <rect x="1070" y="228" width="30" height="12" rx="6" fill="#D4A574"/>
+        <!-- saddle marking -->
+        <ellipse cx="1079" cy="233" rx="7" ry="4.5" fill="#8B5E3C" opacity="0.52"/>
+        <!-- neck + head -->
+        <rect x="1093" y="222" width="12" height="11" rx="4" fill="#D4A574"/>
+        <circle cx="1100" cy="222" r="10.5" fill="#D4A574"/>
+        <!-- floppy ear -->
+        <ellipse cx="1093" cy="215" rx="4.5" ry="7" fill="#8B5E3C" transform="rotate(-18,1093,215)"/>
+        <!-- snout -->
+        <ellipse cx="1107" cy="225" rx="7.5" ry="5" fill="#c49060"/>
+        <!-- nose -->
+        <ellipse cx="1112" cy="223" rx="3.5" ry="2.5" fill="#1a0800"/>
+        <circle  cx="1111" cy="222" r="1"              fill="white" opacity="0.38"/>
+        <!-- eye + glint -->
+        <circle cx="1098" cy="218" r="2.2" fill="#1a0800"/>
+        <circle cx="1098.7" cy="217" r="0.7" fill="white" opacity="0.6"/>
+        <!-- front paws -->
+        <rect x="1073" y="237" width="11" height="5" rx="3" fill="#c49060"/>
+        <rect x="1088" y="238" width="11" height="5" rx="3" fill="#c49060"/>
+      </g>
+
       <!-- Smoke wisps -->
       <path class="smoke-wisp w1"
             d="M990,184 C988,177 993,170 990,163 C987,156 992,149 990,142 C988,135 992,128 990,121"
@@ -560,6 +650,87 @@
         <path d="M977,218 Q974,204 979,192 Q984,180 987,188 Q990,178 993,188 Q997,198 994,216 Z" fill="#e65100" />
         <path d="M979,218 Q977,208 981,198 Q985,190 988,196 Q991,188 994,196 Q996,205 993,218 Z" fill="#ff8f00" />
         <path d="M982,218 Q981,210 984,203 Q987,197 989,201 Q991,196 993,201 Q994,208 992,218 Z" fill="#ffd600" />
+      </g>
+
+      <!-- ═══ CAMPFIRE COMPANIONS (night) — firelit, deeper palette ══════════ -->
+
+      <!-- COOLER — night: same forms, slightly deeper tones -->
+      <g>
+        <path d="M907,221 Q910,217 914,221" fill="none" stroke="#133226" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="898" y="221" width="28" height="5"  rx="2.5" fill="#1d4d38"/>
+        <rect x="900" y="225" width="24" height="14" rx="3"   fill="#2a8faa"/>
+        <rect x="903" y="228" width="18" height="2.5" rx="1.2" fill="white" opacity="0.18"/>
+        <rect x="909" y="222" width="5"  height="3"  rx="1.2" fill="#133226"/>
+        <rect x="901" y="237" width="6"  height="3"  rx="1.5" fill="#0e2030"/>
+        <rect x="916" y="237" width="6"  height="3"  rx="1.5" fill="#0e2030"/>
+      </g>
+
+      <!-- PERSON 1 — night: fire-warm amber glow on jacket, violet hat glows -->
+      <g>
+        <!-- hat -->
+        <rect x="938" y="191" width="16" height="12" rx="3"   fill="#6920d4"/>
+        <rect x="934" y="201" width="24" height="4"  rx="2"   fill="#6920d4"/>
+        <rect x="938" y="199" width="16" height="3"           fill="#e8a000"/>
+        <!-- head + face -->
+        <circle cx="946" cy="210" r="8.5" fill="#d4884a"/>
+        <circle cx="943" cy="209" r="1.3" fill="#1a0c04"/>
+        <circle cx="949" cy="209" r="1.3" fill="#1a0c04"/>
+        <path d="M943,213 Q946,215 949,213" fill="none" stroke="#1a0c04" stroke-width="1" stroke-linecap="round"/>
+        <!-- jacket + scarf -->
+        <rect x="937" y="218" width="18" height="16" rx="3"   fill="#c24800"/>
+        <rect x="937" y="218" width="18" height="5"  rx="2"   fill="#e8a000"/>
+        <!-- arms -->
+        <rect x="951" y="220" width="5" height="13" rx="2.5" fill="#c24800" transform="rotate(-28,953,221)"/>
+        <rect x="929" y="222" width="5" height="10" rx="2.5" fill="#c24800" transform="rotate(14,931,223)"/>
+        <!-- lap + feet -->
+        <rect x="930" y="231" width="32" height="9" rx="4.5" fill="#2a1c0e"/>
+        <rect x="929" y="237" width="12" height="6" rx="3"   fill="#130a04"/>
+        <rect x="944" y="237" width="12" height="6" rx="3"   fill="#130a04"/>
+      </g>
+
+      <!-- PERSON 2 — night: warm fire glow shifts terra to ember orange -->
+      <g>
+        <!-- hat -->
+        <rect x="1030" y="188" width="16" height="12" rx="3"  fill="#1d4d38"/>
+        <rect x="1026" y="198" width="24" height="4"  rx="2"  fill="#1d4d38"/>
+        <rect x="1030" y="196" width="16" height="3"          fill="#2a8faa"/>
+        <!-- head + face -->
+        <circle cx="1038" cy="207" r="8.5" fill="#c07858"/>
+        <circle cx="1034" cy="206" r="1.3" fill="#1a0c04"/>
+        <circle cx="1041" cy="206" r="1.3" fill="#1a0c04"/>
+        <path d="M1035,210 Q1038,212 1041,210" fill="none" stroke="#1a0c04" stroke-width="1" stroke-linecap="round"/>
+        <!-- jacket + collar -->
+        <rect x="1029" y="215" width="18" height="16" rx="3"  fill="#c4622c"/>
+        <rect x="1029" y="215" width="18" height="5"  rx="2"  fill="#1d4d38"/>
+        <!-- arm + mug glowing warm -->
+        <rect x="1018" y="218" width="11" height="4"  rx="2"  fill="#c07858"/>
+        <rect x="1008" y="215" width="9"  height="8"  rx="2"  fill="#2a8faa"/>
+        <path d="M1017,218 Q1021,218 1021,221 Q1021,224 1017,224" fill="none" stroke="#2a8faa" stroke-width="1.6"/>
+        <rect x="1009" y="215" width="9"  height="2"  rx="1"  fill="#1d4d38"/>
+        <!-- right arm -->
+        <rect x="1043" y="220" width="5" height="10" rx="2.5" fill="#c4622c" transform="rotate(12,1045,220)"/>
+        <!-- lap + feet -->
+        <rect x="1023" y="228" width="32" height="9" rx="4.5" fill="#142830"/>
+        <rect x="1022" y="234" width="12" height="6" rx="3"   fill="#0e1a20"/>
+        <rect x="1037" y="235" width="12" height="6" rx="3"   fill="#0e1a20"/>
+      </g>
+
+      <!-- DOG — night: same shapes, darker warm tones under firelight -->
+      <g>
+        <path d="M1072,233 C1063,228 1060,219 1065,213 C1070,208 1077,213 1073,221"
+              fill="none" stroke="#b8875a" stroke-width="6" stroke-linecap="round"/>
+        <rect x="1070" y="228" width="30" height="12" rx="6" fill="#b8875a"/>
+        <ellipse cx="1079" cy="233" rx="7" ry="4.5" fill="#6e4020" opacity="0.55"/>
+        <rect x="1093" y="222" width="12" height="11" rx="4" fill="#b8875a"/>
+        <circle cx="1100" cy="222" r="10.5" fill="#b8875a"/>
+        <ellipse cx="1093" cy="215" rx="4.5" ry="7" fill="#6e4020" transform="rotate(-18,1093,215)"/>
+        <ellipse cx="1107" cy="225" rx="7.5" ry="5" fill="#9a6840"/>
+        <ellipse cx="1112" cy="223" rx="3.5" ry="2.5" fill="#0e0400"/>
+        <circle  cx="1111" cy="222" r="1"              fill="white" opacity="0.3"/>
+        <circle cx="1098" cy="218" r="2.2" fill="#0e0400"/>
+        <circle cx="1098.7" cy="217" r="0.7" fill="white" opacity="0.5"/>
+        <rect x="1073" y="237" width="11" height="5" rx="3" fill="#9a6840"/>
+        <rect x="1088" y="238" width="11" height="5" rx="3" fill="#9a6840"/>
       </g>
 
       <!-- Smoke wisps -->

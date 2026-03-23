@@ -397,7 +397,7 @@ async function subscribeNav() {
 }
 
 /* ══ PAGE CONTAINER ══════════════════════════════════════════════ */
-.page-light { background: #f5f0ff; color: #1a0a2e; }
+.page-light { background: linear-gradient(180deg, #d0eaff 0%, #f5f0ff 100%); color: #1a0a2e; }
 .page-dark  { background: #070014; color: #e8e0ff; }
 
 /* Layout background animations */

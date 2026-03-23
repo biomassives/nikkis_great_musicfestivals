@@ -14,6 +14,47 @@
       </div>
 
       <template v-else>
+
+        <!-- Daily Cuteness subscribe banner -->
+        <div class="cuteness-subscribe-wrap q-mb-xl">
+          <div class="cuteness-subscribe-card q-pa-lg">
+            <div class="row items-center q-col-gutter-lg">
+              <div class="col-12 col-sm-auto text-center text-sm-left">
+                <div class="text-h3" style="line-height:1">🐾</div>
+              </div>
+              <div class="col-12 col-sm">
+                <div class="cuteness-subscribe-heading">Get Your Daily Cuteness</div>
+                <div class="text-body2 text-grey-7 q-mt-xs">
+                  One sweet photo from the road, delivered to your inbox every morning.
+                </div>
+              </div>
+              <div class="col-12 col-sm-auto">
+                <div v-if="cutenessSub.success" class="row items-center q-gutter-xs text-positive">
+                  <q-icon name="check_circle" size="20px" />
+                  <span class="text-body2 text-weight-bold">You're in! Check your inbox.</span>
+                </div>
+                <div v-else class="row q-gutter-sm items-start">
+                  <q-input
+                    v-model="cutenessSub.email"
+                    dense outlined
+                    placeholder="your@email.com"
+                    style="width:200px"
+                    :error="!!cutenessSub.error"
+                    :error-message="cutenessSub.error"
+                    hide-bottom-space
+                    @keyup.enter="subscribeCuteness"
+                  />
+                  <q-btn
+                    unelevated color="pink-6" icon="favorite" label="Subscribe"
+                    :loading="cutenessSub.loading"
+                    @click="subscribeCuteness"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <section
           v-for="sec in sections"
           :key="sec.slug"
@@ -67,6 +108,39 @@ import { supabase } from 'src/lib/supabase'
 import type { GalleryPhoto, GallerySection } from 'src/lib/supabase'
 
 const loading = ref(true)
+
+const cutenessSub = reactive({
+  email:   '',
+  loading: false,
+  success: false,
+  error:   '',
+})
+
+async function subscribeCuteness() {
+  cutenessSub.error = ''
+  if (!cutenessSub.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cutenessSub.email)) {
+    cutenessSub.error = 'Please enter a valid email'
+    return
+  }
+  cutenessSub.loading = true
+  try {
+    const res  = await fetch('/api/newsletter/subscribe', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email: cutenessSub.email, lists: ['cuteness'] }),
+    })
+    const data = await res.json() as { ok?: boolean; error?: string }
+    if (data.ok) {
+      cutenessSub.success = true
+    } else {
+      cutenessSub.error = data.error ?? 'Something went wrong'
+    }
+  } catch {
+    cutenessSub.error = 'Connection error — please try again'
+  }
+  cutenessSub.loading = false
+}
+
 const photos  = ref<GalleryPhoto[]>([])
 
 const sections = ref<GallerySection[]>([
@@ -103,8 +177,21 @@ function openSlideshow(slug: string, index: number) {
 </script>
 
 <style lang="scss" scoped>
-.photo-page   { min-height: 100vh; background: #fafaf5; }
+.photo-page   { min-height: 100vh; background: transparent; }
 .page-content { position: relative; z-index: 1; }
+
+/* Daily Cuteness subscribe card */
+.cuteness-subscribe-wrap { max-width: 900px; margin: 0 auto; }
+.cuteness-subscribe-card {
+  background: rgba(255,255,255,0.72);
+  border: 1.5px solid rgba(236,64,122,0.22);
+  border-radius: 18px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 24px rgba(236,64,122,0.08);
+}
+.cuteness-subscribe-heading {
+  font-size: 18px; font-weight: 800; color: #880e4f; letter-spacing: -0.3px;
+}
 
 .section-label {
   font-size: 11px; font-weight: 700; letter-spacing: 3px;
@@ -159,6 +246,12 @@ function openSlideshow(slug: string, index: number) {
 <style lang="scss">
 body.body--dark {
   .photo-page { background: #080a04 !important; }
+
+  .cuteness-subscribe-card {
+    background: rgba(30,10,20,0.75) !important;
+    border-color: rgba(236,64,122,0.35) !important;
+  }
+  .cuteness-subscribe-heading { color: #f48fb1 !important; }
 
   .photo-page .section-label { color: #ff8a65 !important; }
   .photo-page .text-h3, .photo-page .text-body1 { color: rgba(255,255,255,0.9) !important; }

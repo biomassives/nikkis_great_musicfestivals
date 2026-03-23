@@ -271,7 +271,7 @@ async function redirectToStripe(params: Record<string, unknown>) {
 
 <style lang="scss" scoped>
 /* ── Page shell ─────────────────────────────────────────────────── */
-.support-page   { min-height: 100vh; background: #fff8f2; }
+.support-page   { min-height: 100vh; }
 .page-content   { position: relative; z-index: 1; }
 
 .section-label {
