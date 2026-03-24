@@ -1002,6 +1002,11 @@ ALTER TABLE newsletters
   ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'draft',
   ADD COLUMN IF NOT EXISTS recipient_count int;
 
+ALTER TABLE newsletters ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Authenticated manages newsletters" ON newsletters;
+CREATE POLICY "Authenticated manages newsletters"
+  ON newsletters FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
 CREATE TABLE IF NOT EXISTS email_templates (
   id         text PRIMARY KEY,
   subject    text NOT NULL DEFAULT '',

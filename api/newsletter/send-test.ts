@@ -2,10 +2,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
 import { getAdminUser } from '../_auth'
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
+function getSupabase() {
+  const url = process.env.VITE_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.VITE_SUPABASE_KEY ?? ''
+  if (!url) throw new Error('VITE_SUPABASE_URL not set in Vercel env vars')
+  return createClient(url, key)
+}
 
 interface Block {
   type:       'intro' | 'news' | 'shows' | 'spotlight' | 'html'
@@ -25,57 +27,79 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const user = await getAdminUser(req, res)
-  if (!user) return
+  try {
+    const user = await getAdminUser(req, res)
+    if (!user) return
 
-  const adminEmail = user.email
-  if (!adminEmail) return res.status(400).json({ error: 'Admin account has no email' })
+    const adminEmail = user.email
+    if (!adminEmail) return res.status(400).json({ error: 'Admin account has no email' })
 
-  const { newsletter_id } = (req.body ?? {}) as { newsletter_id?: string }
-  if (!newsletter_id) return res.status(400).json({ error: 'newsletter_id required' })
+    const { newsletter_id } = (req.body ?? {}) as { newsletter_id?: string }
+    if (!newsletter_id) return res.status(400).json({ error: 'newsletter_id required' })
 
-  // Fetch the newsletter
-  const { data: nlRows } = await supabase
-    .from('newsletters').select('*').eq('id', newsletter_id).limit(1)
-  const nl = nlRows?.[0] as Record<string, unknown> | undefined
-  if (!nl) return res.status(404).json({ error: 'Newsletter not found' })
+    const supabase = getSupabase()
 
-  // Fetch weekly base template
-  const { data: tmplRows } = await supabase
-    .from('email_templates').select('subject, html_body').eq('id', 'weekly').limit(1)
-  const tmpl = tmplRows?.[0] as { subject: string; html_body: string } | undefined
-  if (!tmpl) return res.status(500).json({ error: 'Weekly template not found — run setup SQL' })
+    // Fetch newsletter
+    const { data: nlRows, error: nlErr } = await supabase
+      .from('newsletters').select('*').eq('id', newsletter_id).limit(1)
+    if (nlErr) return res.status(500).json({ error: `DB error fetching newsletter: ${nlErr.message}` })
+    const nl = nlRows?.[0] as Record<string, unknown> | undefined
+    if (!nl) return res.status(404).json({ error: 'Newsletter not found' })
 
-  const blocks     = (nl['blocks'] as Block[] | null) ?? []
-  const blocksHtml = await renderBlocks(blocks)
-  const siteUrl    = process.env.VITE_SITE_URL ?? `https://${String(req.headers.host ?? '')}`
-  const subject    = `[TEST] ${String(nl['subject'] ?? tmpl.subject)}`
+    // Fetch weekly base template
+    const { data: tmplRows, error: tmplErr } = await supabase
+      .from('email_templates').select('subject, html_body').eq('id', 'weekly').limit(1)
+    if (tmplErr) return res.status(500).json({ error: `DB error fetching template: ${tmplErr.message}` })
+    const tmpl = tmplRows?.[0] as { subject: string; html_body: string } | undefined
+    if (!tmpl) return res.status(500).json({ error: 'Weekly template not found — run setup SQL' })
 
-  const html = tmpl.html_body
-    .replace(/\{\{name\}\}/g,            user.user_metadata?.['full_name'] ?? 'Admin')
-    .replace(/\{\{subject\}\}/g,         subject)
-    .replace(/\{\{blocks_html\}\}/g,     blocksHtml)
-    .replace(/\{\{unsubscribe_url\}\}/g, `${siteUrl}/admin`)  // no real unsub for test
+    const blocks     = (nl['blocks'] as Block[] | null) ?? []
+    const blocksHtml = await renderBlocks(blocks, supabase)
+    const siteUrl    = process.env.VITE_SITE_URL ?? `https://${String(req.headers.host ?? '')}`
+    const subject    = `[TEST] ${String(nl['subject'] ?? tmpl.subject)}`
 
-  if (!process.env.MAILGUN_API_KEY) {
-    return res.status(200).json({ ok: true, to: adminEmail, mailgun: false,
-      message: 'MAILGUN_API_KEY not configured — email not sent' })
+    const html = tmpl.html_body
+      .replace(/\{\{name\}\}/g,            user.user_metadata?.['full_name'] ?? 'Admin')
+      .replace(/\{\{subject\}\}/g,         subject)
+      .replace(/\{\{blocks_html\}\}/g,     blocksHtml)
+      .replace(/\{\{unsubscribe_url\}\}/g, `${siteUrl}/admin`)
+
+    if (!process.env.MAILGUN_API_KEY) {
+      return res.status(200).json({ ok: true, to: adminEmail, mailgun: false,
+        message: 'MAILGUN_API_KEY not set in Vercel env vars — email not sent' })
+    }
+    if (!process.env.MAILGUN_DOMAIN) {
+      return res.status(200).json({ ok: true, to: adminEmail, mailgun: false,
+        message: 'MAILGUN_DOMAIN not set in Vercel env vars — email not sent' })
+    }
+
+    try {
+      await sendMail({ to: adminEmail, subject, html })
+    } catch (mailErr) {
+      const msg = mailErr instanceof Error ? mailErr.message : String(mailErr)
+      return res.status(500).json({ error: `Mailgun error: ${msg}` })
+    }
+
+    return res.status(200).json({ ok: true, to: adminEmail })
+
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[send-test] unhandled error:', msg)
+    return res.status(500).json({ error: msg })
   }
-
-  await sendMail({ to: adminEmail, subject, html })
-  return res.status(200).json({ ok: true, to: adminEmail })
 }
 
-async function renderBlocks(blocks: Block[]): Promise<string> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function renderBlocks(blocks: Block[], supabase: any): Promise<string> {
   const parts: string[] = []
   for (const b of blocks) {
     switch (b.type) {
       case 'intro':
         parts.push(`
           <h2 style="color:#1a0042;font-size:22px;margin:0 0 12px">${b.title ?? ''}</h2>
-          <p style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
-            ${(b.body ?? '').replace(/\n/g, '<br>')}
-          </p>`)
+          <div style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
+            ${b.body ?? ''}
+          </div>`)
         break
       case 'news': {
         const { data: articles } = await supabase
@@ -117,9 +141,9 @@ async function renderBlocks(blocks: Block[]): Promise<string> {
           <h3 style="color:#1a0042;border-bottom:2px solid #ffd700;padding-bottom:8px;margin:0 0 12px">
             ${b.heading ?? ''}</h3>
           ${b.image_url ? `<img src="${b.image_url}" alt="" style="max-width:100%;border-radius:8px;display:block;margin:0 0 12px">` : ''}
-          <p style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
-            ${(b.text ?? '').replace(/\n/g, '<br>')}
-          </p>`)
+          <div style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
+            ${b.text ?? ''}
+          </div>`)
         break
       case 'html':
         parts.push(b.content ?? '')
@@ -136,7 +160,7 @@ async function sendMail(opts: { to: string; subject: string; html: string }) {
   const body    = new URLSearchParams({ from, to: opts.to, subject: opts.subject, html: opts.html })
   if (replyTo) body.set('h:Reply-To', replyTo)
   const key = Buffer.from(`api:${process.env.MAILGUN_API_KEY}`).toString('base64')
-  const r      = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
+  const r   = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
     method:  'POST',
     headers: { Authorization: `Basic ${key}`, 'Content-Type': 'application/x-www-form-urlencoded' },
     body:    body.toString(),

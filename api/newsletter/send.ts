@@ -95,9 +95,9 @@ async function renderBlocks(blocks: Block[]): Promise<string> {
       case 'intro':
         parts.push(`
           <h2 style="color:#1a0042;font-size:22px;margin:0 0 12px">${b.title ?? ''}</h2>
-          <p style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
-            ${(b.body ?? '').replace(/\n/g, '<br>')}
-          </p>`)
+          <div style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
+            ${b.body ?? ''}
+          </div>`)
         break
 
       case 'news': {
@@ -151,9 +151,9 @@ async function renderBlocks(blocks: Block[]): Promise<string> {
           <h3 style="color:#1a0042;border-bottom:2px solid #ffd700;padding-bottom:8px;margin:0 0 12px">
             ${b.heading ?? ''}</h3>
           ${b.image_url ? `<img src="${b.image_url}" alt="" style="max-width:100%;border-radius:8px;display:block;margin:0 0 12px">` : ''}
-          <p style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
-            ${(b.text ?? '').replace(/\n/g, '<br>')}
-          </p>`)
+          <div style="color:#444;line-height:1.75;font-size:15px;margin:0 0 28px">
+            ${b.text ?? ''}
+          </div>`)
         break
 
       case 'html':

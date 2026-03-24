@@ -7,10 +7,13 @@ import { createClient } from '@supabase/supabase-js'
 import type { User } from '@supabase/supabase-js'
 
 function adminClient() {
-  return createClient(
-    process.env.VITE_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  )
+  // JWT verification only needs a valid project key — use the anon key so this
+  // works even before SUPABASE_SERVICE_ROLE_KEY is configured in Vercel.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+           ?? process.env.VITE_SUPABASE_KEY
+           ?? process.env.VITE_SUPABASE_ANON_KEY
+           ?? ''
+  return createClient(process.env.VITE_SUPABASE_URL!, key)
 }
 
 /** Returns the authenticated User or null (and sends 401 automatically). */
