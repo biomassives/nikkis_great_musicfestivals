@@ -130,10 +130,12 @@ async function renderBlocks(blocks: Block[]): Promise<string> {
 }
 
 async function sendMail(opts: { to: string; subject: string; html: string }) {
-  const domain = process.env.MAILGUN_DOMAIN!
-  const from   = process.env.MAILGUN_FROM ?? `Nikki's Great Music Festivals <hello@${domain}>`
-  const body   = new URLSearchParams({ from, to: opts.to, subject: opts.subject, html: opts.html })
-  const key    = Buffer.from(`api:${process.env.MAILGUN_API_KEY}`).toString('base64')
+  const domain  = process.env.MAILGUN_DOMAIN!
+  const from    = process.env.MAILGUN_FROM ?? `Nikki's Great Music Festivals <hello@${domain}>`
+  const replyTo = process.env.MAILGUN_REPLY_TO
+  const body    = new URLSearchParams({ from, to: opts.to, subject: opts.subject, html: opts.html })
+  if (replyTo) body.set('h:Reply-To', replyTo)
+  const key = Buffer.from(`api:${process.env.MAILGUN_API_KEY}`).toString('base64')
   const r      = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
     method:  'POST',
     headers: { Authorization: `Basic ${key}`, 'Content-Type': 'application/x-www-form-urlencoded' },
