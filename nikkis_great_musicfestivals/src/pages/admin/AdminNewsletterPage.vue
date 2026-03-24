@@ -180,7 +180,7 @@
                   <q-btn color="teal-6" unelevated icon="save" label="Save Draft"
                     :loading="saving" @click="saveNewsletter" class="full-width" />
                   <q-btn color="indigo-5" unelevated icon="science" label="Test to myself"
-                    :loading="sendingTest" :disable="!nlForm.title || !nlForm.subject"
+                    :loading="sendingTest" :disable="!nlForm.title"
                     @click="sendTestEmail" class="full-width" />
                   <q-btn color="deep-orange-7" unelevated icon="send" label="Send Now"
                     :loading="sending" :disable="!nlForm.title || !nlForm.subject"
@@ -807,31 +807,50 @@ async function callSendTest(nlId: string) {
   sendingTest.value = true
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    const r    = await fetch('/api/newsletter/send-test', {
+    if (!session) {
+      $q.notify({ message: 'Not logged in — please refresh and sign in again', color: 'red', position: 'top' })
+      sendingTest.value = false
+      return
+    }
+    const r = await fetch('/api/newsletter/send-test', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token ?? ''}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
       body:    JSON.stringify({ newsletter_id: nlId }),
     })
-    const data = await r.json() as { ok?: boolean; to?: string; mailgun?: boolean; message?: string; error?: string }
+    let data: { ok?: boolean; to?: string; mailgun?: boolean; message?: string; error?: string } = {}
+    try {
+      data = await r.json() as typeof data
+    } catch {
+      console.error('[send-test] non-JSON response', r.status, r.statusText)
+      $q.notify({ message: `Server error (HTTP ${r.status}) — check Vercel logs`, color: 'red', position: 'top' })
+      sendingTest.value = false
+      return
+    }
+    console.log('[send-test] response', r.status, data)
     if (data.ok) {
       if (data.mailgun === false) {
-        $q.notify({ message: data.message ?? 'Mailgun not configured', color: 'orange', position: 'top', icon: 'warning' })
+        $q.notify({ message: data.message ?? 'MAILGUN_API_KEY not set in Vercel env vars', color: 'orange', position: 'top', icon: 'warning' })
       } else {
-        $q.notify({ message: `Test sent to ${data.to}`, color: 'indigo-5', position: 'top', icon: 'science' })
+        $q.notify({ message: `Test email sent to ${data.to} ✓`, color: 'indigo-5', position: 'top', icon: 'science' })
       }
     } else {
       $q.notify({ message: data.error ?? 'Test send failed', color: 'red', position: 'top' })
     }
-  } catch {
-    $q.notify({ message: 'Connection error', color: 'red', position: 'top' })
+  } catch (e) {
+    console.error('[send-test] fetch error', e)
+    $q.notify({ message: 'Network error — are you on the deployed site?', color: 'red', position: 'top' })
   }
   sendingTest.value = false
 }
 
 async function sendTestEmail() {
-  // Save first if we have unsaved changes
-  if (!editingNlId.value) await saveNewsletter()
-  if (!editingNlId.value) return
+  if (!editingNlId.value) {
+    await saveNewsletter()
+    if (!editingNlId.value) {
+      $q.notify({ message: 'Add a title first, then try again', color: 'orange', position: 'top' })
+      return
+    }
+  }
   await callSendTest(editingNlId.value)
 }
 
