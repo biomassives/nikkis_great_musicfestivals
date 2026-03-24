@@ -89,6 +89,8 @@
               <q-card-actions align="right">
                 <q-btn flat dense icon="delete" color="red-4" size="sm"
                   @click.stop="deleteNewsletter(nl)" />
+                <q-btn flat dense icon="science" color="indigo-3" size="sm"
+                  title="Send test to myself" @click.stop="sendTestEmailFromList(nl)" />
                 <q-btn v-if="nl.status !== 'sent'" flat dense icon="send" color="teal-4"
                   label="Send" size="sm" @click.stop="openSendDialog(nl)" />
               </q-card-actions>
@@ -177,6 +179,9 @@
                 <div class="q-gutter-sm column">
                   <q-btn color="teal-6" unelevated icon="save" label="Save Draft"
                     :loading="saving" @click="saveNewsletter" class="full-width" />
+                  <q-btn color="indigo-5" unelevated icon="science" label="Test to myself"
+                    :loading="sendingTest" :disable="!nlForm.title || !nlForm.subject"
+                    @click="sendTestEmail" class="full-width" />
                   <q-btn color="deep-orange-7" unelevated icon="send" label="Send Now"
                     :loading="sending" :disable="!nlForm.title || !nlForm.subject"
                     @click="openSendDialog(null)" class="full-width" />
@@ -497,6 +502,7 @@ const nlView       = ref<'list' | 'edit'>('list')
 const loading      = ref(true)
 const saving       = ref(false)
 const sending      = ref(false)
+const sendingTest  = ref(false)
 const setupNeeded  = ref(false)
 
 const newsletters    = ref<NLetter[]>([])
@@ -795,6 +801,42 @@ async function doSendNewsletter() {
     $q.notify({ message: 'Connection error', color: 'red', position: 'top' })
   }
   sending.value = false
+}
+
+async function callSendTest(nlId: string) {
+  sendingTest.value = true
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const r    = await fetch('/api/newsletter/send-test', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token ?? ''}` },
+      body:    JSON.stringify({ newsletter_id: nlId }),
+    })
+    const data = await r.json() as { ok?: boolean; to?: string; mailgun?: boolean; message?: string; error?: string }
+    if (data.ok) {
+      if (data.mailgun === false) {
+        $q.notify({ message: data.message ?? 'Mailgun not configured', color: 'orange', position: 'top', icon: 'warning' })
+      } else {
+        $q.notify({ message: `Test sent to ${data.to}`, color: 'indigo-5', position: 'top', icon: 'science' })
+      }
+    } else {
+      $q.notify({ message: data.error ?? 'Test send failed', color: 'red', position: 'top' })
+    }
+  } catch {
+    $q.notify({ message: 'Connection error', color: 'red', position: 'top' })
+  }
+  sendingTest.value = false
+}
+
+async function sendTestEmail() {
+  // Save first if we have unsaved changes
+  if (!editingNlId.value) await saveNewsletter()
+  if (!editingNlId.value) return
+  await callSendTest(editingNlId.value)
+}
+
+async function sendTestEmailFromList(nl: NLetter) {
+  await callSendTest(nl.id)
 }
 
 // ── Subscriber actions ─────────────────────────────────────────────────────
