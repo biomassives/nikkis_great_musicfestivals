@@ -21,7 +21,7 @@
         <q-btn flat dense :to="'/admin/maps'"       icon="explore"           label="Maps"       class="nav-btn" />
         <q-btn flat dense :to="'/admin/gallery'"    icon="photo_library"     label="Gallery"    class="nav-btn" />
         <q-btn flat dense :to="'/admin/newsletter'" icon="mark_email_unread" label="Newsletter" class="nav-btn" />
-        <q-btn flat dense :to="'/admin/news'"       icon="newspaper"         label="News"       class="nav-btn" />
+        <q-btn flat dense :to="'/admin/blog'"       icon="newspaper"         label="Blog"       class="nav-btn" />
         <q-btn flat dense :to="'/admin/merch'"      icon="style"             label="Merch"      class="nav-btn" />
       </div>
 

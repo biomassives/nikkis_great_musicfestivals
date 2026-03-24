@@ -1,12 +1,12 @@
 <template>
   <q-page class="news-page relative overflow-hidden">
-    <PageBackground variant="news" />
+    <PageBackground variant="blog" />
 
     <div class="page-content q-pa-lg">
 
       <div class="text-center q-py-xl">
         <div class="section-label q-mb-xs">What's Happening</div>
-        <div class="text-h3 text-bold q-mb-sm">News &amp; Tour Updates</div>
+        <div class="text-h3 text-bold q-mb-sm">Blog &amp; Tour Updates</div>
         <div class="text-body1 text-grey-6">Recent adventures and what's coming up on the road</div>
       </div>
 

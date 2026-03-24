@@ -121,7 +121,7 @@ const DEFAULT_ITEMS: NavItem[] = [
   { title: 'Maps',        icon: 'explore',      link: '/maps',        color: '#00e676', children: [] },
   { title: 'Support',     icon: 'favorite',     link: '/support',     color: '#ff4081', children: [] },
   { title: 'Merch',       icon: 'style',        link: '/merch',       color: '#ce93d8', children: [] },
-  { title: 'News',        icon: 'forum',        link: '/news',        color: '#00b0ff', children: [] },
+  { title: 'Blog',        icon: 'forum',        link: '/blog',        color: '#00b0ff', children: [] },
 ]
 
 const items = ref<NavItem[]>(DEFAULT_ITEMS.map(i => ({ ...i, children: [] })))

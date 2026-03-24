@@ -697,7 +697,7 @@ const filteredSubscribers = computed(() => {
 // ── Block types ────────────────────────────────────────────────────────────
 const BLOCK_TYPES = [
   { type: 'intro' as BlockType,    icon: 'subject',     color: 'teal-4',   label: 'Intro',     desc: 'Opening heading + body text' },
-  { type: 'news' as BlockType,     icon: 'newspaper',   color: 'blue-4',   label: 'News',      desc: 'Auto-pulls recent articles' },
+  { type: 'news' as BlockType,     icon: 'newspaper',   color: 'blue-4',   label: 'Blog',      desc: 'Auto-pulls recent blog posts' },
   { type: 'shows' as BlockType,    icon: 'event',       color: 'purple-4', label: 'Shows',     desc: 'Auto-fetches upcoming shows' },
   { type: 'spotlight' as BlockType, icon: 'star',       color: 'amber-4',  label: 'Spotlight', desc: 'Feature with heading + image' },
   { type: 'html' as BlockType,     icon: 'code',        color: 'grey-4',   label: 'HTML',      desc: 'Raw HTML block' },
@@ -710,7 +710,7 @@ function blockLabel(t: BlockType) { return BLOCK_TYPES.find(b => b.type === t)?.
 function addBlock(type: BlockType) {
   const defaults: Record<BlockType, Block> = {
     intro:     { type, title: '', body: '' },
-    news:      { type, heading: 'Latest News', count: 3 },
+    news:      { type, heading: 'Latest Blog Posts', count: 3 },
     shows:     { type, heading: 'Upcoming Shows' },
     spotlight: { type, heading: '', text: '', image_url: '' },
     html:      { type, content: '' },

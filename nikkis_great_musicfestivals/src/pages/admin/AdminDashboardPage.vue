@@ -116,7 +116,7 @@ const stats = [
   { label: 'Photos',      icon: 'photo_library', color: 'amber-4',       route: '/admin/gallery',    get value() { return counts.value.photos } },
   { label: 'Regions',     icon: 'map',           color: 'light-blue-4',  route: '/admin/maps',       get value() { return counts.value.regions } },
   { label: 'Shows',       icon: 'event',         color: 'deep-purple-3', route: '/admin/maps',       get value() { return counts.value.shows } },
-  { label: 'News',        icon: 'newspaper',     color: 'green-4',       route: '/admin/news',       get value() { return counts.value.news } },
+  { label: 'Blog',        icon: 'newspaper',     color: 'green-4',       route: '/admin/blog',       get value() { return counts.value.news } },
   { label: 'Merch',       icon: 'style',         color: 'pink-4',        route: '/admin/merch',      get value() { return counts.value.merch } },
 ]
 
@@ -124,7 +124,7 @@ const contentSections = [
   { title: 'Festival Maps',    icon: 'explore',           color: 'teal-4',        route: '/admin/maps',       desc: 'Add shows, senior facilities, and nature spots' },
   { title: 'Photo Gallery',    icon: 'photo_library',     color: 'amber-4',       route: '/admin/gallery',    desc: 'Upload and organise photos by category' },
   { title: 'Newsletter',       icon: 'mark_email_unread', color: 'light-blue-4',  route: '/admin/newsletter', desc: 'Compose newsletters and view subscribers' },
-  { title: 'News & Updates',   icon: 'newspaper',         color: 'green-4',       route: '/admin/news',       desc: 'Write tour stories and event recaps' },
+  { title: 'Blog & Updates',   icon: 'newspaper',         color: 'green-4',       route: '/admin/blog',       desc: 'Write tour stories and event recaps' },
   { title: 'Merch & Goods',    icon: 'style',             color: 'pink-4',        route: '/admin/merch',      desc: 'Manage art, photo prints, and other items' },
 ]
 

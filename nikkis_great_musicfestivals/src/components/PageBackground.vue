@@ -83,8 +83,8 @@
       <rect width="100%" height="100%" fill="url(#pgPatSupport)" :opacity="opacity" />
     </svg>
 
-    <!-- NEWS: Diagonal ink-fold grid -->
-    <svg v-else-if="variant === 'news'" class="absolute-full" width="100%" height="100%">
+    <!-- BLOG: Diagonal ink-fold grid -->
+    <svg v-else-if="variant === 'blog'" class="absolute-full" width="100%" height="100%">
       <defs>
         <linearGradient id="pgGradNews" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%"   stop-color="#00bcd4" />

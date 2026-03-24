@@ -186,7 +186,7 @@ const navLinks = [
   { to: '/photography', icon: 'camera',       label: 'Gallery' },
   { to: '/maps',        icon: 'explore',      label: 'Maps'    },
   { to: '/support',     icon: 'stadium',      label: 'Support' },
-  { to: '/news',        icon: 'forum',        label: 'News'    },
+  { to: '/blog',        icon: 'forum',        label: 'Blog'    },
 ]
 </script>
 

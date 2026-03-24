@@ -138,7 +138,7 @@
         <div class="site-footer-links">
           <router-link to="/support" class="site-footer-link">Support the Mission</router-link>
           <span class="site-footer-sep">·</span>
-          <router-link to="/news" class="site-footer-link">News</router-link>
+          <router-link to="/blog" class="site-footer-link">Blog</router-link>
           <span class="site-footer-sep">·</span>
           <router-link to="/admin" class="site-footer-link site-footer-link--admin">Admin</router-link>
         </div>
@@ -170,7 +170,7 @@ const navLinks = ref<NavItem[]>([
   { title: 'Maps',        icon: 'explore',      link: '/maps',        color: '#00e676', children: [] },
   { title: 'Support',     icon: 'favorite',     link: '/support',     color: '#ff4081', children: [] },
   { title: 'Merch',       icon: 'style',        link: '/merch',       color: '#ce93d8', children: [] },
-  { title: 'News',        icon: 'forum',        link: '/news',        color: '#00b0ff', children: [] },
+  { title: 'Blog',        icon: 'forum',        link: '/blog',        color: '#00b0ff', children: [] },
 ])
 
 onMounted(async () => {

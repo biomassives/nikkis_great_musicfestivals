@@ -569,7 +569,7 @@ function flash(key: keyof typeof saved) {
 const bgVariantOptions = [
   { label: 'Home — Mardi-Gras spiral',    value: 'home'        },
   { label: 'Support — Soundwave rings',   value: 'support'     },
-  { label: 'News — Diagonal ink grid',    value: 'news'        },
+  { label: 'Blog — Diagonal ink grid',    value: 'blog'        },
   { label: 'Photography — Lens aperture', value: 'photography' },
   { label: 'Maps — Topographic contours', value: 'maps'        },
   { label: 'Merch — Diamond lattice',     value: 'merch'       },

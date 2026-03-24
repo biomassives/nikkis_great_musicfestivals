@@ -250,7 +250,7 @@ const artists = ref<Artist[]>(ARTISTS.filter(a => a.featured))
 
 // ── Background / SEO ─────────────────────────────────────────────────────────
 const bgImageUrl     = ref<string | null>(null)
-const bgVariant      = ref<'home'|'support'|'news'|'photography'|'maps'|'merch'>('home')
+const bgVariant      = ref<'home'|'support'|'blog'|'photography'|'maps'|'merch'>('home')
 const bgOpacity      = ref(0.09)
 const bgSpiroColors  = ref<string[]>(['#f5a623', '#b39ddb', '#5ba3c9', '#e8956c'])
 const bgSkyTint      = ref('#c8dff0')

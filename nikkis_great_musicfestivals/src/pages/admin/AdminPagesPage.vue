@@ -288,7 +288,7 @@ const DEFAULT_NAV = [
   { title: 'Maps',        link: '/maps'         },
   { title: 'Support',     link: '/support'      },
   { title: 'Merch',       link: '/merch'        },
-  { title: 'News',        link: '/news'         },
+  { title: 'Blog',        link: '/blog'         },
 ]
 const navParentOptions = ref<{ label: string; value: string }[]>(
   DEFAULT_NAV.map(i => ({ label: `${i.title} (${i.link})`, value: i.link }))

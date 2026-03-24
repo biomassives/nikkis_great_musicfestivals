@@ -2,11 +2,11 @@
   <q-page class="q-pa-lg">
     <div class="row items-center q-mb-lg">
       <div>
-        <div class="text-h5 text-teal-3 q-mb-xs">News Articles</div>
+        <div class="text-h5 text-teal-3 q-mb-xs">Blog Articles</div>
         <div class="text-caption text-grey-5">Write and manage tour stories, event recaps, and updates</div>
       </div>
       <q-space />
-      <q-btn color="teal" icon="add" label="New Article" unelevated @click="resetForm" />
+      <q-btn color="teal" icon="add" label="New Post" unelevated @click="resetForm" />
     </div>
 
     <div class="row q-col-gutter-xl">
