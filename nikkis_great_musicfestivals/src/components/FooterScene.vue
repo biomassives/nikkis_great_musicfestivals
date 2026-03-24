@@ -326,31 +326,32 @@
         <rect x="1037" y="235" width="12" height="6" rx="3"   fill="#1e2a30"/>
       </g>
 
-      <!-- DOG — lying beside fire, right side · warm tan + brown markings -->
-      <g>
-        <!-- curled tail arching up behind body -->
-        <path d="M1072,233 C1063,228 1060,219 1065,213 C1070,208 1077,213 1073,221"
-              fill="none" stroke="#D4A574" stroke-width="6" stroke-linecap="round"/>
-        <!-- body -->
-        <rect x="1070" y="228" width="30" height="12" rx="6" fill="#D4A574"/>
-        <!-- saddle marking -->
-        <ellipse cx="1079" cy="233" rx="7" ry="4.5" fill="#8B5E3C" opacity="0.52"/>
-        <!-- neck + head -->
-        <rect x="1093" y="222" width="12" height="11" rx="4" fill="#D4A574"/>
-        <circle cx="1100" cy="222" r="10.5" fill="#D4A574"/>
-        <!-- floppy ear -->
-        <ellipse cx="1093" cy="215" rx="4.5" ry="7" fill="#8B5E3C" transform="rotate(-18,1093,215)"/>
-        <!-- snout -->
-        <ellipse cx="1107" cy="225" rx="7.5" ry="5" fill="#c49060"/>
-        <!-- nose -->
-        <ellipse cx="1112" cy="223" rx="3.5" ry="2.5" fill="#1a0800"/>
-        <circle  cx="1111" cy="222" r="1"              fill="white" opacity="0.38"/>
-        <!-- eye + glint -->
-        <circle cx="1098" cy="218" r="2.2" fill="#1a0800"/>
-        <circle cx="1098.7" cy="217" r="0.7" fill="white" opacity="0.6"/>
-        <!-- front paws -->
-        <rect x="1073" y="237" width="11" height="5" rx="3" fill="#c49060"/>
-        <rect x="1088" y="238" width="11" height="5" rx="3" fill="#c49060"/>
+      <!-- DOG — facing campfire · hover for woof -->
+      <g class="dog-group">
+        <!-- dog artwork flipped to face left (toward campfire) -->
+        <g transform="translate(2175,0) scale(-1,1)">
+          <path d="M1072,233 C1063,228 1060,219 1065,213 C1070,208 1077,213 1073,221"
+                fill="none" stroke="#D4A574" stroke-width="6" stroke-linecap="round"/>
+          <rect x="1070" y="228" width="30" height="12" rx="6" fill="#D4A574"/>
+          <ellipse cx="1079" cy="233" rx="7" ry="4.5" fill="#8B5E3C" opacity="0.52"/>
+          <rect x="1093" y="222" width="12" height="11" rx="4" fill="#D4A574"/>
+          <circle cx="1100" cy="222" r="10.5" fill="#D4A574"/>
+          <ellipse cx="1093" cy="215" rx="4.5" ry="7" fill="#8B5E3C" transform="rotate(-18,1093,215)"/>
+          <ellipse cx="1107" cy="225" rx="7.5" ry="5" fill="#c49060"/>
+          <ellipse cx="1112" cy="223" rx="3.5" ry="2.5" fill="#1a0800"/>
+          <circle  cx="1111" cy="222" r="1"              fill="white" opacity="0.38"/>
+          <circle cx="1098" cy="218" r="2.2" fill="#1a0800"/>
+          <circle cx="1098.7" cy="217" r="0.7" fill="white" opacity="0.6"/>
+          <rect x="1073" y="237" width="11" height="5" rx="3" fill="#c49060"/>
+          <rect x="1088" y="238" width="11" height="5" rx="3" fill="#c49060"/>
+        </g>
+        <!-- woof bubble — appears on hover -->
+        <g class="woof-bubble">
+          <rect x="1040" y="168" width="58" height="26" rx="9" fill="white" stroke="#8B5E3C" stroke-width="1.5"/>
+          <polygon points="1062,194 1072,212 1082,194" fill="white"/>
+          <polygon points="1062,194 1072,212 1082,194" fill="none" stroke="#8B5E3C" stroke-width="1.5" stroke-linejoin="round"/>
+          <text x="1069" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#4a2808" font-family="sans-serif">Woof!</text>
+        </g>
       </g>
 
       <!-- Smoke wisps -->
@@ -715,22 +716,32 @@
         <rect x="1037" y="235" width="12" height="6" rx="3"   fill="#0e1a20"/>
       </g>
 
-      <!-- DOG — night: same shapes, darker warm tones under firelight -->
-      <g>
-        <path d="M1072,233 C1063,228 1060,219 1065,213 C1070,208 1077,213 1073,221"
-              fill="none" stroke="#b8875a" stroke-width="6" stroke-linecap="round"/>
-        <rect x="1070" y="228" width="30" height="12" rx="6" fill="#b8875a"/>
-        <ellipse cx="1079" cy="233" rx="7" ry="4.5" fill="#6e4020" opacity="0.55"/>
-        <rect x="1093" y="222" width="12" height="11" rx="4" fill="#b8875a"/>
-        <circle cx="1100" cy="222" r="10.5" fill="#b8875a"/>
-        <ellipse cx="1093" cy="215" rx="4.5" ry="7" fill="#6e4020" transform="rotate(-18,1093,215)"/>
-        <ellipse cx="1107" cy="225" rx="7.5" ry="5" fill="#9a6840"/>
-        <ellipse cx="1112" cy="223" rx="3.5" ry="2.5" fill="#0e0400"/>
-        <circle  cx="1111" cy="222" r="1"              fill="white" opacity="0.3"/>
-        <circle cx="1098" cy="218" r="2.2" fill="#0e0400"/>
-        <circle cx="1098.7" cy="217" r="0.7" fill="white" opacity="0.5"/>
-        <rect x="1073" y="237" width="11" height="5" rx="3" fill="#9a6840"/>
-        <rect x="1088" y="238" width="11" height="5" rx="3" fill="#9a6840"/>
+      <!-- DOG — night: facing campfire · hover for woof -->
+      <g class="dog-group">
+        <!-- dog artwork flipped to face left (toward campfire) -->
+        <g transform="translate(2175,0) scale(-1,1)">
+          <path d="M1072,233 C1063,228 1060,219 1065,213 C1070,208 1077,213 1073,221"
+                fill="none" stroke="#b8875a" stroke-width="6" stroke-linecap="round"/>
+          <rect x="1070" y="228" width="30" height="12" rx="6" fill="#b8875a"/>
+          <ellipse cx="1079" cy="233" rx="7" ry="4.5" fill="#6e4020" opacity="0.55"/>
+          <rect x="1093" y="222" width="12" height="11" rx="4" fill="#b8875a"/>
+          <circle cx="1100" cy="222" r="10.5" fill="#b8875a"/>
+          <ellipse cx="1093" cy="215" rx="4.5" ry="7" fill="#6e4020" transform="rotate(-18,1093,215)"/>
+          <ellipse cx="1107" cy="225" rx="7.5" ry="5" fill="#9a6840"/>
+          <ellipse cx="1112" cy="223" rx="3.5" ry="2.5" fill="#0e0400"/>
+          <circle  cx="1111" cy="222" r="1"              fill="white" opacity="0.3"/>
+          <circle cx="1098" cy="218" r="2.2" fill="#0e0400"/>
+          <circle cx="1098.7" cy="217" r="0.7" fill="white" opacity="0.5"/>
+          <rect x="1073" y="237" width="11" height="5" rx="3" fill="#9a6840"/>
+          <rect x="1088" y="238" width="11" height="5" rx="3" fill="#9a6840"/>
+        </g>
+        <!-- woof bubble — appears on hover -->
+        <g class="woof-bubble">
+          <rect x="1040" y="168" width="58" height="26" rx="9" fill="white" stroke="#6e4020" stroke-width="1.5"/>
+          <polygon points="1062,194 1072,212 1082,194" fill="white"/>
+          <polygon points="1062,194 1072,212 1082,194" fill="none" stroke="#6e4020" stroke-width="1.5" stroke-linejoin="round"/>
+          <text x="1069" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#4a2808" font-family="sans-serif">Woof!</text>
+        </g>
       </g>
 
       <!-- Smoke wisps -->
@@ -815,5 +826,16 @@ onMounted(async () => {
   10%  {                                opacity: 0.78; }
   75%  { transform: translateY(-60px);  opacity: 0.28; }
   100% { transform: translateY(-88px);  opacity: 0;    }
+}
+
+.dog-group {
+  cursor: pointer;
+}
+.woof-bubble {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.dog-group:hover .woof-bubble {
+  opacity: 1;
 }
 </style>

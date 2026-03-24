@@ -253,8 +253,8 @@ const bgImageUrl     = ref<string | null>(null)
 const bgVariant      = ref<'home'|'support'|'blog'|'photography'|'maps'|'merch'>('home')
 const bgOpacity      = ref(0.09)
 const bgSpiroColors  = ref<string[]>(['#f5a623', '#b39ddb', '#5ba3c9', '#e8956c'])
-const bgSkyTint      = ref('#c8dff0')
-const bgCloudsOpacity = ref(0.55)
+const bgSkyTint      = ref('#04001a')
+const bgCloudsOpacity = ref(0.92)
 
 const seo = reactive({
   og_title: "Nikki's Great Music Festivals — Tour Maps, Live Music & Community",
@@ -601,12 +601,12 @@ onMounted(() => { void loadSettings() })
 }
 .artist-card {
   border-radius: 16px; overflow: hidden;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(124,77,255,0.10);
+  border: 1px solid rgba(124,77,255,0.22);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s;
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.25);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 20px rgba(124,77,255,0.15);
     border-color: var(--ac, rgba(124,77,255,0.6));
   }
 }
@@ -627,14 +627,14 @@ onMounted(() => { void loadSettings() })
 .artist-badge { align-self: flex-start; }
 .artist-name {
   font-size: 1.2rem; font-weight: 900; letter-spacing: -0.2px;
-  margin-bottom: 4px;
+  margin-bottom: 4px; color: #fff;
 }
 .artist-subtitle {
   font-size: 11px; font-weight: 600; letter-spacing: 1px;
-  text-transform: uppercase; opacity: 0.5; margin-bottom: 12px;
+  text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 12px;
 }
 .artist-bio {
-  font-size: 0.88rem; line-height: 1.65; opacity: 0.75; margin: 0;
+  font-size: 0.88rem; line-height: 1.65; color: rgba(255,255,255,0.78); margin: 0;
 }
 .artist-songs { flex-wrap: wrap; }
 
@@ -682,17 +682,26 @@ onMounted(() => { void loadSettings() })
 .home-gate-leave-active { transition: opacity 0.6s ease 0.35s; }
 .home-gate-leave-to     { opacity: 0; }
 
+body.body--dark {
+  /* Artist song chips: brighten the inline color in dark mode */
+  .artist-songs .q-chip {
+    filter: brightness(1.7) saturate(1.2);
+  }
+}
+
 body.body--light {
   .stats-section {
     background: linear-gradient(105deg, #1a0042 0%, #2d006e 55%, #0d1a3a 100%);
   }
   .artist-card {
-    background: rgba(255,255,255,0.75) !important;
+    background: rgba(255,255,255,0.82) !important;
     border-color: rgba(0,0,0,0.08) !important;
     &:hover { border-color: var(--ac, rgba(124,77,255,0.6)) !important; }
   }
-  .artist-bio, .artist-subtitle { color: rgba(26,10,46,0.75) !important; opacity: 1 !important; }
-  .artist-name { color: #1a0a2e !important; }
+  .artist-bio   { color: rgba(26,10,46,0.75) !important; }
+  .artist-subtitle { color: rgba(26,10,46,0.6) !important; }
+  .artist-name  { color: #1a0a2e !important; }
+  .artist-songs .q-chip { filter: none !important; }
   .subscribe-inner {
     background: linear-gradient(135deg, rgba(75,0,130,0.07), rgba(255,215,0,0.09), rgba(0,143,57,0.06)) !important;
   }

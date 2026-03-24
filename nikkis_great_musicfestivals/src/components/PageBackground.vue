@@ -13,10 +13,10 @@
     <svg v-if="variant === 'home'" class="absolute-full" width="100%" height="100%"
       viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <!-- Sky atmosphere gradient — fades from tint at top to transparent -->
+        <!-- Sky atmosphere gradient — deep at top, fades to transparent -->
         <linearGradient id="pgHomeSky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   :stop-color="skyTint" stop-opacity="0.58" />
-          <stop offset="65%"  :stop-color="skyTint" stop-opacity="0.12" />
+          <stop offset="0%"   :stop-color="skyTint" stop-opacity="0.97" />
+          <stop offset="55%"  :stop-color="skyTint" stop-opacity="0.55" />
           <stop offset="100%" :stop-color="skyTint" stop-opacity="0" />
         </linearGradient>
         <!-- Spirograph symbol — 4 layered traces with custom sky-harmonious colors -->
@@ -31,28 +31,63 @@
       <!-- ① Sky atmosphere wash -->
       <rect width="500" height="400" fill="url(#pgHomeSky)" />
 
-      <!-- ② Soft cloud layers — overlapping ellipses grouped into 3 clouds -->
-      <g :opacity="cloudsOpacity">
-        <!-- Cloud A — large, left-of-center -->
+      <!-- ② Star field — replaces clouds, scattered across upper sky -->
+      <g :opacity="cloudsOpacity" class="star-field">
+        <!-- tiny stars -->
         <g fill="white">
-          <ellipse cx="115" cy="72" rx="82" ry="17" />
-          <ellipse cx="78"  cy="56" rx="34" ry="27" />
-          <ellipse cx="115" cy="52" rx="31" ry="26" />
-          <ellipse cx="152" cy="58" rx="33" ry="23" />
+          <circle cx="12"  cy="8"   r="0.5" class="st t1"/><circle cx="45"  cy="15"  r="0.5" class="st t2"/>
+          <circle cx="78"  cy="5"   r="0.5" class="st t3"/><circle cx="112" cy="12"  r="0.5" class="st t1"/>
+          <circle cx="142" cy="4"   r="0.5" class="st t2"/><circle cx="178" cy="18"  r="0.5" class="st t3"/>
+          <circle cx="215" cy="7"   r="0.5" class="st t1"/><circle cx="248" cy="14"  r="0.5" class="st t2"/>
+          <circle cx="285" cy="3"   r="0.5" class="st t3"/><circle cx="318" cy="11"  r="0.5" class="st t1"/>
+          <circle cx="356" cy="8"   r="0.5" class="st t2"/><circle cx="392" cy="16"  r="0.5" class="st t3"/>
+          <circle cx="425" cy="5"   r="0.5" class="st t1"/><circle cx="462" cy="13"  r="0.5" class="st t2"/>
+          <circle cx="492" cy="9"   r="0.5" class="st t3"/>
+          <circle cx="22"  cy="35"  r="0.5" class="st t2"/><circle cx="58"  cy="28"  r="0.5" class="st t3"/>
+          <circle cx="95"  cy="40"  r="0.5" class="st t1"/><circle cx="132" cy="25"  r="0.5" class="st t2"/>
+          <circle cx="165" cy="38"  r="0.5" class="st t3"/><circle cx="205" cy="30"  r="0.5" class="st t1"/>
+          <circle cx="242" cy="45"  r="0.5" class="st t2"/><circle cx="278" cy="22"  r="0.5" class="st t3"/>
+          <circle cx="315" cy="35"  r="0.5" class="st t1"/><circle cx="352" cy="28"  r="0.5" class="st t2"/>
+          <circle cx="388" cy="42"  r="0.5" class="st t3"/><circle cx="428" cy="33"  r="0.5" class="st t1"/>
+          <circle cx="465" cy="19"  r="0.5" class="st t2"/>
+          <circle cx="8"   cy="62"  r="0.5" class="st t3"/><circle cx="42"  cy="55"  r="0.5" class="st t1"/>
+          <circle cx="82"  cy="70"  r="0.5" class="st t2"/><circle cx="118" cy="48"  r="0.5" class="st t3"/>
+          <circle cx="155" cy="65"  r="0.5" class="st t1"/><circle cx="195" cy="55"  r="0.5" class="st t2"/>
+          <circle cx="232" cy="72"  r="0.5" class="st t3"/><circle cx="268" cy="58"  r="0.5" class="st t1"/>
+          <circle cx="305" cy="68"  r="0.5" class="st t2"/><circle cx="342" cy="52"  r="0.5" class="st t3"/>
+          <circle cx="378" cy="65"  r="0.5" class="st t1"/><circle cx="415" cy="50"  r="0.5" class="st t2"/>
+          <circle cx="452" cy="72"  r="0.5" class="st t3"/><circle cx="485" cy="60"  r="0.5" class="st t1"/>
+          <circle cx="30"  cy="92"  r="0.5" class="st t2"/><circle cx="68"  cy="82"  r="0.5" class="st t3"/>
+          <circle cx="105" cy="95"  r="0.5" class="st t1"/><circle cx="145" cy="78"  r="0.5" class="st t2"/>
+          <circle cx="185" cy="92"  r="0.5" class="st t3"/><circle cx="225" cy="82"  r="0.5" class="st t1"/>
+          <circle cx="262" cy="98"  r="0.5" class="st t2"/><circle cx="300" cy="85"  r="0.5" class="st t3"/>
+          <circle cx="338" cy="92"  r="0.5" class="st t1"/><circle cx="375" cy="78"  r="0.5" class="st t2"/>
+          <circle cx="412" cy="95"  r="0.5" class="st t3"/><circle cx="448" cy="83"  r="0.5" class="st t1"/>
+          <circle cx="478" cy="92"  r="0.5" class="st t2"/>
         </g>
-        <!-- Cloud B — medium, far right -->
+        <!-- medium stars -->
         <g fill="white">
-          <ellipse cx="415" cy="50" rx="68" ry="14" />
-          <ellipse cx="388" cy="38" rx="27" ry="21" />
-          <ellipse cx="415" cy="34" rx="29" ry="22" />
-          <ellipse cx="443" cy="41" rx="31" ry="18" />
+          <circle cx="65"  cy="10"  r="1.0" class="st t2"/><circle cx="185" cy="8"   r="1.0" class="st t1"/>
+          <circle cx="310" cy="6"   r="1.0" class="st t3"/><circle cx="430" cy="12"  r="1.0" class="st t2"/>
+          <circle cx="50"  cy="48"  r="1.0" class="st t1"/><circle cx="170" cy="42"  r="1.0" class="st t3"/>
+          <circle cx="295" cy="52"  r="1.0" class="st t2"/><circle cx="418" cy="44"  r="1.0" class="st t1"/>
+          <circle cx="88"  cy="118" r="1.0" class="st t3"/><circle cx="215" cy="108" r="1.0" class="st t2"/>
+          <circle cx="340" cy="122" r="1.0" class="st t1"/><circle cx="458" cy="112" r="1.0" class="st t3"/>
+          <circle cx="140" cy="72"  r="1.1" class="st t2"/><circle cx="370" cy="85"  r="1.1" class="st t1"/>
         </g>
-        <!-- Cloud C — wispy, upper center -->
+        <!-- bright stars with cross sparkle -->
         <g fill="white">
-          <ellipse cx="268" cy="26" rx="95" ry="10" />
-          <ellipse cx="248" cy="19" rx="23" ry="17" />
-          <ellipse cx="271" cy="16" rx="25" ry="18" />
-          <ellipse cx="300" cy="22" rx="21" ry="14" />
+          <circle cx="250" cy="22"  r="1.8" class="st t1"/>
+          <line x1="250" y1="18"  x2="250" y2="26"  stroke="white" stroke-width="0.5" opacity="0.6" class="st t1"/>
+          <line x1="246" y1="22"  x2="254" y2="22"  stroke="white" stroke-width="0.5" opacity="0.6" class="st t1"/>
+          <circle cx="85"  cy="30"  r="1.6" class="st t3"/>
+          <line x1="85"  y1="26"  x2="85"  y2="34"  stroke="white" stroke-width="0.5" opacity="0.6" class="st t3"/>
+          <line x1="81"  y1="30"  x2="89"  y2="30"  stroke="white" stroke-width="0.5" opacity="0.6" class="st t3"/>
+          <circle cx="420" cy="35"  r="1.6" class="st t2"/>
+          <line x1="420" y1="31"  x2="420" y2="39"  stroke="white" stroke-width="0.5" opacity="0.6" class="st t2"/>
+          <line x1="416" y1="35"  x2="424" y2="35"  stroke="white" stroke-width="0.5" opacity="0.6" class="st t2"/>
+          <circle cx="155" cy="88"  r="1.5" class="st t1"/>
+          <circle cx="370" cy="92"  r="1.5" class="st t3"/>
         </g>
       </g>
 
@@ -208,5 +243,16 @@ const SPIRO_GRID = Array.from({ length: 20 }, (_, i) => ({
 @keyframes pgSpin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
+}
+
+/* Star twinkle */
+.st { animation: starTwinkle 3s ease-in-out infinite alternate; }
+.t1 { animation-delay: 0s;    animation-duration: 2.8s; }
+.t2 { animation-delay: 1.1s;  animation-duration: 3.5s; }
+.t3 { animation-delay: 2.2s;  animation-duration: 4.1s; }
+@keyframes starTwinkle {
+  0%   { opacity: 1;    }
+  50%  { opacity: 0.25; }
+  100% { opacity: 0.85; }
 }
 </style>
