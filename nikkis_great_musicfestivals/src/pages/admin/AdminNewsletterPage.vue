@@ -139,8 +139,17 @@
               </div>
               <q-card-section class="q-pt-xs q-gutter-sm">
                 <template v-if="block.type==='intro'">
-                  <q-input v-model="block.title"   label="Heading"   dark outlined dense label-color="teal-3" color="teal-3" />
-                  <q-input v-model="block.body"    label="Body text" dark outlined dense type="textarea" :rows="4" label-color="teal-3" color="teal-3" />
+                  <q-input v-model="block.title" label="Heading" dark outlined dense label-color="teal-3" color="teal-3" />
+                  <div class="nl-quill">
+                    <QuillEditor
+                      :content="block.body ?? ''"
+                      content-type="html"
+                      theme="snow"
+                      :options="NL_QUILL_OPTIONS"
+                      placeholder="Write your intro text…"
+                      @update:content="(v) => { block.body = String(v) }"
+                    />
+                  </div>
                 </template>
                 <template v-else-if="block.type==='news'">
                   <q-input v-model="block.heading" label="Section heading" dark outlined dense label-color="teal-3" color="teal-3" />
@@ -152,8 +161,17 @@
                   <div class="text-caption text-grey-6">Auto-fetches upcoming show map points</div>
                 </template>
                 <template v-else-if="block.type==='spotlight'">
-                  <q-input v-model="block.heading"   label="Heading"         dark outlined dense label-color="teal-3" color="teal-3" />
-                  <q-input v-model="block.text"      label="Body text"       dark outlined dense type="textarea" :rows="3" label-color="teal-3" color="teal-3" />
+                  <q-input v-model="block.heading" label="Heading" dark outlined dense label-color="teal-3" color="teal-3" />
+                  <div class="nl-quill">
+                    <QuillEditor
+                      :content="block.text ?? ''"
+                      content-type="html"
+                      theme="snow"
+                      :options="NL_QUILL_OPTIONS"
+                      placeholder="Spotlight body text…"
+                      @update:content="(v) => { block.text = String(v) }"
+                    />
+                  </div>
                   <q-input v-model="block.image_url" label="Image URL (opt)" dark outlined dense label-color="teal-3" color="teal-3" />
                 </template>
                 <template v-else-if="block.type==='html'">
@@ -446,6 +464,8 @@ import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import type { GalleryPhoto } from 'src/lib/supabase'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const $q = useQuasar()
 
@@ -706,6 +726,17 @@ const BLOCK_TYPES = [
 function blockIcon(t: BlockType)  { return BLOCK_TYPES.find(b => b.type === t)?.icon  ?? 'widgets' }
 function blockColor(t: BlockType) { return BLOCK_TYPES.find(b => b.type === t)?.color ?? 'grey-5' }
 function blockLabel(t: BlockType) { return BLOCK_TYPES.find(b => b.type === t)?.label ?? t }
+
+const NL_QUILL_OPTIONS = {
+  modules: {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean'],
+    ],
+  },
+}
 
 function addBlock(type: BlockType) {
   const defaults: Record<BlockType, Block> = {
@@ -1054,6 +1085,8 @@ onMounted(async () => {
   border-radius: 12px;
 }
 
+.nl-quill { border-radius: 8px; overflow: hidden; margin-top: 4px; }
+
 .ls-1  { letter-spacing: 1px; }
 .ls-2  { letter-spacing: 2px; }
 
@@ -1135,5 +1168,57 @@ onMounted(async () => {
   position: absolute; top: 2px; right: 2px;
   color: #e91e63; font-size: 15px;
   filter: drop-shadow(0 0 2px #000);
+}
+</style>
+
+<!-- Quill dark-theme overrides (teal accent) — unscoped to reach injected DOM -->
+<style lang="scss">
+.nl-quill {
+  .ql-toolbar.ql-snow {
+    background: #131325;
+    border: none;
+    border-bottom: 1px solid rgba(77,182,172,0.2);
+    border-radius: 8px 8px 0 0;
+
+    .ql-stroke              { stroke: rgba(255,255,255,0.55); }
+    .ql-fill                { fill:   rgba(255,255,255,0.55); }
+    .ql-picker-label        { color:  rgba(255,255,255,0.6);  }
+
+    button:hover .ql-stroke,
+    .ql-active  .ql-stroke  { stroke: #4db6ac; }
+    button:hover .ql-fill,
+    .ql-active  .ql-fill    { fill:   #4db6ac; }
+    .ql-picker-label:hover,
+    .ql-picker-label.ql-active { color: #4db6ac; }
+
+    .ql-picker-options {
+      background: #1a1a2e;
+      border-color: rgba(77,182,172,0.2);
+      .ql-picker-item        { color: rgba(255,255,255,0.7); }
+      .ql-picker-item:hover,
+      .ql-picker-item.ql-selected { color: #4db6ac; }
+    }
+  }
+
+  .ql-container.ql-snow {
+    background: #0d0d22;
+    border: none;
+    border-radius: 0 0 8px 8px;
+    min-height: 120px;
+
+    .ql-editor {
+      color: #e0f2f1;
+      font-size: 14px;
+      line-height: 1.75;
+      min-height: 120px;
+      padding: 14px 16px;
+
+      p          { margin-bottom: 0.7em; }
+      ul, ol     { padding-left: 1.4em; margin-bottom: 0.7em; }
+      a          { color: #4db6ac; }
+
+      &.ql-blank::before { color: rgba(255,255,255,0.35) !important; font-style: italic; }
+    }
+  }
 }
 </style>
