@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Nikki's Great Music Festivals">
+  <title>Nikki's Great Music Festivals</title>
+  <defs>
+    <clipPath id="outerClip">
+      <circle cx="50" cy="50" r="49"/>
+    </clipPath>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#28004a"/>
+      <stop offset="100%" stop-color="#0a0014"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="50" cy="50" r="50" fill="url(#bg)"/>
+
+  <g clip-path="url(#outerClip)">
+
+    <!-- Outer ring: 8 gold petals at 45° intervals -->
+    <g fill="#ffd700" fill-opacity="0.88">
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(45 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(90 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(135 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(225 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(270 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(315 50 50)"/>
+    </g>
+
+    <!-- Middle ring: 8 teal petals, offset 22.5° -->
+    <g fill="#26c6da" fill-opacity="0.82">
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(22.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(67.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(112.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(157.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(202.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(247.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(292.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(337.5 50 50)"/>
+    </g>
+
+    <!-- Inner ring: 8 violet petals at 45° -->
+    <g fill="#a855f7" fill-opacity="0.78">
+      <ellipse cx="50" cy="33" rx="4.5" ry="9"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(45 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(90 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(135 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(225 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(270 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(315 50 50)"/>
+    </g>
+
+    <!-- Hub disc: covers petal bases, creates depth -->
+    <circle cx="50" cy="50" r="20" fill="url(#bg)"/>
+
+    <!-- Inner lotus: 6 gold petals at 60° intervals -->
+    <g fill="#ffd700" fill-opacity="0.95">
+      <ellipse cx="50" cy="38" rx="3.5" ry="7"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(60 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(120 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(240 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(300 50 50)"/>
+    </g>
+
+    <!-- Centre jewel: teal ring → gold disc → dark eye -->
+    <circle cx="50" cy="50" r="11.5" fill="#4db6ac"/>
+    <circle cx="50" cy="50" r="7"    fill="#ffd700"/>
+    <circle cx="50" cy="50" r="3"    fill="#1a0042"/>
+
+  </g>
+
+  <!-- Subtle outer rim -->
+  <circle cx="50" cy="50" r="49" fill="none" stroke="#ffd700" stroke-width="0.8" stroke-opacity="0.25"/>
+</svg>

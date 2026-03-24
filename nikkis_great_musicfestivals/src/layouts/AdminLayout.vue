@@ -4,9 +4,9 @@
 
       <!-- ── Top bar: brand + utilities ──────────────────────── -->
       <q-toolbar class="admin-top-bar">
-        <q-icon name="music_note" size="20px" class="q-mr-xs" />
-        <span class="brand-text gt-xs">NIKKI'S</span>
-        <span class="admin-badge q-ml-sm gt-xs">ADMIN</span>
+        <img src="/icons/mandala.svg" width="26" height="26" class="mandala-icon q-mr-sm" alt=""/>
+        <span class="brand-text">Nikki's Great Music Festivals</span>
+        <span class="admin-badge q-ml-sm">ADMIN</span>
         <q-space />
         <q-btn flat round dense :to="'/admin'" exact icon="dashboard" title="Dashboard" size="sm" class="top-btn" />
         <q-separator vertical inset dark class="q-mx-sm" />
@@ -78,9 +78,18 @@ async function signOut() {
   background: #131325;
   border-bottom: 1px solid rgba(77,182,172,0.12);
 }
+.mandala-icon {
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(77,182,172,0.4));
+}
 .brand-text {
-  font-size: 13px; font-weight: 300; letter-spacing: 2px;
-  color: rgba(255,255,255,0.7);
+  font-size: 12px; font-weight: 400; letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
 }
 .admin-badge {
   background: #4db6ac; color: #1a1a2e;
