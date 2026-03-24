@@ -649,9 +649,10 @@ async function deleteCutenessEntry() {
 async function sendCutenessNow(date: string) {
   sendingCuteness.value = true
   try {
+    const { data: { session } } = await supabase.auth.getSession()
     const r    = await fetch('/api/newsletter/send-cuteness', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-secret': import.meta.env.VITE_ADMIN_SECRET as string ?? '' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token ?? ''}` },
       body:    JSON.stringify({ date }),
     })
     const data = await r.json() as { ok?: boolean; sent?: number; error?: string }
@@ -775,9 +776,10 @@ async function doSendNewsletter() {
   if (!sendDialog.nlId) return
   sending.value = true
   try {
+    const { data: { session } } = await supabase.auth.getSession()
     const r    = await fetch('/api/newsletter/send', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-secret': import.meta.env.VITE_ADMIN_SECRET as string ?? '' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token ?? ''}` },
       body:    JSON.stringify({ newsletter_id: sendDialog.nlId }),
     })
     const data = await r.json() as { ok?: boolean; sent?: number; error?: string }

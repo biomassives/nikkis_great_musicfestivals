@@ -6,6 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
+import { supabase } from 'src/lib/supabase';
 
 /*
  * If not building with SSR mode, you can
@@ -31,6 +32,15 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  const ADMIN_PUBLIC = ['/admin/login', '/admin/reset-password'];
+
+  Router.beforeEach(async (to) => {
+    if (!to.path.startsWith('/admin')) return;
+    if (ADMIN_PUBLIC.includes(to.path)) return;
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return '/admin/login';
   });
 
   return Router;

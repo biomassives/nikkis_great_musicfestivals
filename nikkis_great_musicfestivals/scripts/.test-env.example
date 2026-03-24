@@ -1,7 +1,10 @@
-# Copy this to scripts/.test-env and fill in your values.
-# .test-env is gitignored — safe to put real secrets here.
-
 SITE_URL=https://nikkisgreatmusicfestivals.vercel.app
-ADMIN_SECRET=your-admin-secret-here
+ADMIN_EMAIL=nikki@example.com
+ADMIN_PASSWORD=your-supabase-admin-password
 EMAIL_1=you@example.com
-EMAIL_2=you+alias@example.com
+EMAIL_2=you+test@example.com
+
+# Mailgun — copy from .env.local (gitignored)
+MAILGUN_API_KEY=your-mailgun-private-api-key
+MAILGUN_DOMAIN=your-sending-domain.com
+MAILGUN_FROM=Nikki's Great Music Festivals <hello@your-sending-domain.com>

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdminAuth } from '../_auth'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -24,9 +25,7 @@ interface Subscriber {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
-  if (req.headers['x-admin-secret'] !== process.env.ADMIN_SECRET) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
+  if (!await requireAdminAuth(req, res)) return
 
   const { date = new Date().toISOString().slice(0, 10) } = (req.body ?? {}) as { date?: string }
 
