@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Admin — Nikki's Great Music Festivals">
+  <title>Admin — Nikki's Great Music Festivals</title>
+  <defs>
+    <clipPath id="outerClip">
+      <circle cx="50" cy="50" r="49"/>
+    </clipPath>
+    <!-- Admin variant: dark teal-navy instead of deep purple -->
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#002a2a"/>
+      <stop offset="100%" stop-color="#000e14"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="50" cy="50" r="50" fill="url(#bg)"/>
+
+  <g clip-path="url(#outerClip)">
+
+    <!-- Outer ring: teal petals (was gold on main favicon) -->
+    <g fill="#4db6ac" fill-opacity="0.92">
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(45 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(90 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(135 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(225 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(270 50 50)"/>
+      <ellipse cx="50" cy="9"  rx="7.5" ry="15" transform="rotate(315 50 50)"/>
+    </g>
+
+    <!-- Middle ring: gold petals (was teal on main favicon) -->
+    <g fill="#ffd700" fill-opacity="0.85">
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(22.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(67.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(112.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(157.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(202.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(247.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(292.5 50 50)"/>
+      <ellipse cx="50" cy="22" rx="5.5" ry="11" transform="rotate(337.5 50 50)"/>
+    </g>
+
+    <!-- Inner ring: violet stays -->
+    <g fill="#a855f7" fill-opacity="0.78">
+      <ellipse cx="50" cy="33" rx="4.5" ry="9"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(45 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(90 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(135 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(225 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(270 50 50)"/>
+      <ellipse cx="50" cy="33" rx="4.5" ry="9" transform="rotate(315 50 50)"/>
+    </g>
+
+    <circle cx="50" cy="50" r="20" fill="url(#bg)"/>
+
+    <!-- Inner lotus: teal petals (was gold on main favicon) -->
+    <g fill="#4db6ac" fill-opacity="0.95">
+      <ellipse cx="50" cy="38" rx="3.5" ry="7"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(60 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(120 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(180 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(240 50 50)"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="7" transform="rotate(300 50 50)"/>
+    </g>
+
+    <!-- Centre jewel: gold ring → teal disc → dark eye (swapped from main) -->
+    <circle cx="50" cy="50" r="11.5" fill="#ffd700"/>
+    <circle cx="50" cy="50" r="7"    fill="#4db6ac"/>
+    <circle cx="50" cy="50" r="3"    fill="#001a14"/>
+
+  </g>
+
+  <!-- Teal outer rim (was gold on main favicon) -->
+  <circle cx="50" cy="50" r="49" fill="none" stroke="#4db6ac" stroke-width="0.8" stroke-opacity="0.35"/>
+</svg>

@@ -44,18 +44,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useMeta } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import type { Session } from '@supabase/supabase-js'
 
 const router  = useRouter()
+const route   = useRoute()
 const session = ref<Session | null>(null)
 
+// ── Per-route page name map ────────────────────────────────────────────────
+const PAGE_NAMES: Record<string, string> = {
+  '/admin':                  'Dashboard',
+  '/admin/maps':             'Maps',
+  '/admin/gallery':          'Gallery',
+  '/admin/newsletter':       'Newsletter',
+  '/admin/blog':             'Blog',
+  '/admin/merch':            'Merch',
+  '/admin/home':             'Homepage',
+  '/admin/story':            'Our Story',
+  '/admin/support':          'Support',
+  '/admin/nav':              'Navigation',
+  '/admin/pages':            'Pages',
+  '/admin/login':            'Login',
+  '/admin/reset-password':   'Reset Password',
+}
+
+function pageName(path: string): string {
+  // Exact match first, then strip trailing segment for sub-routes (e.g. /admin/maps/:id)
+  return PAGE_NAMES[path]
+    ?? PAGE_NAMES[path.replace(/\/[^/]+$/, '')]
+    ?? 'Admin'
+}
+
+// ── Reactive page title ────────────────────────────────────────────────────
+useMeta(() => {
+  const name = pageName(route.path)
+  return {
+    title: name === 'Dashboard'
+      ? 'Admin — NGMF'
+      : `${name} · Admin — NGMF`,
+  }
+})
+
+// ── Favicon swap: teal admin variant while in admin section ───────────────
+function setFavicon(href: string) {
+  const link = document.querySelector<HTMLLinkElement>('link[rel="icon"][type="image/svg+xml"]')
+  if (link) link.href = href
+}
+
 onMounted(async () => {
+  setFavicon('/icons/admin-favicon.svg')
+
   const { data } = await supabase.auth.getSession()
   session.value = data.session
   supabase.auth.onAuthStateChange((_e, s) => { session.value = s })
+})
+
+onUnmounted(() => {
+  setFavicon('/icons/mandala.svg')
 })
 
 async function signOut() {
