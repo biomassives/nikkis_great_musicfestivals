@@ -211,15 +211,69 @@
           <div>
             <div class="text-caption text-teal-5 text-uppercase q-mb-xs" style="letter-spacing:1.5px">Archive.org Show Player</div>
             <div class="text-caption text-grey-6 q-mb-sm">Audio player strip beneath the hero carousel. Leave blank for auto-default.</div>
-            <q-input v-model="heroForm.archive_id" label="archive.org identifier (e.g. billystrings2026-02-06)"
+
+            <!-- Live artist search -->
+            <div class="text-caption text-grey-5 q-mb-xs" style="letter-spacing:.5px">SEARCH ARCHIVE.ORG BY ARTIST</div>
+            <q-select
+              v-model="archivePickModel"
+              :options="archiveOptions"
+              :option-label="(d: ArchiveDoc) => [d.creator, d.title].filter(Boolean).join(' · ')"
+              label="Type artist name to search…"
+              use-input hide-selected fill-input
+              input-debounce="380"
+              @filter="filterArchive"
+              @update:model-value="onArchivePick"
+              :loading="archiveSearching"
+              dark outlined dense label-color="teal-3" color="teal-3"
+              clearable class="q-mb-xs"
+            >
+              <template #prepend><q-icon name="search" size="16px" color="teal-5" /></template>
+              <template #option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section avatar>
+                    <q-icon name="music_note" color="teal-4" size="18px" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label lines="1">{{ scope.opt.title }}</q-item-label>
+                    <q-item-label caption class="text-teal-4">
+                      {{ scope.opt.creator }}{{ scope.opt.date ? ' · ' + scope.opt.date.slice(0,4) : '' }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template #no-option="{ inputValue }">
+                <q-item>
+                  <q-item-section class="text-grey-6 text-caption">
+                    {{ archiveSearching ? 'Searching…' : inputValue ? 'No matches — try a different name' : 'Type to search archive.org' }}
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <!-- Quick-pick from curated library -->
+            <div class="text-caption text-grey-5 q-mb-xs" style="letter-spacing:.5px">OR PICK FROM LIBRARY</div>
+            <div class="row q-gutter-xs q-mb-sm">
+              <q-chip
+                v-for="show in ARCHIVE_SHOWS" :key="show.id"
+                clickable
+                :color="heroForm.archive_id === show.id ? 'teal-7' : 'grey-9'"
+                :text-color="heroForm.archive_id === show.id ? 'white' : 'teal-3'"
+                size="sm" icon="music_note"
+                @click="heroForm.archive_id = show.id; heroForm.archive_label = show.label"
+              >{{ show.label }}</q-chip>
+            </div>
+
+            <!-- Current selection / manual override -->
+            <div class="text-caption text-grey-5 q-mb-xs" style="letter-spacing:.5px">SELECTED / MANUAL ID</div>
+            <q-input v-model="heroForm.archive_id" label="archive.org identifier"
               dark outlined dense label-color="teal-3" color="teal-3" clearable class="q-mb-xs" />
-            <q-input v-model="heroForm.archive_label" label="Display label (e.g. Billy Strings · Athens, GA)"
+            <q-input v-model="heroForm.archive_label" label="Display label"
               dark outlined dense label-color="teal-3" color="teal-3" />
             <div v-if="heroForm.archive_id" class="text-caption text-teal-6 q-mt-xs">
               <q-icon name="open_in_new" size="12px" />
               <a :href="`https://archive.org/details/${heroForm.archive_id}`"
                  target="_blank" rel="noopener noreferrer" class="text-teal-4 q-ml-xs">
-                Preview on archive.org
+                Preview on archive.org ↗
               </a>
             </div>
           </div>
@@ -230,14 +284,82 @@
             <div class="text-caption text-grey-6 q-mb-sm">
               Embeds a video in the region header. Supports <code style="color:#4dd0c4">?t=</code> timestamps. Overrides Archive.org player.
             </div>
-            <q-input v-model="heroForm.youtube_url" label="YouTube URL (e.g. youtube.com/watch?v=…)"
+
+            <!-- Live search when VITE_YOUTUBE_API_KEY is set -->
+            <template v-if="YOUTUBE_KEY">
+              <div class="text-caption text-grey-5 q-mb-xs" style="letter-spacing:.5px">SEARCH YOUTUBE BY ARTIST</div>
+              <q-select
+                v-model="youtubePickModel"
+                :options="youtubeOptions"
+                :option-label="(v: YTItem) => v.snippet.title"
+                label="Type artist name to search…"
+                use-input hide-selected fill-input
+                input-debounce="380"
+                @filter="filterYoutube"
+                @update:model-value="onYoutubePick"
+                :loading="youtubeSearching"
+                dark outlined dense label-color="teal-3" color="teal-3"
+                clearable class="q-mb-xs"
+              >
+                <template #prepend><q-icon name="search" size="16px" color="teal-5" /></template>
+                <template #option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section avatar>
+                      <q-icon name="smart_display" color="red-4" size="18px" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label lines="1">{{ scope.opt.snippet.title }}</q-item-label>
+                      <q-item-label caption class="text-grey-5">{{ scope.opt.snippet.channelTitle }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template #no-option="{ inputValue }">
+                  <q-item>
+                    <q-item-section class="text-grey-6 text-caption">
+                      {{ youtubeSearching ? 'Searching…' : inputValue ? 'No results' : 'Type to search YouTube' }}
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </template>
+
+            <!-- Fallback: open-in-YouTube helper when no API key -->
+            <template v-else>
+              <div class="text-caption text-grey-5 q-mb-xs" style="letter-spacing:.5px">SEARCH YOUTUBE</div>
+              <div class="row items-center q-gutter-sm q-mb-sm">
+                <q-input
+                  v-model="youtubeSearchHint"
+                  label="Type artist name…"
+                  dark outlined dense label-color="teal-3" color="teal-3"
+                  clearable class="col"
+                >
+                  <template #prepend><q-icon name="search" size="16px" color="teal-5" /></template>
+                </q-input>
+                <q-btn
+                  flat icon="open_in_new" color="teal-4" size="sm" label="Open"
+                  title="Search YouTube in new tab"
+                  tag="a"
+                  :href="`https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeSearchHint)}`"
+                  target="_blank" rel="noopener noreferrer"
+                  :disable="!youtubeSearchHint.trim()"
+                />
+              </div>
+              <div class="text-caption text-grey-7 q-mb-sm">
+                <q-icon name="info" size="11px" class="q-mr-xs" />
+                Add <code style="color:#4dd0c4">VITE_YOUTUBE_API_KEY</code> to <code style="color:#4dd0c4">.env</code> to enable inline search.
+              </div>
+            </template>
+
+            <!-- URL + label fields (always shown) -->
+            <div class="text-caption text-grey-5 q-mb-xs" style="letter-spacing:.5px">SELECTED / PASTE URL</div>
+            <q-input v-model="heroForm.youtube_url" label="YouTube URL (youtube.com/watch?v=… or youtu.be/…)"
               dark outlined dense label-color="teal-3" color="teal-3" clearable class="q-mb-xs" />
             <q-input v-model="heroForm.youtube_label" label="Display label (e.g. Billy Strings · Portland, OR)"
               dark outlined dense label-color="teal-3" color="teal-3" />
             <div v-if="heroForm.youtube_url" class="text-caption text-teal-6 q-mt-xs">
               <q-icon name="smart_display" size="12px" />
               <a :href="heroForm.youtube_url" target="_blank" rel="noopener noreferrer" class="text-teal-4 q-ml-xs">
-                Preview on YouTube
+                Preview on YouTube ↗
               </a>
             </div>
           </div>
@@ -256,13 +378,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import type { MapRegion, MapPoint } from 'src/lib/supabase'
 import { mondrianSvg, MONDRIAN_NAMES, MONDRIAN_SWATCHES, resolveLayout } from 'src/lib/mondrian'
 import type { MondrianOpts } from 'src/lib/mondrian'
+import { ARCHIVE_SHOWS } from 'src/lib/archiveShows'
 
 const router  = useRouter()
 const $q      = useQuasar()
@@ -497,6 +620,84 @@ async function saveMondrianSettings() {
   savingHero.value = false
   mondrianDialog.value.open = false
   $q.notify({ message: 'Header design saved', color: 'teal', icon: 'check', position: 'top' })
+}
+
+// ── Archive.org live search ───────────────────────────────────────────────────
+interface ArchiveDoc { identifier: string; title: string; creator: string; date: string }
+
+const archiveSearching = ref(false)
+const archiveOptions   = ref<ArchiveDoc[]>([])
+const archivePickModel = ref<ArchiveDoc | null>(null)
+
+async function filterArchive(
+  val: string,
+  update: (fn: () => void) => void,
+) {
+  if (!val.trim()) { update(() => { archiveOptions.value = [] }); return }
+  archiveSearching.value = true
+  try {
+    const params = new URLSearchParams({ rows: '14', output: 'json' })
+    params.append('q',    `(${val}) AND mediatype:audio`)
+    params.append('fl[]', 'identifier')
+    params.append('fl[]', 'title')
+    params.append('fl[]', 'creator')
+    params.append('fl[]', 'date')
+    const res  = await fetch(`https://archive.org/advancedsearch.php?${params.toString()}`)
+    const json = await res.json() as { response: { docs: ArchiveDoc[] } }
+    update(() => { archiveOptions.value = json.response.docs })
+  } catch {
+    update(() => { archiveOptions.value = [] })
+  } finally {
+    archiveSearching.value = false
+  }
+}
+
+function onArchivePick(doc: ArchiveDoc | null) {
+  if (!doc) return
+  heroForm.archive_id    = doc.identifier
+  const year             = (doc.date ?? '').slice(0, 4)
+  heroForm.archive_label = [doc.creator, doc.title, year ? `(${year})` : '']
+    .filter(Boolean).join(' · ')
+  void nextTick(() => { archivePickModel.value = null })
+}
+
+// ── YouTube live search (requires VITE_YOUTUBE_API_KEY) ───────────────────────
+const YOUTUBE_KEY = (import.meta.env.VITE_YOUTUBE_API_KEY ?? '') as string
+
+interface YTSnippet { title: string; channelTitle: string; publishedAt: string }
+interface YTItem    { id: { videoId: string }; snippet: YTSnippet }
+
+const youtubeSearching  = ref(false)
+const youtubeOptions    = ref<YTItem[]>([])
+const youtubePickModel  = ref<YTItem | null>(null)
+const youtubeSearchHint = ref('')   // used for the fallback "open" button
+
+async function filterYoutube(
+  val: string,
+  update: (fn: () => void) => void,
+) {
+  youtubeSearchHint.value = val
+  if (!YOUTUBE_KEY || !val.trim()) { update(() => { youtubeOptions.value = [] }); return }
+  youtubeSearching.value = true
+  try {
+    const params = new URLSearchParams({
+      part: 'snippet', q: val, type: 'video', maxResults: '10', key: YOUTUBE_KEY,
+    })
+    const res  = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`)
+    const json = await res.json() as { items: YTItem[] }
+    update(() => { youtubeOptions.value = json.items ?? [] })
+  } catch {
+    update(() => { youtubeOptions.value = [] })
+  } finally {
+    youtubeSearching.value = false
+  }
+}
+
+function onYoutubePick(item: YTItem | null) {
+  if (!item) return
+  heroForm.youtube_url   = `https://www.youtube.com/watch?v=${item.id.videoId}`
+  heroForm.youtube_label = item.snippet.title
+  void nextTick(() => { youtubePickModel.value = null })
 }
 
 // ── Shared helpers ───────────────────────────────────────────────────────────

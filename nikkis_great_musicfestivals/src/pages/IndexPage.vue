@@ -705,6 +705,9 @@ body.body--light {
   .subscribe-inner {
     background: linear-gradient(135deg, rgba(75,0,130,0.07), rgba(255,215,0,0.09), rgba(0,143,57,0.06)) !important;
   }
-  .hero-mission { color: rgba(26,10,46,0.82) !important; }
+  // Hero sits on a dark star-field background regardless of theme —
+  // keep all hero text light/warm so it reads on the dark canvas.
+  .hero-title   { color: #ff9800 !important; }
+  .hero-mission { color: rgba(255,255,255,0.85) !important; }
 }
 </style>

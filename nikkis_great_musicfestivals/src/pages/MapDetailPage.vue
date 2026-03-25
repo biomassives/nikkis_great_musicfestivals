@@ -289,6 +289,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { supabase } from 'src/lib/supabase'
 import type { MapRegion, MapPoint } from 'src/lib/supabase'
+import { ARCHIVE_SHOWS } from 'src/lib/archiveShows'
 
 const route        = useRoute()
 const $q           = useQuasar()
@@ -355,16 +356,7 @@ const REGION_HERO_IMAGES: Record<string, string[]> = {
   ],
 }
 
-// Curated archive.org recordings — freely streamable
-const ARCHIVE_SHOWS = [
-  { id: '78_9958-Take-the-A-train',                                           label: 'Duke Ellington · Take the A Train (1941 78rpm)' },
-  { id: 'gd1977-05-08.shure57.stevenson-ladner-beaumont.29662.sbefp.flac16', label: 'Grateful Dead · Cornell, May 8 1977' },
-  { id: 'gd1972-08-27.sbd.hollister.174.sbeok.shnf',                         label: 'Grateful Dead · Veneta, Aug 27 1972' },
-  { id: 'gd1991-09-10.sbd.miller.87991.sbeok.shnf',                          label: 'Grateful Dead · Madison Square Garden, Sep 1991' },
-  { id: 'gd1985-07-04.sbd.seamons.9517.sbeok.shnf',                          label: 'Grateful Dead · Autzen Stadium, Jul 4 1985' },
-  { id: 'gd1973-11-11.sbd.unknown.14042.sbeok.shnf',                         label: 'Grateful Dead · Winterland, Nov 11 1973' },
-  { id: 'billystrings2026-02-06',                                              label: 'Billy Strings · Athens, GA — Feb 6 2026' },
-]
+// ARCHIVE_SHOWS imported from src/lib/archiveShows.ts
 
 const currentSlide      = ref(0)
 const customHeroImages  = ref<string[]>([])

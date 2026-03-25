@@ -101,3 +101,13 @@ export interface MerchItem {
   display_order: number
   created_at: string
 }
+
+export interface ChangelogEntry {
+  id: string
+  created_at: string
+  category: string
+  summary: string
+  description: string | null
+  author: string | null
+  tags: string[]
+}

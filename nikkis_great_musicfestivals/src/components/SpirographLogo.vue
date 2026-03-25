@@ -60,17 +60,17 @@
       <circle r="4" fill="none" stroke="#ffd700" stroke-width="0.35" opacity="0.55" />
     </g>
 
-    <!-- ── Bright sun at centre — 16-fold symmetry for clean rotation ── -->
+    <!-- ── Radiant sun at centre — 32 rays (16 primary + 16 secondary) ── -->
     <g transform="translate(50, 50)">
-      <!-- Outer corona wash -->
-      <circle r="17" :fill="`url(#sbg-${vid})`" opacity="0.52" />
-      <!-- 8 long primary rays at 0°, 45°, 90°, 135°… -->
-      <g v-for="n in 8" :key="`sr${n}`" :transform="`rotate(${(n-1)*45})`">
-        <rect x="-1.5" y="8" width="3" height="10.5" rx="1.5" fill="#ffd700" opacity="0.92" />
+      <!-- Outer corona wash — expanded to embrace the longer rays -->
+      <circle r="20" :fill="`url(#sbg-${vid})`" opacity="0.38" />
+      <!-- 16 long tapered primary rays every 22.5° -->
+      <g v-for="n in 16" :key="`sr${n}`" :transform="`rotate(${(n-1)*22.5})`">
+        <polygon points="-1.4,8 1.4,8 0,19.5" fill="#ffd700" opacity="0.90" />
       </g>
-      <!-- 8 short secondary rays at 22.5°, 67.5°, 112.5°… -->
-      <g v-for="n in 8" :key="`mr${n}`" :transform="`rotate(${22.5 + (n-1)*45})`">
-        <rect x="-0.9" y="9" width="1.8" height="6.5" rx="0.9" fill="#ffb300" opacity="0.72" />
+      <!-- 16 short secondary rays offset by 11.25° -->
+      <g v-for="n in 16" :key="`mr${n}`" :transform="`rotate(${11.25 + (n-1)*22.5})`">
+        <polygon points="-0.75,9.5 0.75,9.5 0,15.5" fill="#ffb300" opacity="0.70" />
       </g>
       <!-- Sun disc — three layers, warm white core -->
       <circle r="7"   fill="#fff8c0" opacity="0.98" />
