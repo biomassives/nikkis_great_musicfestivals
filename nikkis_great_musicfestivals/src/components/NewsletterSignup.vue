@@ -2,7 +2,7 @@
   <div class="nl-signup">
 
     <!-- ── Idle / form state ──────────────────────────────────────────── -->
-    <template v-if="state === 'idle' || state === 'error'">
+    <template v-if="state === 'idle' || state === 'loading' || state === 'error'">
       <slot name="header">
         <div class="nl-title">{{ title }}</div>
         <div class="nl-sub">{{ subtitle }}</div>
@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   title?:    string
   subtitle?: string
   dark?:     boolean
