@@ -74,11 +74,12 @@
           </q-list>
 
           <!-- Newsletter CTA -->
-          <div class="news-subscribe-cta q-mt-xl q-pa-lg rounded-borders text-center">
-            <q-icon name="mark_email_unread" size="36px" color="teal-4" />
-            <div class="text-subtitle1 text-bold q-mt-sm q-mb-xs">Get Tour Updates</div>
-            <div class="text-caption text-grey-6 q-mb-md">Be the first to know about new dates</div>
-            <q-btn label="Subscribe to Newsletter" color="teal" outline :to="'/#subscribe-bottom'" />
+          <div class="news-subscribe-cta q-mt-xl q-pa-lg rounded-borders">
+            <NewsletterSignup
+              title="Get Tour Updates"
+              subtitle="Be the first to know about new dates"
+              :dark="false"
+            />
           </div>
         </div>
 
@@ -89,7 +90,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import PageBackground from 'src/components/PageBackground.vue'
+import PageBackground    from 'src/components/PageBackground.vue'
+import NewsletterSignup  from 'src/components/NewsletterSignup.vue'
 import { supabase } from 'src/lib/supabase'
 import type { NewsArticle } from 'src/lib/supabase'
 

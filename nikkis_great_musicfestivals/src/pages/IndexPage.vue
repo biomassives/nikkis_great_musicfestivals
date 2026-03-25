@@ -160,31 +160,7 @@
           <div class="section-eyebrow">Stay Connected</div>
           <h2 class="section-title q-mb-sm">{{ content.subscribe_title }}</h2>
           <p class="subscribe-body">{{ content.subscribe_body }}</p>
-          <div class="subscribe-form row items-start q-gutter-sm justify-center q-mt-lg">
-            <q-input
-              v-model="email"
-              type="email"
-              placeholder="your@email.com"
-              outlined dense
-              class="subscribe-input"
-              :error="!!emailError"
-              :error-message="emailError"
-              hide-bottom-space
-            />
-            <q-btn
-              label="Subscribe"
-              color="secondary" unelevated
-              :loading="subscribing"
-              :disable="subscribed"
-              @click="subscribe"
-              icon-right="send"
-            />
-          </div>
-          <div v-if="subscribed" class="text-positive q-mt-md">
-            <q-icon name="check_circle" size="16px" class="q-mr-xs" />
-            You're in! We'll be in touch soon.
-          </div>
-          <div class="subscribe-fine q-mt-md">No spam. Unsubscribe anytime.</div>
+          <NewsletterSignup class="q-mt-lg" />
         </div>
       </div>
     </section>
@@ -211,7 +187,8 @@ import type { Artist } from 'src/lib/artists'
 import PageBackground from 'src/components/PageBackground.vue'
 import SpirographLogo from 'src/components/SpirographLogo.vue'
 import WelcomeOverlay from 'src/components/WelcomeOverlay.vue'
-import StoryOverlay   from 'src/components/StoryOverlay.vue'
+import StoryOverlay      from 'src/components/StoryOverlay.vue'
+import NewsletterSignup  from 'src/components/NewsletterSignup.vue'
 
 const showStory = ref(false)
 const SESSION_KEY = 'ngmf_welcomed_v1'
@@ -357,24 +334,6 @@ async function loadSettings() {
   // Kick off scroll-reveal after DOM updates
   await nextTick()
   initReveal()
-}
-
-// ── Newsletter ────────────────────────────────────────────────────────────────
-const email       = ref('')
-const subscribing = ref(false)
-const subscribed  = ref(false)
-const emailError  = ref('')
-
-async function subscribe() {
-  emailError.value = ''
-  if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-    emailError.value = 'Please enter a valid email'
-    return
-  }
-  subscribing.value = true
-  await supabase.from('newsletter_subscribers').upsert({ email: email.value })
-  subscribing.value = false
-  subscribed.value = true
 }
 
 onMounted(() => { void loadSettings() })
@@ -668,8 +627,6 @@ onMounted(() => { void loadSettings() })
   max-width: 420px; margin: 0 auto;
   opacity: 0.7; line-height: 1.65;
 }
-.subscribe-input { min-width: 260px; }
-.subscribe-fine  { font-size: 11px; opacity: 0.35; letter-spacing: 0.5px; }
 </style>
 
 <style lang="scss">
