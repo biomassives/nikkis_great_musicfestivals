@@ -12,6 +12,31 @@
         </div>
       </div>
 
+      <!-- KICKSTARTER CAMPAIGN BANNER -->
+      <div v-if="cfg.kickstarter_url || true" class="kickstarter-banner q-pa-xl rounded-borders text-center q-mb-xl" style="max-width:700px; margin:0 auto">
+        <div class="section-label q-mb-xs">Campaign</div>
+        <div class="text-h5 text-bold q-mb-xs" style="color:#05ce78">Back Us on Kickstarter 🚀</div>
+        <div class="text-body2 q-mb-md" style="color:rgba(0,0,0,0.65)">
+          Help us reach our goal of <strong>$38,000</strong> by <strong>May 10th</strong> to fund concerts at senior facilities,
+          community art programs, and festival accessibility initiatives.
+        </div>
+        <div class="row items-center justify-center q-gutter-sm q-mb-md">
+          <div class="text-h4 text-bold" style="color:#05ce78">$38,000</div>
+          <div class="text-body2 text-grey-6">goal · deadline May 10</div>
+        </div>
+        <q-btn
+          v-if="cfg.kickstarter_url"
+          :href="cfg.kickstarter_url"
+          target="_blank"
+          label="Back This Project on Kickstarter"
+          color="positive"
+          unelevated
+          icon="launch"
+          class="q-px-xl"
+        />
+        <div v-else class="text-caption text-grey-5 q-mt-xs">(Kickstarter link coming soon)</div>
+      </div>
+
       <!-- BILLING INTERVAL TOGGLE -->
       <div class="flex flex-center q-mb-xl">
         <div class="interval-toggle">
@@ -78,6 +103,34 @@
             </q-card-actions>
           </q-card>
         </div>
+      </div>
+
+      <!-- $1,000 CORPORATE SPONSOR -->
+      <div class="sponsor-section q-pa-xl rounded-borders text-center q-mb-xl" style="max-width:700px; margin:0 auto">
+        <div class="sponsor-crown q-mb-md">👑</div>
+        <div class="section-label q-mb-xs">Presenting Sponsor</div>
+        <div class="text-h4 text-bold q-mb-xs sponsor-title">$1,000 Community Sponsor</div>
+        <div class="text-body1 q-mb-lg" style="color:rgba(255,255,255,0.75); max-width:480px; margin:0 auto">
+          Your logo featured on <strong>all marketing materials</strong> — flyers, social media, event signage, and the website — as an official community supporter.
+        </div>
+        <q-list dense class="text-left q-mb-lg" style="max-width:360px; margin:0 auto">
+          <q-item v-for="perk in sponsorPerks" :key="perk" dense class="q-py-xs">
+            <q-item-section avatar>
+              <q-icon name="star" color="yellow-6" size="18px" />
+            </q-item-section>
+            <q-item-section class="text-body2" style="color:rgba(255,255,255,0.85)">{{ perk }}</q-item-section>
+          </q-item>
+        </q-list>
+        <q-btn
+          label="Become a Sponsor"
+          color="yellow-8"
+          text-color="black"
+          unelevated
+          icon="workspace_premium"
+          class="q-px-xl text-weight-bold"
+          :loading="checkingOut === 'sponsor'"
+          @click="checkoutSponsor"
+        />
       </div>
 
       <!-- CUSTOM AMOUNT -->
@@ -182,6 +235,7 @@ const DEFAULT_TIERS: Tier[] = [
     perks: [
       'Everything in Supporter',
       'Monthly merch gift',
+      'Art donated to seniors on your behalf',
       'Artist interview archives',
       'Priority merch access',
       'Name on supporter wall',
@@ -193,7 +247,8 @@ const DEFAULT_TIERS: Tier[] = [
     stripe_month: 'price_champion_monthly', stripe_year: 'price_champion_annual',
     perks: [
       'Everything in Festival Friend',
-      'Quarterly photo print',
+      'Original art sent to you monthly',
+      'Art donated to a senior facility in your name',
       'Behind-the-scenes updates',
       'Annual virtual meet & greet',
       'Direct mission input',
@@ -208,13 +263,22 @@ const DEFAULT_GLOBAL_PERKS: GlobalPerk[] = [
   { icon: 'people',        color: 'teal-6',        title: 'Community',      desc: 'Connect with fellow festival fans' },
 ]
 
+const sponsorPerks = [
+  'Logo on all printed marketing flyers & event signage',
+  'Logo featured on the website sponsor wall',
+  'Dedicated social media shout-out',
+  'All Champion tier membership benefits included',
+  'Direct partnership recognition with Nikki',
+]
+
 // ── Config (loaded from Supabase, falls back to defaults) ─────────────────────
 const cfg = reactive({
-  section_label: 'Help Us Grow',
-  heading:       'Support the Mission',
-  description:   'Every membership directly funds accessibility programs, senior facility concerts, and community building at festivals.',
-  tiers:         DEFAULT_TIERS.map(t => ({ ...t, perks: [...t.perks] })) as Tier[],
-  globalPerks:   DEFAULT_GLOBAL_PERKS.map(p => ({ ...p })) as GlobalPerk[],
+  section_label:   'Help Us Grow',
+  heading:         'Support the Mission',
+  description:     'Every membership directly funds accessibility programs, senior facility concerts, and community building at festivals.',
+  kickstarter_url: '' as string,
+  tiers:           DEFAULT_TIERS.map(t => ({ ...t, perks: [...t.perks] })) as Tier[],
+  globalPerks:     DEFAULT_GLOBAL_PERKS.map(p => ({ ...p })) as GlobalPerk[],
 })
 
 onMounted(async () => {
@@ -226,9 +290,10 @@ onMounted(async () => {
   const row = data?.[0]
   if (row?.value && typeof row.value === 'object') {
     const v = row.value as Record<string, unknown>
-    if (typeof v.section_label === 'string') cfg.section_label = v.section_label
-    if (typeof v.heading       === 'string') cfg.heading       = v.heading
-    if (typeof v.description   === 'string') cfg.description   = v.description
+    if (typeof v.section_label   === 'string') cfg.section_label   = v.section_label
+    if (typeof v.heading         === 'string') cfg.heading         = v.heading
+    if (typeof v.description     === 'string') cfg.description     = v.description
+    if (typeof v.kickstarter_url === 'string') cfg.kickstarter_url = v.kickstarter_url
     if (Array.isArray(v.tiers) && (v.tiers as unknown[]).length > 0) {
       cfg.tiers = v.tiers as Tier[]
     }
@@ -243,6 +308,12 @@ async function checkout(tier: Tier) {
   checkingOut.value = tier.id
   const priceId = interval.value === 'month' ? tier.stripe_month : tier.stripe_year
   await redirectToStripe({ priceId, mode: 'subscription' })
+  checkingOut.value = null
+}
+
+async function checkoutSponsor() {
+  checkingOut.value = 'sponsor'
+  await redirectToStripe({ customAmount: 100000, interval: 'year', mode: 'payment', description: 'Community Sponsor – logo on all marketing' })
   checkingOut.value = null
 }
 
@@ -343,6 +414,24 @@ async function redirectToStripe(params: Record<string, unknown>) {
   font-size: 11px; font-weight: 700; letter-spacing: 1px;
   padding: 4px 16px; border-radius: 20px; white-space: nowrap;
 }
+
+/* ── Kickstarter banner ─────────────────────────────────────────── */
+.kickstarter-banner {
+  background: linear-gradient(135deg, #05a85c 0%, #028a4a 100%);
+  border: 2px solid #05ce78;
+  color: #fff;
+  .text-grey-6 { color: rgba(255,255,255,0.6) !important; }
+  strong { color: #fff; }
+}
+
+/* ── Sponsor section ────────────────────────────────────────────── */
+.sponsor-section {
+  background: linear-gradient(135deg, #1a0042 0%, #2d0066 100%);
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 40px rgba(255,215,0,0.15);
+}
+.sponsor-crown { font-size: 48px; line-height: 1; }
+.sponsor-title { color: #ffd700; }
 
 /* ── Custom & perks sections ────────────────────────────────────── */
 .custom-section {
