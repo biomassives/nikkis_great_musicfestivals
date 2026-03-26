@@ -404,7 +404,9 @@ const months = [
 
 function showPct(p: MapPoint): number {
   if (!p.date) return 50
-  return Math.max(2, Math.min(97, ((new Date(p.date).getTime() - SEASON_START) / SEASON_MS) * 100))
+  const t = new Date(p.date).getTime()
+  if (isNaN(t)) return 50
+  return Math.max(2, Math.min(97, ((t - SEASON_START) / SEASON_MS) * 100))
 }
 
 function daysBetween(a: string | null, b: string | null): number {

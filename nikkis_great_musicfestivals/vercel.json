@@ -10,6 +10,11 @@
     { "src": "/api/newsletter/send-test",     "dest": "/api/newsletter/send-test.ts"     },
     { "src": "/api/newsletter/send-cuteness", "dest": "/api/newsletter/send-cuteness.ts" },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/assets/(.*)", "status": 404 },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" }
+    }
   ]
 }
