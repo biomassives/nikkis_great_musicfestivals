@@ -544,6 +544,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
 import type { HomepageArtist } from 'src/lib/supabase'
+import { ARTISTS } from 'src/lib/artists'
 import PageBackground from 'src/components/PageBackground.vue'
 
 // ── Upload refs ──────────────────────────────────────────────────────────────
@@ -590,36 +591,15 @@ const accentColorOptions = [
   { label: 'Red',         value: 'red'         },
 ]
 
-// ── Default artist data ──────────────────────────────────────────────────────
-const DEFAULT_ARTISTS: HomepageArtist[] = [
-  {
-    id: 'billy-strings', name: 'Billy Strings',
-    subtitle: 'Progressive Bluegrass · Newgrass · Psychedelic',
-    icon: 'music_note', icon_color: 'amber',
-    badge_text: 'Headline', badge_color: 'amber',
-    bio_main: "William Apostol — known to the world as Billy Strings — is a Grammy-winning flatpicker who bends time with a guitar. Raised on the old-time music of Michigan and west of the Blue Ridge, he has become one of the most electrifying live performers in any genre, threading jaw-dropping technique through dark folk imagery and untethered improvisation.",
-    bio_sub: "At Nikki's festivals, Billy's sets tend to stretch deep into the night — the jam-grass crowd locks in, and the field turns into something that feels less like a concert and more like a ritual. Bring layers. Bring patience. Let the third set happen to you.",
-    songs: ['Home', 'Dust in a Baggie', 'Meet Me at the Creek'],
-  },
-  {
-    id: 'leftover-salmon', name: 'Leftover Salmon',
-    subtitle: 'Polyethnic Cajun Slamgrass · Roots · Mountain Folk',
-    icon: 'water', icon_color: 'deep-orange',
-    badge_text: 'Legacy Act', badge_color: 'deep-orange',
-    bio_main: 'Colorado\'s Leftover Salmon invented "Polyethnic Cajun Slamgrass" — a label that sounds like a joke until you hear it, and then it makes perfect sense. Vince Herman and Mark Vann started cooking something strange and wonderful in the early \'90s, and the band has been a cornerstone of the jam scene ever since.',
-    bio_sub: "Festival crowds who've seen Leftover Salmon dozens of times will tell you: no two shows are the same. The energy is communal, the musicianship is staggering, and the party starts before the first note lands. Pack a cowboy hat. Hydrate. Dance until your knees forget they have feelings.",
-    songs: ['Zombie Jamboree', 'Salmon Run', 'Euphoria'],
-  },
-  {
-    id: 'stringdusters', name: 'The Infamous Stringdusters',
-    subtitle: 'Grammy Bluegrass · Acoustic Jam · Americana',
-    icon: 'star', icon_color: 'purple',
-    badge_text: 'Grammy Winners', badge_color: 'purple',
-    bio_main: "The Infamous Stringdusters have spent two decades proving that bluegrass is not a museum piece. Grammy-winning and perpetually evolving, the band writes originals that sound traditional until they don't, and then they improvise in ways that should not work but absolutely do.",
-    bio_sub: 'Their sets at outdoor festivals have a particular magic: acoustic instruments carrying over acres of open field, five-part harmonies landing like a surprise. The Dusters reward attentive listening and reward dancing in equal measure.',
-    songs: ['Fork in the Road', 'Silver Sky', 'Things You Left Behind'],
-  },
-]
+// ── Default artist data — sourced from the full static roster ────────────────
+const DEFAULT_ARTISTS: HomepageArtist[] = ARTISTS
+  .filter(a => a.featured)
+  .map(a => ({
+    id: a.id, name: a.name, subtitle: a.subtitle,
+    icon: a.icon, icon_color: a.icon_color,
+    badge_text: a.badge_text, badge_color: a.badge_color,
+    bio_main: a.bio_main, bio_sub: a.bio_sub, songs: a.songs,
+  }))
 
 // ── Reactive data ────────────────────────────────────────────────────────────
 const welcome = reactive({

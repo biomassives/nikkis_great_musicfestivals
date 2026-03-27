@@ -223,7 +223,7 @@ const content = reactive({
   subscribe_body:    'Show dates, artist interviews, trail reports, and community stories — straight to your inbox.',
 })
 
-const artists = ref<Artist[]>(ARTISTS.filter(a => a.featured))
+const artists = ref<Artist[]>([])
 
 // ── Background / SEO ─────────────────────────────────────────────────────────
 const bgImageUrl     = ref<string | null>(null)
@@ -311,6 +311,11 @@ async function loadSettings() {
     if (row.key === 'homepage_artists' && Array.isArray(row.value) && (row.value as unknown[]).length) {
       artists.value = row.value as Artist[]
     }
+  }
+
+  // Fall back to the full static featured roster if the DB had nothing saved
+  if (artists.value.length === 0) {
+    artists.value = ARTISTS.filter(a => a.featured)
   }
 
   // Regions
