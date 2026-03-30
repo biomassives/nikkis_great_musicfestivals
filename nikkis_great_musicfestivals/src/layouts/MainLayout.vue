@@ -397,7 +397,7 @@ async function subscribeNav() {
 }
 
 /* ══ PAGE CONTAINER ══════════════════════════════════════════════ */
-.page-light { background: linear-gradient(180deg, #d0eaff 0%, #f5f0ff 100%); color: #1a0a2e; }
+.page-light { background: #f5f0ff; color: #1a0a2e; }
 .page-dark  { background: #070014; color: #e8e0ff; }
 
 /* Layout background animations */
@@ -434,6 +434,23 @@ async function subscribeNav() {
   &--admin {
     color: rgba(77,182,172,0.45);
     &:hover { color: #4db6ac; }
+  }
+}
+
+body.body--light {
+  .site-footer {
+    background: rgba(75, 0, 130, 0.05);
+    border-top: 1px solid rgba(75, 0, 130, 0.14);
+  }
+  .site-footer-copy { color: rgba(26, 10, 46, 0.4); }
+  .site-footer-sep  { color: rgba(26, 10, 46, 0.18); }
+  .site-footer-link {
+    color: rgba(26, 10, 46, 0.45);
+    &:hover { color: #1a0a2e; }
+    &--admin {
+      color: rgba(0, 100, 80, 0.55);
+      &:hover { color: #006450; }
+    }
   }
 }
 </style>

@@ -35,6 +35,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'support',        component: () => import('pages/admin/AdminSupportPage.vue') },
       { path: 'nav',            component: () => import('pages/admin/AdminNavPage.vue') },
       { path: 'pages',          component: () => import('pages/admin/AdminPagesPage.vue') },
+      { path: 'archive',         component: () => import('pages/admin/AdminArchivePage.vue') },
       { path: 'reset-password', component: () => import('pages/admin/AdminResetPasswordPage.vue') },
     ],
   },

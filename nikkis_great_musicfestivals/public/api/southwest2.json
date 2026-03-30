@@ -1,0 +1,65 @@
+{
+  "region": "Southwest",
+  "areas": [
+    {
+      "location": "Prescott, AZ",
+      "senior_artistic_hubs": [
+        {
+          "name": "The Folk Sessions (Elks Crystal Hall)",
+          "focus": "Folk Radio & Live Heritage Concerts",
+          "senior_appeal": "Pete Seeger/Guthrie-style singalongs, historic theatre setting"
+        },
+        {
+          "name": "Courthouse Plaza (Bluegrass Festival)",
+          "focus": "Free Public Jams & Workshops"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Bluegrass", "Traditional Folk", "Cowboy Poetry"],
+        "event": "Acker Night (December) - 100+ musicians in downtown shops"
+      },
+      "outdoor_nature_spots": {
+        "hiking": ["Peavine Trail (Flat/Scenic)", "Thumb Butte"],
+        "biodiversity_spot": ["Watson Lake (Granite Dells)"],
+        "nature_appreciation": ["Highlands Center for Natural History"]
+      }
+    },
+    {
+      "location": "Silver City, NM",
+      "senior_artistic_hubs": [
+        {
+          "name": "Tranquil Buzz Coffeehouse",
+          "focus": "Open Mics & Intergenerational Jams",
+          "senior_appeal": "Bohemian garden vibe, high concentration of retired artists"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Old-Time", "Desert Blues", "Songwriter Circles"],
+        "community": "Silver City Arts & Cultural District"
+      },
+      "outdoor_nature_spots": {
+        "hiking": ["Catwalk Recreation Area (Accessible)", "Gila Cliff Dwellings"],
+        "biodiversity_spot": ["Gila River Riparian Area"],
+        "nature_appreciation": ["Gila Native Plant Society Walks"]
+      }
+    },
+    {
+      "location": "Yuma, AZ",
+      "senior_artistic_hubs": [
+        {
+          "name": "Arizona Old Time Fiddlers (Territorial Chapter)",
+          "focus": "Winter Fiddle Jams & Performance",
+          "senior_appeal": "High community engagement for winter residents/snowbirds"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Old-Time Fiddle", "Gospel Bluegrass"],
+        "event": "Worthen Memorial Fiddle Contest (January)"
+      },
+      "outdoor_nature_spots": {
+        "nature_appreciation": ["Imperial National Wildlife Refuge"],
+        "biodiversity_spot": ["West Wetlands Park (Hummingbirds)"]
+      }
+    }
+  ]
+}

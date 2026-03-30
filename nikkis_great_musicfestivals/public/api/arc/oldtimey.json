@@ -1,0 +1,78 @@
+{
+  "style": "Southern Old-Time String Band",
+  "sub_genres": ["Round Peak", "Galax Style", "Frontier Fiddle"],
+  "instrumentation": ["Fiddle", "Clawhammer Banjo", "Upright Bass", "Clogging Feet", "Guitar (flat-top)"],
+  "essential_78s": [
+    {
+      "artist": "The Skillet Lickers",
+      "track": "Soldier's Joy",
+      "search_term": "Gid Tanner Riley Puckett 78rpm",
+      "archive_url": "https://archive.org/details/78_soldiers-joy_gid-tanner-and-his-skillet-lickers"
+    },
+    {
+      "artist": "Charlie Poole",
+      "track": "Don't Let Your Deal Go Down",
+      "search_term": "Charlie Poole North Carolina Ramblers",
+      "archive_url": "https://archive.org/details/78_dont-let-your-deal-go-down-blues"
+    },
+    {
+      "artist": "Uncle Dave Macon",
+      "track": "Keep My Skillet Good and Greasy",
+      "vibe": "The grandfather of high-energy banjo performance/clogging drive",
+      "archive_url": "https://archive.org/details/78_keep-my-skillet-good-and-greasy_uncle-dave-macon_gbia0001436a"
+    }
+  ],
+  "revival_masters_and_field_recordings": [
+    {
+      "band": "Highwoods String Band",
+      "collection": "Fire on the Mountain",
+      "vibe": "1970s energy that bridged the gap for the Hippie/Deadhead generation",
+      "archive_url": "https://archive.org/details/HighwoodsStringBandFireOnTheMountain"
+    },
+    {
+      "individual": "Tommy Jarrell",
+      "collection": "The Round Peak Style",
+      "search_term": "Tommy Jarrell Fred Cockerham kitchen tapes",
+      "archive_url": "https://archive.org/details/TommyJarrellFieldRecordings"
+    },
+    {
+      "band": "Old & In The Way",
+      "connection": "Jerry Garcia (Banjo), Vassar Clements (Fiddle)",
+      "vibe": "The 'Gateway Drug' for Deadheads into Bluegrass and Old-Timey styles",
+      "archive_url": "https://archive.org/details/OldAndInTheWay"
+    }
+  ],
+  "festival_field_recordings": [
+    {
+      "event": "Old Fiddlers Convention - Galax, VA",
+      "search_advice": "Search 'Galax Fiddlers Convention' + [Year 1960-1980]",
+      "archive_url": "https://archive.org/details/GalaxOldFiddlersConvention"
+    },
+    {
+      "event": "Clifftop (Appalachian String Band Festival)",
+      "vibe": "The modern 'Artistic Senior' and 'Youth' meeting ground for clogging and jams",
+      "archive_url": "https://archive.org/details/Clifftop_String_Band_Festival"
+    }
+  ],
+  "visual_and_percussive_heritage": [
+    {
+      "title": "Talking Feet",
+      "focus": "Flatfooting, Clogging, and Buck Dancing documentary",
+      "archive_url": "https://archive.org/details/talking-feet-dancing"
+    },
+    {
+      "title": "Smithsonian Folklife 1976",
+      "focus": "Bicentennial celebration of mountain music and elder-led dancing",
+      "archive_url": "https://archive.org/details/Smithsonian_Folklife_1976_Appalachia"
+    }
+  ],
+  "manual_search_keywords": [
+    "Breakdown",
+    "Hoedown",
+    "Reel",
+    "Clawhammer",
+    "Open-back",
+    "Flatfooting",
+    "Square Dance with Calls"
+  ]
+}

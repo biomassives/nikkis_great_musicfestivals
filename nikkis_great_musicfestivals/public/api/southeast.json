@@ -1,0 +1,44 @@
+{
+  "region": "Southeast",
+  "areas": [
+    {
+      "location": "Asheville / Black Mountain, NC",
+      "archive_org_shows": [
+        "https://archive.org/details/billystrings2026-02-11",
+        "https://archive.org/details/LEAF_Festival_Community_Audio"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Looking Glass Rock", "Mount Mitchell"],
+        "camping": ["Davidson River Campground", "Lake Powhatan"],
+        "rafting": ["Nantahala River", "French Broad River"],
+        "biodiversity_spot": ["The Pink Beds", "NC Arboretum"],
+        "fishing": ["Davidson River (Trout)", "South Mills River"]
+      }
+    },
+    {
+      "location": "Boone / Blowing Rock, NC",
+      "archive_org_shows": [
+        "https://archive.org/details/lke2019-11-15.litz.sbd.akg414.flac16"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Profile Trail", "Rough Ridge"],
+        "camping": ["Julian Price Park", "Grandfather Mountain Backcountry"],
+        "biodiversity_spot": ["Grandfather Mountain Biosphere", "Linville Gorge"],
+        "fishing": ["Watauga River", "Boone Fork Creek"]
+      }
+    },
+    {
+      "location": "Pittsboro, NC (Shakori Hills)",
+      "archive_org_shows": [
+        "https://archive.org/details/donna2023-10-07.aud",
+        "https://archive.org/details/twsh2023-05-05.akg461.flac2496"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["White Pines Nature Preserve"],
+        "paddling": ["Haw River Canoe Trail"],
+        "biodiversity_spot": ["Lower Haw River State Natural Area"],
+        "nature_appreciation": ["Jordan Lake State Recreation Area"]
+      }
+    }
+  ]
+}

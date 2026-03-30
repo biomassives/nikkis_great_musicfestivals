@@ -1,0 +1,46 @@
+{
+  "region": "Pacific Northwest",
+  "areas": [
+    {
+      "location": "George, WA (The Gorge)",
+      "archive_org_shows": [
+        "https://archive.org/details/wsp-george-wa-19980607",
+        "https://archive.org/details/tsp1994-08-31.shn"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Ancient Lakes", "Steamboat Rock"],
+        "camping": ["WildHorse Campground", "Wanapum State Park"],
+        "rafting": ["Wenatchee River"],
+        "fishing": ["Wanapum Lake", "Columbia River"],
+        "nature_appreciation": ["Gorge Overlook Park", "Cave B Estate"]
+      }
+    },
+    {
+      "location": "Troutdale, OR (Edgefield)",
+      "archive_org_shows": [
+        "https://archive.org/details/billystrings2021-09-17.neumann140.flac24"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Multnomah Falls", "Angel's Rest"],
+        "camping": ["Oxbow Regional Park", "Airstream Retreat"],
+        "rafting": ["Sandy River"],
+        "fishing": ["Sandy River", "Columbia River"],
+        "nature_appreciation": ["Vista House at Crown Point"]
+      }
+    },
+    {
+      "location": "Eugene, OR (Cuthbert)",
+      "archive_org_shows": [
+        "https://archive.org/details/furthur2010-09-16.109859.adk-tl.larson.flac16",
+        "https://archive.org/details/jrad2019-05-31.cmc621.cmc64.sbd.matrix.flac24"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Spencer Butte", "Mount Pisgah"],
+        "camping": ["Armitage Park", "Richardson Park"],
+        "rafting": ["McKenzie River"],
+        "fishing": ["Middle Fork Willamette", "McKenzie River"],
+        "nature_appreciation": ["Hendricks Park Rhododendron Garden"]
+      }
+    }
+  ]
+}

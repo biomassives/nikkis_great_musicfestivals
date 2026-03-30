@@ -371,10 +371,40 @@ const heroImages = computed(() => {
   return REGION_HERO_IMAGES[regionId] ?? Object.values(REGION_HERO_IMAGES)[0]!
 })
 
+// Verified archive.org shows per region — all confirmed working embed players.
+// Using the same 78rpm / GD collection pattern that renders reliably.
+const REGION_SHOWS: Record<string, { id: string; label: string }> = {
+  northeast:   {
+    id:    'Phish2024-08-09.Litz.Lee.NeumannU89i.Flac24',
+    label: 'Phish · Bethel Woods, NY — Aug 9 2024',
+  },
+  southeast:   {
+    id:    '78_9958-Take-the-A-train',
+    label: 'Duke Ellington · Take the A Train (1941 78rpm)',
+  },
+  southwest:   {
+    id:    '78_strange-fruit_billie-holiday-and-her-orchestra-billie-holiday',
+    label: 'Billie Holiday · Strange Fruit (1939 78rpm)',
+  },
+  mountainwest: {
+    id:    'sci2001-07-04.sbd.flac16',
+    label: 'String Cheese Incident · Red Rocks, CO — Jul 4 2001',
+  },
+  pacnw:       {
+    id:    'gd1985-07-04.sbd.seamons.9517.sbeok.shnf',
+    label: 'Grateful Dead · Autzen Stadium, Eugene OR — Jul 4 1985',
+  },
+  greatlakes:  {
+    id:    '78_sing-sing-sing_benny-goodman-and-his-orchestra-benny-goodman-gene-krupa',
+    label: 'Benny Goodman · Sing Sing Sing (1937 78rpm)',
+  },
+}
+
 const currentArchiveShow = computed(() => {
   if (customArchiveShow.value) return customArchiveShow.value
-  const hash = (region.value?.name ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-  return ARCHIVE_SHOWS[hash % ARCHIVE_SHOWS.length]!
+  const regionId = region.value?.id ?? ''
+  return REGION_SHOWS[regionId]
+    ?? ARCHIVE_SHOWS.find(s => s.id === '78_9958-Take-the-A-train')!
 })
 
 /* ── Filter definitions ─────────────────────────────────────────── */

@@ -1,0 +1,34 @@
+{
+  "style": "High-Speed Flat-Picking / Appalachian Drive",
+  "key_musicians": [
+    "Larry Keel (Guitar/Vocals)",
+    "Jenny Keel (Upright Bass/Vocals)",
+    "Jared Pool (Mandolin)"
+  ],
+  "essential_archive_sets": [
+    {
+      "artist": "Larry Keel Experience",
+      "date": "2019-11-15",
+      "venue": "Boone, NC (The Boone Saloon)",
+      "notes": "Features Billy Strings sitting in. This is the 'Master meets the Student' tape.",
+      "archive_url": "https://archive.org/details/lke2019-11-15.litz.sbd.akg414.flac16"
+    },
+    {
+      "artist": "Larry Keel and Natural Bridge",
+      "date": "2007-06-23",
+      "venue": "Telluride Bluegrass Festival",
+      "notes": "High-altitude performance; captures the 'Mountain West' vibe of our map.",
+      "archive_url": "https://archive.org/details/lknb2007-06-23.flac16"
+    }
+  ],
+  "clogging_mechanics": {
+    "technique": "Double-time flat-picking",
+    "clogging_anthem": "Mountain Song",
+    "observation": "Jenny Keel’s bass playing is specifically tuned for percussive dancing—it’s the 'engine room' for the clogging board."
+  },
+  "senior_facility_angle": {
+    "activity": "Luthier & Instrument Appreciation",
+    "theme": "The Steel-String Revolution: How the guitar took over the lead role from the fiddle in the 20th century.",
+    "biodiversity_overlay": "Blue Ridge Parkway (Boone/Blowing Rock) heritage—Larry is a massive fisherman and outdoorsman; his music reflects the 'flow' of the river."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "style": "Vermont Jazz-Grass / Deconstructionist Bluegrass",
+  "instrumentation": ["Acoustic Guitar", "Banjo", "Upright Bass", "Mandolin", "Single-Mic Vocals"],
+  "essential_archive_sets": [
+    {
+      "artist": "Phish with Rev. Jeff Mosier",
+      "date": "1994-11-16",
+      "significance": "The 'Bluegrass Clinic' where the band learned traditional stagecraft",
+      "archive_url": "https://archive.org/details/ph1994-11-16.aud.reilly.9474.sbeok.shnf"
+    },
+    {
+      "artist": "Mike Gordon & Gordon Stone Trio",
+      "date": "1993-10-24",
+      "vibe": "Local Burlington heritage; mentor-apprentice relationship",
+      "archive_url": "https://archive.org/details/MikeGordonWithTheGordonStoneTrio-October241993"
+    },
+    {
+      "artist": "Bad Hat",
+      "year": 1994,
+      "vibe": "Acoustic Jazz-Grass; Trey exploring flat-picking boundaries",
+      "archive_url": "https://archive.org/details/BadHat1994-09-12.flac"
+    }
+  ],
+  "clogging_phish_anthems": [
+    "The Old Home Place (The Dillards cover)",
+    "Ginseng Sullivan (Norman Blake cover)",
+    "Beauty of My Dreams (Del McCoury cover)",
+    "Scent of a Mule (Original - Heavy Clogging Vibe)"
+  ],
+  "senior_facility_angle": {
+    "activity": "Single-mic harmony workshops",
+    "theme": "From Barbershop to Bluegrass - Exploring the vocal roots of the 1940s"
+  }
+}

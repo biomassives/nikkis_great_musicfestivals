@@ -1,0 +1,27 @@
+{
+  "region": "Southeast",
+  "areas": [
+    {
+      "location": "Boone / Blowing Rock, NC",
+      "archive_org_shows": [
+        "https://archive.org/details/lke2019-11-15.litz.sbd.akg414.flac16"
+      ],
+      "senior_and_community_hubs": [
+        {
+          "name": "Jones House Cultural Center",
+          "activity": "Thursday Night Old-Time Jams",
+          "senior_appeal": "Historic porch-picking, Doc Watson heritage, intergenerational learning"
+        }
+      ],
+      "folk_culture": {
+        "instrument_focus": "Open-back Banjo, Fiddle",
+        "dance": "Clogging and Square Dancing at the High Country Fairgrounds",
+        "campground_vibe": "Julian Price Park - frequent campsite pickin' circles"
+      },
+      "outdoor_must_sees": {
+        "hiking": ["Profile Trail", "Rough Ridge"],
+        "biodiversity_spot": ["Grandfather Mountain Biosphere"]
+      }
+    }
+  ]
+}

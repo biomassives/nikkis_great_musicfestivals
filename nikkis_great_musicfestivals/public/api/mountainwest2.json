@@ -1,0 +1,71 @@
+{
+  "region": "Mountain West",
+  "areas": [
+    {
+      "location": "Weiser, ID",
+      "archive_org_shows": [
+        "https://archive.org/details/National_Oldtime_Fiddlers_Contest_Collections"
+      ],
+      "senior_artistic_hubs": [
+        {
+          "name": "Stickerville (Campground)",
+          "focus": "Intergenerational Jamming & Fiddling",
+          "senior_appeal": "Hallowed ground for fiddle mentors; campfire storytelling"
+        },
+        {
+          "name": "National Oldtime Fiddlers' Museum",
+          "focus": "Music Preservation & Oral History"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Northwest Fiddling", "Texas Style", "Old-Time"],
+        "event": "National Oldtime Fiddlers' Contest (June)"
+      },
+      "outdoor_nature_spots": {
+        "hiking": ["Weiser River Trail (Flat/Accessible)"],
+        "biodiversity_spot": ["Snake River / Hells Canyon"],
+        "nature_appreciation": ["Paddock Valley Reservoir (Birding)"]
+      }
+    },
+    {
+      "location": "Lyons, CO",
+      "archive_org_shows": [
+        "https://archive.org/details/RockyGrass_Festival_Recordings"
+      ],
+      "senior_artistic_hubs": [
+        {
+          "name": "Sandstone Park",
+          "focus": "Sunday Community Picking Circles",
+          "activity": "Bluegrass Jamming (Outdoor)"
+        }
+      ],
+      "outdoor_nature_spots": {
+        "hiking": ["Lily Lake (Rocky Mountain NP)", "Hall Ranch"],
+        "biodiversity_spot": ["Moraine Park (Elk viewing)"],
+        "fishing": ["St. Vrain Creek (Fly Fishing)"]
+      }
+    },
+    {
+      "location": "Livingston/Bozeman, MT",
+      "archive_org_shows": [
+        "https://archive.org/details/kd2022-09-02.sbd.flac24"
+      ],
+      "senior_artistic_hubs": [
+        {
+          "name": "Bozeman Senior Center",
+          "focus": "Gallatin Fiddlers Performance Group",
+          "activity": "Community Barn Dances"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Western Swing", "Traditional Fiddle"],
+        "vibe": "Frontier-style community gatherings"
+      },
+      "outdoor_nature_spots": {
+        "nature_appreciation": ["Lamar Valley (Wildlife/Wolf watching)"],
+        "biodiversity_spot": ["Mammoth Hot Springs"],
+        "fishing": ["Yellowstone River (Blue Ribbon)"]
+      }
+    }
+  ]
+}

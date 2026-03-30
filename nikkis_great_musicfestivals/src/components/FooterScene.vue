@@ -66,9 +66,9 @@
           <stop offset="100%" stop-color="#ffd700" stop-opacity="0"    />
         </radialGradient>
         <clipPath id="d-sky-reveal">
-          <rect x="460" y="47" height="26" width="0">
+          <rect x="630" y="47" height="26" width="0">
             <animate attributeName="width"
-              values="0;502;502;502;0"
+              values="0;180;180;180;0"
               keyTimes="0;0.62;0.76;0.88;1"
               dur="20s" begin="1s" repeatCount="indefinite" />
           </rect>
@@ -100,7 +100,7 @@
           keyTimes="0;0.03;0.62;0.74;1"
           dur="20s" begin="1s" repeatCount="indefinite" />
         <animateTransform attributeName="transform" type="translate"
-          values="460,62; 962,62; 962,62; 962,62; 460,62"
+          values="630,62; 810,62; 810,62; 810,62; 630,62"
           keyTimes="0;0.62;0.76;0.88;1"
           dur="20s" begin="1s" repeatCount="indefinite" />
         <!-- Pulsing halo -->
@@ -461,9 +461,9 @@
           <stop offset="100%" stop-color="#ffd700" stop-opacity="0"    />
         </radialGradient>
         <clipPath id="n-sky-reveal">
-          <rect x="460" y="47" height="26" width="0">
+          <rect x="630" y="47" height="26" width="0">
             <animate attributeName="width"
-              values="0;502;502;502;0"
+              values="0;180;180;180;0"
               keyTimes="0;0.62;0.76;0.88;1"
               dur="20s" begin="1s" repeatCount="indefinite" />
           </rect>
@@ -495,7 +495,7 @@
           keyTimes="0;0.03;0.62;0.74;1"
           dur="20s" begin="1s" repeatCount="indefinite" />
         <animateTransform attributeName="transform" type="translate"
-          values="460,62; 962,62; 962,62; 962,62; 460,62"
+          values="630,62; 810,62; 810,62; 810,62; 630,62"
           keyTimes="0;0.62;0.76;0.88;1"
           dur="20s" begin="1s" repeatCount="indefinite" />
         <!-- Pulsing halo (brighter against dark sky) -->
@@ -786,7 +786,11 @@ onMounted(async () => {
 .footer-svg {
   display: block; width: 100%; height: auto; min-height: 220px;
 }
-.footer-svg--day   { background: #f5f0ff; }
+.footer-svg--day {
+  background: #f5f0ff;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 7%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 7%);
+}
 .footer-svg--night { background: #070014; }
 
 .stream-body    { animation: streamPulse 5s ease-in-out infinite; }

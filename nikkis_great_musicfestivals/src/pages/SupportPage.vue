@@ -13,28 +13,109 @@
       </div>
 
       <!-- KICKSTARTER CAMPAIGN BANNER -->
-      <div v-if="cfg.kickstarter_url || true" class="kickstarter-banner q-pa-xl rounded-borders text-center q-mb-xl" style="max-width:700px; margin:0 auto">
-        <div class="section-label q-mb-xs">Campaign</div>
-        <div class="text-h5 text-bold q-mb-xs" style="color:#05ce78">Back Us on Kickstarter 🚀</div>
-        <div class="text-body2 q-mb-md" style="color:rgba(0,0,0,0.65)">
-          Help us reach our goal of <strong>$38,000</strong> by <strong>May 10th</strong> to fund concerts at senior facilities,
-          community art programs, and festival accessibility initiatives.
+      <div v-if="cfg.kickstarter_url || true" class="ks-banner q-mb-xl" style="max-width:780px; margin:0 auto">
+
+        <!-- Layer 2: background SVG art -->
+        <svg class="ks-bg-svg" viewBox="0 0 780 340" xmlns="http://www.w3.org/2000/svg"
+             aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <radialGradient id="ks-glow-green" cx="65%" cy="30%" r="45%">
+              <stop offset="0%" stop-color="#05ce78" stop-opacity="0.28" />
+              <stop offset="100%" stop-color="#05ce78" stop-opacity="0" />
+            </radialGradient>
+            <radialGradient id="ks-glow-purple" cx="15%" cy="75%" r="38%">
+              <stop offset="0%" stop-color="#a020f0" stop-opacity="0.2" />
+              <stop offset="100%" stop-color="#a020f0" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+
+          <!-- ambient glows -->
+          <rect width="780" height="340" fill="url(#ks-glow-green)" />
+          <rect width="780" height="340" fill="url(#ks-glow-purple)" />
+
+          <!-- SPIRO_P3 (7-petal cyan) — upper right, large -->
+          <g transform="translate(500, -18) scale(2.3)">
+            <path :d="SPIRO_P3" fill="none" stroke="#00e5ff" stroke-width="0.55" opacity="0.13" />
+          </g>
+
+          <!-- SPIRO_P1 (5-petal gold) — lower left, medium -->
+          <g transform="translate(-35, 155) scale(1.8)">
+            <path :d="SPIRO_P1" fill="none" stroke="#ffd700" stroke-width="0.55" opacity="0.1" />
+          </g>
+
+          <!-- SPIRO_P2 (3-petal magenta) — top left corner -->
+          <g transform="translate(-25, -35) scale(1.4)">
+            <path :d="SPIRO_P2" fill="none" stroke="#e040fb" stroke-width="0.5" opacity="0.08" />
+          </g>
+
+          <!-- static stars -->
+          <circle cx="122" cy="28"  r="1.3" fill="#fff" opacity="0.65" />
+          <circle cx="315" cy="16"  r="0.8" fill="#fff" opacity="0.50" />
+          <circle cx="575" cy="22"  r="1.1" fill="#fff" opacity="0.55" />
+          <circle cx="705" cy="50"  r="1.6" fill="#fff" opacity="0.38" />
+          <circle cx="42"  cy="145" r="0.9" fill="#fff" opacity="0.50" />
+          <circle cx="762" cy="215" r="1.2" fill="#fff" opacity="0.45" />
+          <circle cx="655" cy="298" r="0.9" fill="#fff" opacity="0.42" />
+          <circle cx="198" cy="308" r="1.4" fill="#fff" opacity="0.55" />
+          <circle cx="418" cy="318" r="0.7" fill="#fff" opacity="0.38" />
+          <circle cx="540" cy="140" r="1.0" fill="#fff" opacity="0.48" />
+          <circle cx="88"  cy="250" r="0.8" fill="#fff" opacity="0.42" />
+
+          <!-- twinkling coloured stars -->
+          <circle cx="482" cy="78" r="1.5" fill="#05ce78" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.1;0.7" dur="3.2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="242" cy="58" r="1.0" fill="#7df9ff" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.12;0.6" dur="2.7s" begin="0.8s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="638" cy="172" r="1.3" fill="#ffd700" opacity="0.5">
+            <animate attributeName="opacity" values="0.5;0.05;0.5" dur="4.1s" begin="1.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="355" cy="295" r="1.0" fill="#e040fb" opacity="0.5">
+            <animate attributeName="opacity" values="0.5;0.08;0.5" dur="3.6s" begin="0.4s" repeatCount="indefinite" />
+          </circle>
+
+          <!-- pulse rings emanating from upper-right spiro center -->
+          <circle cx="624" cy="110" r="28" fill="none" stroke="#05ce78" stroke-width="0.9" opacity="0">
+            <animate attributeName="r"       values="28;82"  dur="3.4s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.35;0" dur="3.4s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="624" cy="110" r="28" fill="none" stroke="#05ce78" stroke-width="0.9" opacity="0">
+            <animate attributeName="r"       values="28;82"  dur="3.4s" begin="1.7s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.35;0" dur="3.4s" begin="1.7s" repeatCount="indefinite" />
+          </circle>
+        </svg>
+
+        <!-- Layer 3: content -->
+        <div class="ks-content text-center">
+          <div class="ks-eyebrow q-mb-sm">Campaign</div>
+          <div class="ks-rocket q-mb-sm" aria-hidden="true">🚀</div>
+          <div class="ks-title q-mb-md">Back Us on Kickstarter</div>
+          <div class="ks-desc q-mb-lg">
+            Help us reach our goal of <strong>$38,000</strong> by <strong>May 10, 2026</strong> to fund concerts at senior facilities,
+            community art programs, and festival accessibility initiatives.
+          </div>
+          <div class="ks-pills row items-center justify-center q-gutter-md q-mb-lg">
+            <div class="ks-pill ks-pill--green">
+              <span class="ks-pill-num">$38,000</span>
+              <span class="ks-pill-label">Goal</span>
+            </div>
+            <div class="ks-pill ks-pill--blue">
+              <span class="ks-pill-num">May 10</span>
+              <span class="ks-pill-label">Deadline</span>
+            </div>
+          </div>
+          <q-btn
+            v-if="cfg.kickstarter_url"
+            :href="cfg.kickstarter_url"
+            target="_blank"
+            label="Back This Project on Kickstarter"
+            unelevated
+            icon="launch"
+            class="ks-cta-btn q-px-xl"
+          />
+          <div v-else class="ks-coming-soon q-mt-xs">Kickstarter campaign link coming soon</div>
         </div>
-        <div class="row items-center justify-center q-gutter-sm q-mb-md">
-          <div class="text-h4 text-bold" style="color:#05ce78">$38,000</div>
-          <div class="text-body2 text-grey-6">goal · deadline May 10</div>
-        </div>
-        <q-btn
-          v-if="cfg.kickstarter_url"
-          :href="cfg.kickstarter_url"
-          target="_blank"
-          label="Back This Project on Kickstarter"
-          color="positive"
-          unelevated
-          icon="launch"
-          class="q-px-xl"
-        />
-        <div v-else class="text-caption text-grey-5 q-mt-xs">(Kickstarter link coming soon)</div>
       </div>
 
       <!-- BILLING INTERVAL TOGGLE -->
@@ -189,6 +270,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import PageBackground from 'src/components/PageBackground.vue'
 import { supabase } from 'src/lib/supabase'
+import { SPIRO_P1, SPIRO_P2, SPIRO_P3 } from 'src/lib/spirograph'
 
 const interval     = ref<'month' | 'year'>('month')
 const customAmount = ref<number | null>(null)
@@ -415,13 +497,149 @@ async function redirectToStripe(params: Record<string, unknown>) {
   padding: 4px 16px; border-radius: 20px; white-space: nowrap;
 }
 
-/* ── Kickstarter banner ─────────────────────────────────────────── */
-.kickstarter-banner {
-  background: linear-gradient(135deg, #05a85c 0%, #028a4a 100%);
-  border: 2px solid #05ce78;
+/* ── Kickstarter campaign banner ────────────────────────────────── */
+.ks-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 62% 72% at 70% 28%, rgba(5, 150, 80, 0.30) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 58% at 16% 78%, rgba(100, 0, 180, 0.20) 0%, transparent 55%),
+    linear-gradient(155deg, #08001e 0%, #0d1d40 50%, #041510 100%);
+  border: 1px solid rgba(5, 206, 120, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(5, 206, 120, 0.08),
+    0 0 55px rgba(5, 206, 120, 0.15),
+    0 24px 80px rgba(5, 0, 40, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: ks-flicker-in 2.4s ease forwards;
+}
+
+.ks-bg-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ks-content {
+  position: relative;
+  z-index: 1;
+  padding: 54px 48px 48px;
+}
+
+.ks-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: #05ce78;
+  display: block;
+}
+
+.ks-rocket {
+  font-size: 54px;
+  display: inline-block;
+  line-height: 1;
+  filter: drop-shadow(0 0 18px rgba(5, 206, 120, 0.55));
+  animation: rocket-float 2.8s ease-in-out infinite;
+}
+
+.ks-title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 800;
   color: #fff;
-  .text-grey-6 { color: rgba(255,255,255,0.6) !important; }
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 45px rgba(5, 206, 120, 0.38);
+}
+
+.ks-desc {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.70);
+  max-width: 530px;
+  margin: 0 auto;
+  line-height: 1.65;
   strong { color: #fff; }
+}
+
+.ks-pills { flex-wrap: wrap; }
+
+.ks-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 11px 30px;
+  border-radius: 14px;
+  min-width: 115px;
+  backdrop-filter: blur(6px);
+  &--green {
+    background: rgba(5, 206, 120, 0.14);
+    border: 1px solid rgba(5, 206, 120, 0.40);
+  }
+  &--blue {
+    background: rgba(100, 180, 255, 0.11);
+    border: 1px solid rgba(100, 180, 255, 0.33);
+  }
+}
+.ks-pill-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.ks-pill-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+  margin-top: 3px;
+}
+
+.ks-cta-btn {
+  background: linear-gradient(135deg, #05ce78 0%, #00a85a 100%) !important;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  border-radius: 50px !important;
+  box-shadow: 0 5px 28px rgba(5, 206, 120, 0.42) !important;
+  transition: box-shadow 0.22s, transform 0.22s;
+  &:hover {
+    box-shadow: 0 10px 44px rgba(5, 206, 120, 0.65) !important;
+    transform: translateY(-2px);
+  }
+}
+
+.ks-coming-soon {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
+}
+
+/* flicker-in entrance */
+@keyframes ks-flicker-in {
+  0%   { opacity: 0; }
+  6%   { opacity: 0.28; }
+  9%   { opacity: 0.04; }
+  14%  { opacity: 0.52; }
+  18%  { opacity: 0.13; }
+  23%  { opacity: 0.74; }
+  26%  { opacity: 0.43; }
+  33%  { opacity: 0.88; }
+  37%  { opacity: 0.65; }
+  46%  { opacity: 0.96; }
+  53%  { opacity: 0.80; }
+  63%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* rocket float */
+@keyframes rocket-float {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50%       { transform: translateY(-11px) rotate(-7deg); }
 }
 
 /* ── Sponsor section ────────────────────────────────────────────── */

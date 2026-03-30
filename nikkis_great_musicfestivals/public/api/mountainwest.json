@@ -1,0 +1,46 @@
+{
+  "region": "Mountain West",
+  "areas": [
+    {
+      "location": "Morrison, CO (Red Rocks)",
+      "archive_org_shows": [
+        "https://archive.org/details/wsp2025-06-29_202506",
+        "https://archive.org/details/gd1978-07-08.sbd.miller.98085.flac16"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Trading Post Trail", "Red Rocks Trail"],
+        "camping": ["Bear Creek Lake Park", "Chatfield State Park"],
+        "fishing": ["Bear Creek", "Manitou Lake"],
+        "biodiversity_spot": ["Bear Creek Lake Park Wetlands"],
+        "nature_appreciation": ["Dinosaur Ridge (fossils)"]
+      }
+    },
+    {
+      "location": "Telluride, CO (Town Park)",
+      "archive_org_shows": [
+        "https://archive.org/details/billystrings2024-06-20",
+        "https://archive.org/details/sierraferrell2023-06-17"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Bridal Veil Falls", "Jud Wiebe Trail"],
+        "camping": ["Telluride Town Park", "Alta Lakes"],
+        "rafting": ["San Miguel River"],
+        "biodiversity_spot": ["San Miguel River Riparian Zone"],
+        "fishing": ["San Miguel River", "Trout Lake"]
+      }
+    },
+    {
+      "location": "Livingston, MT (Pine Creek)",
+      "archive_org_shows": [
+        "https://archive.org/details/kd2022-09-02.sbd.flac24"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Pine Creek Falls", "Deep Creek"],
+        "camping": ["Pine Creek Campground", "Luccock Park"],
+        "rafting": ["Yellowstone River (Yankee Jim Canyon)"],
+        "biodiversity_spot": ["Yellowstone Northern Range", "Paradise Valley"],
+        "fishing": ["Yellowstone River (Blue Ribbon Trout)"]
+      }
+    }
+  ]
+}

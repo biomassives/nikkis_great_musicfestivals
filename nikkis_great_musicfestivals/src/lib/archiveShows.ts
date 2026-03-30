@@ -40,6 +40,14 @@ export const ARCHIVE_SHOWS: ArchiveShow[] = [
   { id: 'gd1991-09-10.sbd.miller.87991.sbeok.shnf',
     label: 'Grateful Dead · Madison Square Garden, Sep 1991' },
 
+  // ── Phish ─────────────────────────────────────────────────────────────────
+  { id: 'Phish2024-08-09.Litz.Lee.NeumannU89i.Flac24',
+    label: 'Phish · Bethel Woods, NY — Aug 9 2024' },
+
+  // ── String Cheese Incident ────────────────────────────────────────────────
+  { id: 'sci2001-07-04.sbd.flac16',
+    label: 'String Cheese Incident · Red Rocks, CO — Jul 4 2001' },
+
   // ── Contemporary ──────────────────────────────────────────────────────────
   { id: 'billystrings2026-02-06',
     label: 'Billy Strings · Athens, GA — Feb 6 2026' },

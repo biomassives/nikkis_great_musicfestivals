@@ -1,0 +1,47 @@
+{
+  "region": "Northeast",
+  "areas": [
+    {
+      "location": "Bethel, NY (Bethel Woods)",
+      "archive_org_shows": [
+        "https://archive.org/details/Phish2024-08-09.Litz.Lee.NeumannU89i.Flac24",
+        "https://archive.org/details/franti2019-06-16.spyder9.flac16"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Walnut Mountain", "Neversink Gorge"],
+        "camping": ["Bethel Woods Historic Camping", "Mongaup Pond"],
+        "fishing": ["Willowemoc Creek (Fly Fishing)", "Delaware River"],
+        "biodiversity_spot": ["Upper Delaware Scenic River (Bald Eagles)"],
+        "nature_appreciation": ["The Museum at Bethel Woods"]
+      }
+    },
+    {
+      "location": "Saratoga Springs, NY (SPAC)",
+      "archive_org_shows": [
+        "https://archive.org/details/20230618_20230618_0559",
+        "https://archive.org/details/Phish2025-07-25.Tremblay.Schoeps.Flac24"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Geyser Creek Trail", "Hadley Mountain"],
+        "camping": ["Moreau Lake State Park"],
+        "rafting": ["Sacandaga River"],
+        "biodiversity_spot": ["Karner Blue Butterfly Sanctuary", "Mineral Springs"],
+        "fishing": ["Saratoga Lake", "Kayaderosseras Creek"]
+      }
+    },
+    {
+      "location": "Portland, ME (Thompson's Point)",
+      "archive_org_shows": [
+        "https://archive.org/details/kglw2024-08-20.SBD",
+        "https://archive.org/details/dso2025-07-11.Tim_Leavy"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Jewell Falls", "Mackworth Island"],
+        "kayaking": ["Casco Bay", "Fore River"],
+        "biodiversity_spot": ["Wolfe’s Neck Woods (Ospreys)", "Scarborough Marsh"],
+        "fishing": ["Fore River (Striped Bass)"],
+        "nature_appreciation": ["Portland Observatory", "Eastern Promenade"]
+      }
+    }
+  ]
+}

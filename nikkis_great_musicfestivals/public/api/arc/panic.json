@@ -1,0 +1,33 @@
+{
+  "style": "Southern Gothic Acoustic / Muddy-Water Jam",
+  "key_artists": ["Widespread Panic", "Vic Chesnutt", "Jerry Joseph", "The Wood Brothers"],
+  "essential_archive_sets": [
+    {
+      "artist": "Widespread Panic (Sit & Ski)",
+      "date": "1996-01-20",
+      "venue": "Snow King Center, WY",
+      "significance": "The definitive acoustic 'Sit & Ski' performance",
+      "archive_url": "https://archive.org/details/wsp1996-01-20.aud.flac16"
+    },
+    {
+      "artist": "Brute (Vic Chesnutt + Panic)",
+      "date": "1995-04-08",
+      "vibe": "Haunting Southern folk; heavy storytelling emphasis",
+      "archive_url": "https://archive.org/details/wsp1995-04-08.aud.schoeps.641.8744.sbeok.shnf"
+    },
+    {
+      "artist": "Widespread Panic w/ Billy Strings",
+      "date": "2023-12-31",
+      "vibe": "Full acoustic set; the bridge between Athens and the New Vanguard",
+      "archive_url": "https://archive.org/details/wsp1502025-12-31"
+    }
+  ],
+  "heritage_clogging_metric": {
+    "song_to_watch": "Fishwater",
+    "clogging_vibe": "Heavy percussion; Sunny Ortiz’s 'Whistle' and 'Washboard' additions mimic old-time dance calls."
+  },
+  "senior_facility_angle": {
+    "theme": "Southern Storytelling & The Athens Sound",
+    "activity": "Songwriting workshops focused on local 'Sense of Place'—using the lyrics of Mike Houser and Vic Chesnutt as templates."
+  }
+}

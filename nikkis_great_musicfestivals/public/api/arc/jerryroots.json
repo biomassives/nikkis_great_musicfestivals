@@ -1,0 +1,32 @@
+{
+  "style": "Jerry Garcia Acoustic & Roots",
+  "musical_focus": ["Scruggs-Style Banjo", "Bluegrass Fiddle", "Jug Band Stomp"],
+  "essential_archive_sets": [
+    {
+      "band": "Hart Valley Drifters",
+      "year": 1962,
+      "notable_track": "Sitting on Top of the World",
+      "archive_url": "https://archive.org/details/HartValleyDrifters1962",
+      "senior_connection": "Jerry learning traditional balladry and folk patterns"
+    },
+    {
+      "band": "Old & In The Way",
+      "year": 1973,
+      "venue": "The Boarding House, San Francisco",
+      "archive_url": "https://archive.org/details/oaity1973-10-08.sbd.ashley-field.19530.sbeok.shnf",
+      "vibe": "The pinnacle of the Fiddle/Banjo/Bass/Mandolin quartet"
+    },
+    {
+      "band": "Jerry Garcia & David Grisman",
+      "era": "1990-1995",
+      "vibe": "Mellow, sophisticated acoustic 'Dawg' music",
+      "archive_url": "https://archive.org/details/jerry-garcia-david-grisman-1991-08-25",
+      "senior_appeal": "Acoustic storytelling, 'The Thrill is Gone' covers, high-fidelity"
+    }
+  ],
+  "manual_review_notes": {
+    "search_tip_1": "Search 'Vassar Clements' for the best Old-Timey/Bluegrass fiddle tapes.",
+    "search_tip_2": "Search 'Jerry Garcia Banjo 1960s' for early field recordings.",
+    "clogging_metric": "Look for shows with 'Orange Blossom Special'—it is the ultimate clogging/fiddle showcase."
+  }
+}

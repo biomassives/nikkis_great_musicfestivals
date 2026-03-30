@@ -1,0 +1,29 @@
+{
+  "playlist_title": "Blue Ridge Local Legends: From Porch to Stage",
+  "region_focus": "Southern Appalachia (Boone/Asheville/Brevard)",
+  "tracks": [
+    {
+      "era": "The Roots (1960s)",
+      "legend": "Doc Watson",
+      "significance": "The Deep Gap, NC pioneer of flat-picking.",
+      "senior_facility_activity": "Heritage Storytelling: Discussing life in the 'Deep Gap' before the Parkway."
+    },
+    {
+      "era": "The Bridge (2000s-2010s)",
+      "legend": "Larry Keel",
+      "significance": "Connecting Appalachian flat-picking to the Jam Band circuit.",
+      "senior_facility_activity": "Instrument Clinic: Examining the 'Steel-String' guitar versus the traditional 'Gut-String' banjo."
+    },
+    {
+      "era": "The Future (2020s)",
+      "legend": "Billy Strings",
+      "significance": "Revitalizing the Bluegrass/Old-Timey intersection for a global audience.",
+      "senior_facility_activity": "Intergenerational Listening: Playing 'Rank Stranger' and comparing Billy's version to the 1950s Stanley Brothers original."
+    }
+  ],
+  "clogging_checklist": {
+    "recommended_surface": "Wooden 'Dance Board' (Oak or Maple preferred)",
+    "rhythm_tip": "Focus on the 'Off-Beat' (the backbeat) provided by the Upright Bass.",
+    "visual_aid": ""
+  }
+}

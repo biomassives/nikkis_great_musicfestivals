@@ -132,8 +132,8 @@
       </div>
     </div>
 
-    <!-- Content sections -->
-    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-md">Content</div>
+    <!-- ── Row 1: Content ─────────────────────────────────────── -->
+    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-md">Publish Content</div>
     <div class="row q-col-gutter-lg q-mb-xl">
       <div class="col-12 col-sm-6 col-lg-4" v-for="section in contentSections" :key="section.route">
         <q-card class="section-card" @click="$router.push(section.route)">
@@ -149,8 +149,8 @@
       </div>
     </div>
 
-    <!-- Pages sections -->
-    <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-md">Pages</div>
+    <!-- ── Row 2: Pages & Design ───────────────────────────── -->
+    <div class="text-subtitle2 text-amber-4 text-uppercase ls-2 q-mb-md">Pages &amp; Design</div>
     <div class="row q-col-gutter-lg q-mb-xl">
       <div class="col-12 col-sm-6 col-lg-4" v-for="section in pageSections" :key="section.route">
         <q-card class="section-card" @click="$router.push(section.route)">
@@ -163,6 +163,38 @@
             <q-icon name="chevron_right" color="grey-6" size="20px" />
           </q-card-section>
         </q-card>
+      </div>
+    </div>
+
+    <!-- ── Row 3: Automation & Settings ───────────────────── -->
+    <div class="text-subtitle2 text-light-blue-4 text-uppercase ls-2 q-mb-md">Automation &amp; Settings</div>
+    <div class="row q-col-gutter-lg q-mb-xl">
+      <div class="col-12 col-sm-6 col-lg-4" v-for="section in automationSections" :key="section.route">
+        <q-card class="section-card" @click="$router.push(section.route)">
+          <q-card-section class="row items-center q-pa-lg gap-md">
+            <q-icon :name="section.icon" :color="section.color" size="36px" class="q-mr-md" />
+            <div class="col">
+              <div class="text-h6 text-white text-weight-bold">{{ section.title }}</div>
+              <div class="text-caption text-grey-5">{{ section.desc }}</div>
+            </div>
+            <q-icon name="chevron_right" color="grey-6" size="20px" />
+          </q-card-section>
+        </q-card>
+      </div>
+      <!-- Analytics — external link -->
+      <div class="col-12 col-sm-6 col-lg-4">
+        <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" class="no-decoration" style="display:block">
+          <q-card class="section-card">
+            <q-card-section class="row items-center q-pa-lg gap-md">
+              <q-icon name="insights" color="deep-orange-4" size="36px" class="q-mr-md" />
+              <div class="col">
+                <div class="text-h6 text-white text-weight-bold">Analytics</div>
+                <div class="text-caption text-grey-5">Traffic, visitors &amp; page views on Vercel</div>
+              </div>
+              <q-icon name="open_in_new" color="grey-6" size="18px" />
+            </q-card-section>
+          </q-card>
+        </a>
       </div>
     </div>
 
@@ -407,19 +439,25 @@ const stats = [
 ]
 
 const contentSections = [
-  { title: 'Festival Maps',    icon: 'explore',           color: 'teal-4',        route: '/admin/maps',       desc: 'Add shows, senior facilities, and nature spots' },
-  { title: 'Photo Gallery',    icon: 'photo_library',     color: 'amber-4',       route: '/admin/gallery',    desc: 'Upload and organise photos by category' },
-  { title: 'Newsletter',       icon: 'mark_email_unread', color: 'light-blue-4',  route: '/admin/newsletter', desc: 'Compose newsletters and view subscribers' },
-  { title: 'Blog & Updates',   icon: 'newspaper',         color: 'green-4',       route: '/admin/blog',       desc: 'Write tour stories and event recaps' },
-  { title: 'Merch & Goods',    icon: 'style',             color: 'pink-4',        route: '/admin/merch',      desc: 'Manage art, photo prints, and other items' },
+  { title: 'Festival Maps',         icon: 'explore',        color: 'teal-4',        route: '/admin/maps',       desc: 'Add shows, senior stops, and nature spots to the tour map' },
+  { title: 'Photo Gallery',         icon: 'photo_library',  color: 'amber-4',       route: '/admin/gallery',    desc: 'Upload and organise photos by category' },
+  { title: 'Blog & Updates',        icon: 'newspaper',      color: 'green-4',       route: '/admin/blog',       desc: 'Write tour stories, recaps, and community posts' },
+  { title: 'Merch & Goods',         icon: 'style',          color: 'pink-4',        route: '/admin/merch',      desc: 'Manage art prints, apparel, and other items' },
+  { title: 'Archive Collections',   icon: 'library_music',  color: 'deep-purple-3', route: '/admin/archive',    desc: 'Curated archive.org listening rooms, organized by theme and region' },
 ]
 
 const pageSections = [
-  { title: 'Homepage',         icon: 'home',              color: 'teal-3',        route: '/admin/home',       desc: 'Content, background image, and SEO meta tags' },
-  { title: 'Our Story',        icon: 'auto_stories',      color: 'deep-purple-3', route: '/admin/story',      desc: 'Edit the full-screen story overlay text and image' },
-  { title: 'Support Page',     icon: 'favorite',          color: 'red-4',         route: '/admin/support',    desc: 'Manage membership tiers, pricing, and perks' },
-  { title: 'Navigation',       icon: 'menu',              color: 'purple-3',      route: '/admin/nav',        desc: 'Rename links, add sub-pages, or reorder the nav' },
-  { title: 'Pages',            icon: 'web',               color: 'deep-purple-3', route: '/admin/pages',      desc: 'Build custom pages with images, video, embeds, and media links' },
+  { title: 'Homepage',           icon: 'home',              color: 'teal-3',        route: '/admin/home',       desc: 'Hero, artists, welcome overlay, background, and SEO' },
+  { title: 'Our Story',          icon: 'auto_stories',      color: 'deep-purple-3', route: '/admin/story',      desc: 'Full-screen story overlay text and image' },
+  { title: 'Support & Funding',  icon: 'favorite',          color: 'red-4',         route: '/admin/support',    desc: 'Membership tiers, Kickstarter goal, and sponsor options' },
+  { title: 'Navigation',         icon: 'menu',              color: 'purple-3',       route: '/admin/nav',       desc: 'Rename links, add sub-pages, or reorder the nav' },
+  { title: 'Custom Pages',       icon: 'web',               color: 'deep-orange-3', route: '/admin/pages',      desc: 'Build pages with images, video, embeds, and media links' },
+]
+
+const automationSections = [
+  { title: 'Newsletter & Email', icon: 'mark_email_unread', color: 'light-blue-4',  route: '/admin/newsletter', desc: 'Compose campaigns, view subscribers, and send test emails' },
+  { title: 'Artist Profiles',    icon: 'queue_music',       color: 'cyan-4',        route: '/admin/home',       desc: 'Manage the featured artists shown on the homepage grid' },
+  { title: 'Site Appearance',    icon: 'tune',              color: 'indigo-3',      route: '/admin/home',       desc: 'Background image, spirograph colors, SEO, and social meta' },
 ]
 
 function fmtDate(d: string) {

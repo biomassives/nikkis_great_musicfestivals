@@ -147,6 +147,11 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
+         LISTENING ROOM
+    ═══════════════════════════════════════════════════════════ -->
+    <ArchivePlayerSection />
+
+    <!-- ═══════════════════════════════════════════════════════════
          SUBSCRIBE
     ═══════════════════════════════════════════════════════════ -->
     <section class="subscribe-section q-pa-lg" id="subscribe-bottom">
@@ -189,6 +194,7 @@ import SpirographLogo from 'src/components/SpirographLogo.vue'
 import WelcomeOverlay from 'src/components/WelcomeOverlay.vue'
 import StoryOverlay      from 'src/components/StoryOverlay.vue'
 import NewsletterSignup  from 'src/components/NewsletterSignup.vue'
+import ArchivePlayerSection from 'src/components/ArchivePlayerSection.vue'
 
 const showStory = ref(false)
 const SESSION_KEY = 'ngmf_welcomed_v1'
@@ -309,11 +315,17 @@ async function loadSettings() {
       if (v['clouds_opacity']   != null) bgCloudsOpacity.value = v['clouds_opacity'] as number
     }
     if (row.key === 'homepage_artists' && Array.isArray(row.value) && (row.value as unknown[]).length) {
-      artists.value = row.value as Artist[]
+      const dbList = row.value as Artist[]
+      const dbIds  = new Set(dbList.map(a => a.id))
+      // DB order first, then append any static featured artists not yet included
+      artists.value = [
+        ...dbList,
+        ...ARTISTS.filter(a => a.featured && !dbIds.has(a.id)),
+      ]
     }
   }
 
-  // Fall back to the full static featured roster if the DB had nothing saved
+  // Nothing in DB at all — use the full static featured roster
   if (artists.value.length === 0) {
     artists.value = ARTISTS.filter(a => a.featured)
   }
@@ -567,8 +579,10 @@ onMounted(() => { void loadSettings() })
   border-radius: 16px; overflow: hidden;
   background: rgba(124,77,255,0.10);
   border: 1px solid rgba(124,77,255,0.22);
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s;
+  opacity: 0.27;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s, opacity 0.3s;
   &:hover {
+    opacity: 1;
     transform: translateY(-8px);
     box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 20px rgba(124,77,255,0.15);
     border-color: var(--ac, rgba(124,77,255,0.6));

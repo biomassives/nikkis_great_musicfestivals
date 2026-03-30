@@ -1,0 +1,69 @@
+{
+  "project_title": "The Intergenerational String Band & Heritage Map",
+  "core_instrumentation": ["Fiddle", "Clawhammer Banjo", "Upright Bass", "Clogging/Flatfooting"],
+  "musical_roots_library": {
+    "jerry_garcia_roots": {
+      "style": "Early Folk & Bluegrass (1962-1973)",
+      "key_archive_links": [
+        {
+          "band": "Hart Valley Drifters (1962)",
+          "url": "https://archive.org/details/HartValleyDrifters1962",
+          "notes": "Jerry at 20; pure old-timey folk and flat-picking."
+        },
+        {
+          "band": "Old & In The Way (1973)",
+          "url": "https://archive.org/details/oaity1973-10-08.sbd.ashley-field.19530.sbeok.shnf",
+          "notes": "The gold standard for Fiddle/Banjo/Bass/Mandolin quartet."
+        }
+      ],
+      "heritage_connection": "Jerry's deep study of the 'Old Masters' like Bill Monroe and Doc Watson."
+    },
+    "phish_roots": {
+      "style": "Vermont Jazz-Grass & Barbershop (1984-1996)",
+      "key_archive_links": [
+        {
+          "artist": "Phish (The Bluegrass Clinic)",
+          "url": "https://archive.org/details/ph1994-11-16.aud.reilly.9474.sbeok.shnf",
+          "notes": "Rev. Jeff Mosier teaching the band traditional stagecraft."
+        },
+        {
+          "artist": "Gordon Stone Trio (w/ Mike Gordon)",
+          "url": "https://archive.org/details/MikeGordonWithTheGordonStoneTrio-October241993",
+          "notes": "Burlington heritage; pedal steel and banjo mastery."
+        }
+      ],
+      "heritage_connection": "Deconstructionist Bluegrass; high-speed precision meets vocal harmony."
+    },
+    "billy_strings_vanguard": {
+      "style": "Modern Traditionalism / Galaxy Grass",
+      "key_archive_links": [
+        {
+          "artist": "Billy Strings (RockyGrass 2017)",
+          "url": "https://archive.org/details/bs2017-07-30.akg.flac16",
+          "notes": "Raw acoustic power; direct lineage to Doc Watson."
+        },
+        {
+          "artist": "Sierra Ferrell (2023)",
+          "url": "https://archive.org/details/sierraferrell2023-06-17",
+          "notes": "Heritage swing meets old-time fiddle; high senior/vintage appeal."
+        }
+      ],
+      "heritage_connection": "The 'Great Connector' bringing the 1920s sound to the 2020s."
+    }
+  },
+  "manual_review_toolkit": {
+    "clogging_indicators": [
+      "Listen for rhythmic 'thumping' on wooden boards in field recordings.",
+      "Search metadata for 'Breakdown', 'Hoedown', or 'Square Dance with Calls'.",
+      "Look for 'John Hartford' covers—the patron saint of the clogging-fiddle-banjo intersection."
+    ],
+    "senior_facility_integration": {
+      "activity_ideas": [
+        "Single-mic harmony workshops (Phish roots)",
+        "Plein-air painting to 'Dawg Music' (Garcia/Grisman)",
+        "Storytelling through balladry (Boone/Asheville heritage)"
+      ],
+      "biodiversity_overlay": "Pair 'The Pink Beds' (NC) with Highwoods String Band for a full sensory mountain experience."
+    }
+  }
+}

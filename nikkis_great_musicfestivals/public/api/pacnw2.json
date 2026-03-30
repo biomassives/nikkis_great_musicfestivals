@@ -1,0 +1,65 @@
+{
+  "region": "Pacific Northwest",
+  "areas": [
+    {
+      "location": "Port Townsend, WA",
+      "archive_org_shows": [
+        "https://archive.org/details/Centrum_Fiddle_Tunes_Archive"
+      ],
+      "senior_artistic_hubs": [
+        {
+          "name": "Centrum at Fort Worden",
+          "focus": "Festival of American Fiddle Tunes",
+          "senior_appeal": "Master-apprentice heritage, historic barracks jams, maritime setting"
+        },
+        {
+          "name": "Quimper Village (Co-housing)",
+          "focus": "Collaborative Arts & Music living"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Maritime Shanties", "Old-Time Fiddle", "Luthier culture"],
+        "event": "Festival of American Fiddle Tunes (July)"
+      },
+      "outdoor_nature_spots": {
+        "hiking": ["Hurricane Ridge (Accessible trails)", "Fort Worden Beach Walk"],
+        "biodiversity_spot": ["Olympic National Park (Ancient Forests)"],
+        "nature_appreciation": ["Port Townsend Marine Science Center"]
+      }
+    },
+    {
+      "location": "Brownsville / Eugene, OR",
+      "senior_artistic_hubs": [
+        {
+          "name": "Oregon Oldtime Fiddlers Association (OOTFA)",
+          "focus": "Grange Hall Fiddle Jams",
+          "activity": "Statewide senior jam network"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Pioneer Fiddling", "Square Dance Calling"],
+        "local_legends": "The OOTFA District 6 Pickers"
+      },
+      "outdoor_nature_spots": {
+        "nature_appreciation": ["Mount Pisgah Arboretum"],
+        "biodiversity_spot": ["Willamette Valley Oak Savanna"],
+        "camping": ["Armitage Park (Riverfront picking)"]
+      }
+    },
+    {
+      "location": "Bellingham, WA",
+      "senior_artistic_hubs": [
+        {
+          "name": "Roeder Home (Whatcom County)",
+          "focus": "Heritage Music & Arts",
+          "activity": "Bellingham Folk Festival workshops"
+        }
+      ],
+      "outdoor_nature_spots": {
+        "hiking": ["Interurban Trail", "Whatcom Falls Park"],
+        "biodiversity_spot": ["Chuckanut Bay (Tidepools)"],
+        "nature_appreciation": ["Sehome Hill Arboretum"]
+      }
+    }
+  ]
+}

@@ -111,3 +111,19 @@ export interface ChangelogEntry {
   author: string | null
   tags: string[]
 }
+
+export interface ArcEntry {
+  id: string
+  label: string
+  notes?: string
+}
+
+export interface ArcCollection {
+  id: string
+  title: string
+  style: string
+  icon: string
+  color: string
+  region_tags: string[]
+  entries: ArcEntry[]
+}

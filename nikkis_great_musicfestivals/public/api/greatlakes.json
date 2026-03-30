@@ -1,0 +1,44 @@
+{
+  "region": "Great Lakes",
+  "areas": [
+    {
+      "location": "East Troy, WI (Alpine Valley)",
+      "archive_org_shows": [
+        "https://archive.org/details/gd1989-07-19.175297.5-1.tobin.flac1648",
+        "https://archive.org/details/phish1999-07-24.aud.flac16"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Ice Age Trail", "Scuppernong Trail"],
+        "camping": ["Kettle Moraine South Unit", "Bong State Recreation Area"],
+        "fishing": ["Lake Beulah", "Whitewater Lake"],
+        "biodiversity_spot": ["Kettle Moraine Glacial Features", "Lulu Lake Preserve"]
+      }
+    },
+    {
+      "location": "Cuyahoga Falls, OH (Blossom)",
+      "archive_org_shows": [
+        "https://archive.org/details/jrad2018-08-16.Blossom"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["The Ledges", "Brandywine Falls"],
+        "camping": ["Stanford House (NPS)", "Punderson State Park"],
+        "rafting_kayaking": ["Cuyahoga River Water Trail"],
+        "biodiversity_spot": ["Beaver Marsh", "Cuyahoga Valley National Park"],
+        "fishing": ["Cuyahoga River", "Lake Erie (nearby)"]
+      }
+    },
+    {
+      "location": "Highland Park, IL (Ravinia)",
+      "archive_org_shows": [
+        "https://archive.org/details/AndrewBird2012-09-07"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Green Bay Trail", "Des Plaines River Trail"],
+        "camping": ["Illinois Beach State Park"],
+        "paddling": ["Skokie Lagoons"],
+        "biodiversity_spot": ["Chicago Botanic Garden", "Ryerson Conservation Area"],
+        "nature_appreciation": ["Fort Sheridan Forest Preserve"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "region": "Southwest",
+  "areas": [
+    {
+      "location": "Sedona/Phoenix, AZ",
+      "archive_org_shows": [
+        "https://archive.org/details/GratefulDead?query=Phoenix+1978",
+        "https://archive.org/details/CompaiaDeDanzaFolkloricaArizona"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["Cathedral Rock", "Camelback Mountain"],
+        "camping": ["Cave Springs", "Dead Horse Ranch"],
+        "rafting_kayaking": ["Verde River", "Lower Salt River"],
+        "fishing": ["Oak Creek Canyon", "Lake Pleasant"],
+        "nature_appreciation": ["Red Rock State Park", "Desert Botanical Garden"]
+      }
+    },
+    {
+      "location": "Santa Fe/Albuquerque, NM",
+      "archive_org_shows": [
+        "https://archive.org/details/gd1982-09-11.sbd.walker-scotton.62916.shnf"
+      ],
+      "outdoor_must_sees": {
+        "hiking": ["La Luz Trail", "Atalaya Mountain"],
+        "camping": ["Black Canyon Campground"],
+        "rafting": ["Rio Grande Race Course"],
+        "fishing": ["Pecos River"],
+        "nature_appreciation": ["Valles Caldera", "Sandia Peak Tramway"]
+      }
+    }
+  ]
+}

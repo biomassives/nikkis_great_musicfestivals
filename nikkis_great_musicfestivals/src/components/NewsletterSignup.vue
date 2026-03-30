@@ -30,7 +30,6 @@
           label="Your name (optional)"
           outlined dense
           :dark="dark"
-          :label-color="dark ? 'teal-3' : undefined"
           :color="dark ? 'teal-3' : 'teal'"
           class="q-mb-sm"
           autocomplete="name"
@@ -46,7 +45,6 @@
             outlined dense
             class="col"
             :dark="dark"
-            :label-color="dark ? 'teal-3' : undefined"
             :color="dark ? 'teal-3' : 'teal'"
             :error="state === 'error'"
             :error-message="errorMsg"
@@ -169,6 +167,11 @@ async function submit() {
 </script>
 
 <style scoped>
+/* Input label/placeholder text — site yellow-orange */
+:deep(.q-field__label) {
+  color: #f5a623 !important;
+}
+
 /* Honeypot: off-screen, never visible to humans */
 .nl-honeypot {
   position: absolute;

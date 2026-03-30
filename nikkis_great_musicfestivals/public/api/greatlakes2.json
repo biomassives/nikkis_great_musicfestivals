@@ -1,0 +1,58 @@
+{
+  "region": "Great Lakes",
+  "areas": [
+    {
+      "location": "Evart, MI",
+      "archive_org_shows": [
+        "https://archive.org/details/ODPC_Dulcimer_Funfest_Recordings"
+      ],
+      "senior_artistic_hubs": [
+        {
+          "name": "Osceola County Fairgrounds (ODPC FunFest)",
+          "focus": "Hammered Dulcimer & Acoustic Jams",
+          "senior_appeal": "Master-led workshops, 'Slow Jams' for elders, non-electric environment"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Hammered Dulcimer", "Old-Time Fiddle", "Gospel Sing"],
+        "community": "Original Dulcimer Players Club (founded 1963)"
+      },
+      "outdoor_nature_spots": {
+        "paddling": ["Muskegon River (Gentle floats)"],
+        "biodiversity_spot": ["Silver Lake Sand Dunes", "Little Sable Point"],
+        "nature_appreciation": ["Sable Points Lighthouse Keepers (Volunteer Seniors)"]
+      }
+    },
+    {
+      "location": "Traverse City / Interlochen, MI",
+      "senior_artistic_hubs": [
+        {
+          "name": "Interlochen College of Creative Arts",
+          "focus": "Adult Nature & Art Retreats",
+          "activity": "Songwriting in the Pines, Plein-air painting"
+        }
+      ],
+      "outdoor_nature_spots": {
+        "hiking": ["Sleeping Bear Dunes Heritage Trail (Accessible)"],
+        "nature_appreciation": ["Grand Traverse Conservation District (Senior Birding)"]
+      }
+    },
+    {
+      "location": "La Farge, WI (Driftless Area)",
+      "archive_org_shows": [
+        "https://archive.org/details/LarryFest_Bluegrass_Family"
+      ],
+      "senior_artistic_hubs": [
+        {
+          "name": "Kickapoo Valley Reserve Visitor Center",
+          "focus": "Local Heritage & Driftless Biodiversity",
+          "activity": "Guided Elder Hikes & Folk History Talks"
+        }
+      ],
+      "musical_heritage": {
+        "styles": ["Bluegrass", "Traditional Valley Jams"],
+        "event": "LarryFest (Intergenerational community vibe)"
+      }
+    }
+  ]
+}
