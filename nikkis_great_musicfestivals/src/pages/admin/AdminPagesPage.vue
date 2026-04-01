@@ -44,7 +44,9 @@
                   :label="page.published ? 'Live' : 'Draft'" class="q-ml-sm" />
               </div>
               <div class="text-caption text-grey-5 q-mt-xs">
-                <q-icon name="link" size="11px" class="q-mr-xs" />/{{ page.slug }}
+                <q-icon name="link" size="11px" class="q-mr-xs" />
+                <span v-if="page.nav_parent">{{ page.nav_parent }}/{{ page.slug }}</span>
+                <span v-else>/{{ page.slug }}</span>
               </div>
               <div v-if="page.nav_parent" class="text-caption text-grey-6 q-mt-xs">
                 <q-icon name="account_tree" size="11px" class="q-mr-xs" />under {{ page.nav_parent }}
@@ -69,7 +71,14 @@
         <div class="col">
           <div class="text-h5 text-purple-3">{{ editingPage.id ? 'Edit Page' : 'New Page' }}</div>
           <div class="text-caption text-grey-5">
-            {{ editingPage.slug ? `Site URL: /${editingPage.slug}` : 'Set a slug below' }}
+            <template v-if="editingPage.slug">
+              Site URL:
+              <span v-if="editingPage.nav_parent">
+                {{ editingPage.nav_parent }}/{{ editingPage.slug }}
+              </span>
+              <span v-else>/{{ editingPage.slug }}</span>
+            </template>
+            <template v-else>Set a slug below</template>
           </div>
         </div>
         <q-toggle v-model="editingPage.published" label="Published" color="teal-4" dark

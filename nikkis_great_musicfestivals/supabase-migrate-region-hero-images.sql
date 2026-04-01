@@ -36,7 +36,7 @@ VALUES (
   'region_hero_southwest',
   jsonb_build_object(
     'images', jsonb_build_array(
-      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80',
+      'https://images.unsplash.com/photo-1703821717473-c512aa0b4654?auto=format&fit=crop&w=1600&q=80',
       'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=1600&q=80',
       'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1600&q=80',
       'https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=80',
@@ -132,8 +132,8 @@ VALUES (
   'region_hero_northeast',
   jsonb_build_object(
     'images', jsonb_build_array(
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1600&q=80',
-      'https://images.unsplash.com/photo-1569587112025-0d460e81a126?auto=format&fit=crop&w=1600&q=80',
+      'https://images.unsplash.com/photo-1446329813274-7c9036bd9a1f?auto=format&fit=crop&w=1600&q=80',
+      'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1600&q=80',
       'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80',
       'https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=80',
       'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80'

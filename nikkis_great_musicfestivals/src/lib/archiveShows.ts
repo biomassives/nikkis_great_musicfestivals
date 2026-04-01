@@ -47,8 +47,36 @@ export const ARCHIVE_SHOWS: ArchiveShow[] = [
   // ── String Cheese Incident ────────────────────────────────────────────────
   { id: 'sci2001-07-04.sbd.flac16',
     label: 'String Cheese Incident · Red Rocks, CO — Jul 4 2001' },
+  { id: 'sci2010-07-25',
+    label: 'String Cheese Incident · Red Rocks Amphitheater — Jul 25 2010' },
 
-  // ── Contemporary ──────────────────────────────────────────────────────────
+  // ── Widespread Panic ──────────────────────────────────────────────────────
+  { id: 'wsp2013-11-09.ak40.flac24',
+    label: 'Widespread Panic · Asheville Civic Center — Nov 9 2013' },
+  { id: 'wsp2007-09-22.mk41.mk5.flac16',
+    label: 'Widespread Panic · FedExForum, Memphis TN — Sep 22 2007' },
+
+  // ── Greensky Bluegrass ────────────────────────────────────────────────────
+  { id: 'gsbg2021-09-19.akg61.stearns.flac16',
+    label: 'Greensky Bluegrass · Red Rocks Amphitheatre — Sep 19 2021' },
+
+  // ── Umphrey\'s McGee ──────────────────────────────────────────────────────
+  { id: 'um2004-07-03.flac',
+    label: "Umphrey's McGee · Summerfest, Milwaukee WI — Jul 3 2004" },
+
+  // ── Railroad Earth ────────────────────────────────────────────────────────
+  { id: 'rre2009-09-05.mimna.bsc1-k4.flac16',
+    label: 'Railroad Earth · Red Rocks Amphitheatre — Sep 5 2009' },
+
+  // ── Leftover Salmon ───────────────────────────────────────────────────────
+  { id: 'los1997-04-11.flac16',
+    label: 'Leftover Salmon · The Rock — Apr 11 1997' },
+
+  // ── Billy Strings ─────────────────────────────────────────────────────────
   { id: 'billystrings2026-02-06',
     label: 'Billy Strings · Athens, GA — Feb 6 2026' },
+  { id: 'billystrings2018-06-21.koto.digihoarders.16441',
+    label: 'Billy Strings · Town Park, Telluride CO — Jun 21 2018' },
+  { id: 'billystrings2019-04-13.litz.schoepsMK41v.flac16',
+    label: 'Billy Strings · Bender Jamboree, Las Vegas — Apr 13 2019' },
 ]
