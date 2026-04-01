@@ -19,6 +19,7 @@
     "@stripe/stripe-js": "^9.0.0",
     "@supabase/supabase-js": "^2.99.3",
     "@types/leaflet": "^1.9.21",
+    "@vercel/analytics": "^2.0.1",
     "@vueup/vue-quill": "^1.2.0",
     "leaflet": "^1.9.4",
     "pinia": "^3.0.1",
