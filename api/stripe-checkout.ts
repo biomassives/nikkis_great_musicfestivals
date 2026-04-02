@@ -58,6 +58,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ url: session.url })
 
   } catch (err) {
+    console.error('[stripe-checkout]', err)
+    if (err instanceof Stripe.errors.StripeError) {
+      return res.status(500).json({
+        error: err.message,
+        type: err.type,
+        code: err.code ?? null,
+      })
+    }
     const message = err instanceof Error ? err.message : 'Unknown error'
     return res.status(500).json({ error: message })
   }
