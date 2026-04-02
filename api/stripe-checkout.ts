@@ -64,6 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         error: err.message,
         type: err.type,
         code: err.code ?? null,
+        detail: (err as unknown as { detail?: unknown }).detail ?? null,
       })
     }
     const message = err instanceof Error ? err.message : 'Unknown error'
