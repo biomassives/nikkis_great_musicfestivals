@@ -1,13 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-  apiVersion: '2026-02-25.clover',
-})
-
-const BASE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:9000'
+const BASE_URL =
+  process.env.SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:9000')
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -15,6 +11,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return res.status(503).json({ error: 'Stripe not configured yet — add STRIPE_SECRET_KEY to Vercel env vars' })
   }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2026-02-25.clover',
+  })
 
   const { priceId, customAmount, interval, mode = 'subscription' } = req.body as {
     priceId?: string
