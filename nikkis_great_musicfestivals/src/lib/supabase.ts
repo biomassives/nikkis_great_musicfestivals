@@ -14,6 +14,12 @@ export interface MapRegion {
   zoom: number
   display_order: number
   image_url: string | null
+  attribution_author:      string | null
+  attribution_source_url:  string | null
+  attribution_license:     string | null
+  attribution_license_url: string | null
+  attribution_changes:     string | null
+  attribution_approved:    boolean
 }
 
 export interface GallerySection {
@@ -39,6 +45,12 @@ export interface GalleryPhoto {
   caption: string | null
   display_order: number
   published: boolean
+  attribution_author:      string | null
+  attribution_source_url:  string | null
+  attribution_license:     string | null
+  attribution_license_url: string | null
+  attribution_changes:     string | null
+  attribution_approved:    boolean
 }
 
 export interface Newsletter {

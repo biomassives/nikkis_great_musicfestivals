@@ -546,6 +546,7 @@ import { supabase } from 'src/lib/supabase'
 import type { HomepageArtist } from 'src/lib/supabase'
 import { ARTISTS } from 'src/lib/artists'
 import PageBackground from 'src/components/PageBackground.vue'
+import { storageBucket } from 'src/lib/instance'
 
 // ── Upload refs ──────────────────────────────────────────────────────────────
 const uploadingBg      = ref(false)
@@ -646,7 +647,7 @@ const seo = reactive({
   og_title:        "Nikki's Great Music Festivals — Tour Maps, Live Music & Community",
   og_description:  'Follow the festival trail — tour maps, artist interviews, photography, and community across the US.',
   og_image:        null as string | null,
-  og_url:          'https://nikkisgreatmusicfestivals.vercel.app',
+  og_url:          'https://lovelight.cc',
   meta_description:"Festival tour maps, artist interviews, trail photography and community — Nikki's Great Music Festivals.",
   meta_keywords:   'music festivals, bluegrass, outdoor concerts, Billy Strings, Leftover Salmon, Stringdusters',
   twitter_card:    'summary_large_image',
@@ -759,9 +760,9 @@ async function handleWelcomeUpload(e: Event) {
   if (!file) return
   uploadingWelcome.value = true
   const path = `homepage/welcome-${Date.now()}.${file.name.split('.').pop() ?? 'jpg'}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     welcome.image_url = data.publicUrl
     await saveWelcome()          // ← auto-save immediately
   }
@@ -774,9 +775,9 @@ async function handleBgUpload(e: Event) {
   if (!file) return
   uploadingBg.value = true
   const path = `homepage/bg-${Date.now()}.${file.name.split('.').pop() ?? 'jpg'}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     appearance.bg_image_url = data.publicUrl
     await saveAppearance()       // ← auto-save immediately
   }
@@ -789,9 +790,9 @@ async function handleOgUpload(e: Event) {
   if (!file) return
   uploadingOg.value = true
   const path = `homepage/og-${Date.now()}.${file.name.split('.').pop() ?? 'jpg'}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     seo.og_image = data.publicUrl
     await saveSeo()              // ← auto-save immediately
   }

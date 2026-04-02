@@ -259,6 +259,7 @@ import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { storageBucket, sessionKey } from 'src/lib/instance'
 
 const $q = useQuasar()
 
@@ -405,9 +406,9 @@ async function handleImgUpload(e: Event) {
   imgDialog.uploading = true
   const ext  = file.name.split('.').pop() ?? 'jpg'
   const path = `pages/${Date.now()}.${ext}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     imgDialog.url = data.publicUrl
   }
   imgDialog.uploading = false
@@ -431,7 +432,7 @@ function confirmInsertImage() {
 }
 
 // ── Draft helpers ──────────────────────────────────────────────────────────
-function draftKey(id?: string) { return `ngmf_page_draft_${id ?? 'new'}` }
+function draftKey(id?: string) { return sessionKey(`page_draft_${id ?? 'new'}`) }
 
 function checkDraft(id?: string) {
   const raw = localStorage.getItem(draftKey(id))

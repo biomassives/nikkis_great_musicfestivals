@@ -39,6 +39,77 @@
       </q-card>
     </q-expansion-item>
 
+    <!-- Attribution Review Queue -->
+    <q-expansion-item
+      icon="policy"
+      label="Attribution Review"
+      :caption="reviewPending.length ? `${reviewPending.length} pending approval` : 'All attributions approved'"
+      class="attr-review q-mb-md rounded-borders"
+      header-class="attr-review-header"
+    >
+      <q-card class="attr-review-card">
+        <q-card-section v-if="reviewPending.length === 0" class="text-grey-5 text-center q-py-lg text-caption">
+          Nothing pending — all credited photos have been reviewed.
+        </q-card-section>
+        <q-list v-else separator dark style="background:transparent">
+          <q-item v-for="photo in reviewPending" :key="photo.id" class="q-py-sm">
+            <q-item-section avatar>
+              <img :src="photo.url" class="attr-review-thumb" :alt="photo.caption ?? ''" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-grey-2 text-weight-medium">{{ photo.attribution_author }}</q-item-label>
+              <q-item-label caption class="text-grey-6">
+                {{ photo.attribution_license }}
+                <span v-if="!photo.attribution_source_url" class="text-amber-6"> · source URL missing</span>
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn flat dense label="Edit & Approve" color="teal-3" icon="fact_check" size="sm"
+                @click="openAttrReview(photo)" />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+    </q-expansion-item>
+
+    <!-- Attribution Edit & Approve Dialog -->
+    <q-dialog v-model="attrReview.open" persistent>
+      <q-card style="min-width:440px;background:#1a1a2e;border:1px solid rgba(77,182,172,0.3)">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6 text-teal-3">Review Attribution</div>
+          <q-space />
+          <q-btn icon="close" flat round dense color="grey-5" v-close-popup />
+        </q-card-section>
+
+        <q-card-section v-if="attrReview.photo" class="q-gutter-sm">
+          <div class="row items-center q-gutter-md q-mb-sm">
+            <img :src="attrReview.photo.url" class="attr-dialog-thumb" />
+            <div class="text-caption text-grey-5">
+              {{ attrReview.photo.caption ?? attrReview.photo.category }}
+            </div>
+          </div>
+          <q-input v-model="attrReview.form.author"
+            label="Author / photographer" dark outlined dense label-color="teal-3" color="teal-3" />
+          <q-input v-model="attrReview.form.source_url"
+            label="Source URL" hint="Wikimedia page, Flickr, etc."
+            dark outlined dense label-color="teal-3" color="teal-3" />
+          <q-input v-model="attrReview.form.license"
+            label="License" dark outlined dense label-color="teal-3" color="teal-3" />
+          <q-input v-model="attrReview.form.license_url"
+            label="License deed URL" dark outlined dense label-color="teal-3" color="teal-3" />
+          <q-input v-model="attrReview.form.changes"
+            label="Modifications (if any)" dark outlined dense label-color="teal-3" color="teal-3" />
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-px-md q-pb-md">
+          <q-btn flat label="Save draft" color="grey-5"
+            :loading="attrReview.saving" @click="saveAttrReview(false)" />
+          <q-btn unelevated label="Approve" icon="check" color="teal"
+            :loading="attrReview.saving" @click="saveAttrReview(true)" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <!-- Section tabs -->
     <q-tabs v-model="tab" dense align="left" active-color="teal-3" indicator-color="teal-3" class="q-mb-lg">
       <q-tab v-for="sec in sections" :key="sec.slug" :name="sec.slug" :icon="sec.icon" :label="sec.label" />
@@ -83,6 +154,9 @@
               </div>
             </div>
             <q-badge v-if="!photo.published" class="draft-badge" color="amber-8" text-color="black" label="DRAFT" />
+            <q-icon v-if="photo.attribution_author && !photo.attribution_approved"
+              name="policy" color="amber-6" size="14px" class="attr-pending-badge"
+              title="Attribution pending review" />
           </div>
           <div v-if="byCategory(tab).length === 0" class="text-grey-6 text-center q-py-xl col-span-full">
             No photos yet in this section
@@ -126,6 +200,22 @@
           <q-input v-model="captionInput" placeholder="Optional caption..." dark outlined dense
             label-color="teal-3" color="teal-3" class="q-mb-md" />
 
+          <q-expansion-item dense icon="policy" label="Attribution (CC / third-party photos)"
+            header-class="text-teal-4" class="q-mb-md attr-expand">
+            <div class="q-pt-sm q-gutter-sm">
+              <q-input v-model="attrInput.author" label="Creator / photographer" dark outlined dense
+                label-color="teal-3" color="teal-3" placeholder="e.g. Ser Amantio di Nicolao" />
+              <q-input v-model="attrInput.source_url" label="Source URL (Wikimedia page, Flickr, etc.)" dark outlined dense
+                label-color="teal-3" color="teal-3" placeholder="https://commons.wikimedia.org/wiki/File:..." />
+              <q-input v-model="attrInput.license" label="License" dark outlined dense
+                label-color="teal-3" color="teal-3" placeholder="CC BY-SA 4.0" />
+              <q-input v-model="attrInput.license_url" label="License deed URL" dark outlined dense
+                label-color="teal-3" color="teal-3" placeholder="https://creativecommons.org/licenses/by-sa/4.0/" />
+              <q-input v-model="attrInput.changes" label="Modifications (if any)" dark outlined dense
+                label-color="teal-3" color="teal-3" placeholder="e.g. cropped" />
+            </div>
+          </q-expansion-item>
+
           <q-toggle v-model="addAsPublished" label="Publish immediately" color="teal-3" dark />
           <div class="text-caption text-grey-6 q-mt-xs">Off = saved as draft, visible only in admin</div>
         </div>
@@ -166,9 +256,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
 import type { GalleryPhoto, GallerySection } from 'src/lib/supabase'
+import { storageBucket } from 'src/lib/instance'
+import { parsePhotoFilename } from 'src/lib/parsePhotoFilename'
 
 const DEFAULT_SECTIONS: GallerySection[] = [
   { slug: 'outdoor',  label: 'Outdoor Adventures', description: 'Trails, peaks, and wild places',                icon: 'forest',     color: 'green-8' },
@@ -201,6 +293,80 @@ const fileInput      = ref<HTMLInputElement | null>(null)
 const uploadProgress = ref<{ name: string; pct: number }[]>([])
 const addAsPublished = ref(true)
 const savingSection  = ref(false)
+
+const attrInput = reactive({
+  author:      '',
+  source_url:  '',
+  license:     'CC BY-SA 4.0',
+  license_url: 'https://creativecommons.org/licenses/by-sa/4.0/',
+  changes:     '',
+})
+
+function attrFields() {
+  return {
+    attribution_author:      attrInput.author      || null,
+    attribution_source_url:  attrInput.source_url  || null,
+    attribution_license:     attrInput.license      || null,
+    attribution_license_url: attrInput.license_url  || null,
+    attribution_changes:     attrInput.changes       || null,
+  }
+}
+
+function clearAttr() {
+  attrInput.author      = ''
+  attrInput.source_url  = ''
+  attrInput.license     = 'CC BY-SA 4.0'
+  attrInput.license_url = 'https://creativecommons.org/licenses/by-sa/4.0/'
+  attrInput.changes     = ''
+}
+
+// ── Attribution review queue ─────────────────────────────────────────────────
+const reviewPending = computed(() =>
+  photos.value.filter(p => p.attribution_author && !p.attribution_approved)
+)
+
+const attrReview = reactive({
+  open:   false,
+  saving: false,
+  photo:  null as GalleryPhoto | null,
+  form: {
+    author:      '',
+    source_url:  '',
+    license:     '',
+    license_url: '',
+    changes:     '',
+  },
+})
+
+function openAttrReview(photo: GalleryPhoto) {
+  attrReview.photo = photo
+  attrReview.form  = {
+    author:      photo.attribution_author      ?? '',
+    source_url:  photo.attribution_source_url  ?? '',
+    license:     photo.attribution_license     ?? '',
+    license_url: photo.attribution_license_url ?? '',
+    changes:     photo.attribution_changes     ?? '',
+  }
+  attrReview.open = true
+}
+
+async function saveAttrReview(approve: boolean) {
+  if (!attrReview.photo) return
+  attrReview.saving = true
+  const updates = {
+    attribution_author:      attrReview.form.author      || null,
+    attribution_source_url:  attrReview.form.source_url  || null,
+    attribution_license:     attrReview.form.license     || null,
+    attribution_license_url: attrReview.form.license_url || null,
+    attribution_changes:     attrReview.form.changes     || null,
+    attribution_approved:    approve,
+  }
+  await supabase.from('gallery_photos').update(updates).eq('id', attrReview.photo.id)
+  const found = photos.value.find(p => p.id === attrReview.photo!.id)
+  if (found) Object.assign(found, updates)
+  attrReview.saving = false
+  attrReview.open   = false
+}
 
 const sectionDialog = ref({ open: false, isNew: true, editIndex: -1 })
 const sectionForm   = ref<GallerySection>({ slug: '', label: '', description: '', icon: 'photo', color: 'teal-3' })
@@ -288,10 +454,12 @@ async function addByUrl() {
     caption: captionInput.value || null,
     display_order: byCategory(tab.value).length + 1,
     published: addAsPublished.value,
+    ...attrFields(),
   }).select().single()
   if (data) photos.value.push(data as GalleryPhoto)
   urlInput.value = ''
   captionInput.value = ''
+  clearAttr()
 }
 
 async function addBatch() {
@@ -299,14 +467,17 @@ async function addBatch() {
   if (!urls.length) return
   addingBatch.value = true
   const base = byCategory(tab.value).length
+  const attr = attrFields()
   const rows = urls.map((url, i) => ({
     category: tab.value, url, caption: null,
     display_order: base + i + 1, published: addAsPublished.value,
+    ...attr,
   }))
   const { data } = await supabase.from('gallery_photos').insert(rows).select()
   if (data) photos.value.push(...(data as GalleryPhoto[]))
   batchUrls.value = ''
   addingBatch.value = false
+  clearAttr()
 }
 
 async function deletePhoto(id: string) {
@@ -319,21 +490,38 @@ function triggerUpload() { fileInput.value?.click() }
 async function handleUpload(e: Event) {
   const files = Array.from((e.target as HTMLInputElement).files ?? [])
   if (!files.length) return
+
+  // Tier 1: auto-fill attribution from filename if it follows the naming scheme.
+  // Source URL is intentionally left blank — it can't be derived from the filename
+  // and must be filled in the review queue (Tier 2).
+  const firstFile = files[0]
+  if (firstFile) {
+    const parsed = parsePhotoFilename(firstFile.name)
+    if (parsed?.valid) {
+      attrInput.author      = parsed.author
+      attrInput.source_url  = ''
+      attrInput.license     = parsed.licenseLabel
+      attrInput.license_url = parsed.licenseUrl
+      attrInput.changes     = parsed.changes ?? ''
+    }
+  }
+
   uploading.value = true
   uploadProgress.value = files.map(f => ({ name: f.name, pct: 0 }))
   for (let i = 0; i < files.length; i++) {
     const file = files[i]!
     const ext  = file.name.split('.').pop()
     const path = `gallery/${tab.value}/${Date.now()}-${i}.${ext}`
-    const { error } = await supabase.storage.from('festival-media').upload(path, file)
+    const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
     uploadProgress.value[i]!.pct = 50
     if (!error) {
-      const { data: urlData } = supabase.storage.from('festival-media').getPublicUrl(path)
+      const { data: urlData } = supabase.storage.from(storageBucket()).getPublicUrl(path)
       const { data: row } = await supabase.from('gallery_photos').insert({
         category: tab.value, url: urlData.publicUrl,
         caption: captionInput.value || null,
         display_order: byCategory(tab.value).length + i + 1,
         published: addAsPublished.value,
+        ...attrFields(),
       }).select().single()
       if (row) photos.value.push(row as GalleryPhoto)
     }
@@ -342,6 +530,7 @@ async function handleUpload(e: Event) {
   uploading.value = false
   uploadProgress.value = []
   captionInput.value = ''
+  clearAttr()
 }
 
 onMounted(async () => {
@@ -358,6 +547,12 @@ onMounted(async () => {
 .section-mgr-card   { background: #14142a; }
 .admin-add-panel    { background: #1a1a2e; border: 1px solid rgba(77,182,172,0.2); }
 
+.attr-review        { background: #1a1a2e; border: 1px solid rgba(251,192,45,0.25); }
+.attr-review-header { color: #ffe082 !important; }
+.attr-review-card   { background: #14142a; }
+.attr-review-thumb  { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
+.attr-dialog-thumb  { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+
 .admin-photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -367,6 +562,11 @@ onMounted(async () => {
   position: relative; border-radius: 6px; overflow: hidden; aspect-ratio: 1;
   &:hover .admin-thumb-overlay { opacity: 1; }
   &--draft { opacity: 0.65; outline: 2px solid #ffa000; }
+}
+
+.attr-pending-badge {
+  position: absolute; top: 4px; right: 4px;
+  background: rgba(0,0,0,0.6); border-radius: 50%; padding: 2px;
 }
 .admin-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .admin-thumb-overlay {

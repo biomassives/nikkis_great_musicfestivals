@@ -201,6 +201,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
 import type { MerchItem, MerchSection } from 'src/lib/supabase'
+import { storageBucket } from 'src/lib/instance'
 
 const DEFAULT_SECTIONS: MerchSection[] = [
   { slug: 'art',    label: 'Art We Make', description: 'Original paintings, prints, and handcrafted pieces created during the tour',  icon: 'palette',      color: 'deep-purple' },
@@ -310,9 +311,9 @@ async function handleUpload(e: Event) {
   uploading.value = true
   const ext  = file.name.split('.').pop()
   const path = `merch/${form.category}/${Date.now()}.${ext}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     form.image_url = data.publicUrl
   }
   uploading.value = false

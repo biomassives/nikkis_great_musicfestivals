@@ -24,12 +24,17 @@
       <div class="vignette"></div>
 
       <!-- Caption bar -->
-      <div class="caption-bar" v-if="photos[current]?.caption">
-        <span>{{ photos[current]?.caption }}</span>
-        <span class="counter">{{ current + 1 }} / {{ photos.length }}</span>
-      </div>
-      <div class="caption-bar" v-else>
-        <span></span>
+      <div class="caption-bar">
+        <div class="caption-left">
+          <span v-if="photos[current]?.caption" class="caption-text">{{ photos[current]?.caption }}</span>
+          <PhotoAttribution
+            :author="photos[current]?.attribution_author ?? null"
+            :source-url="photos[current]?.attribution_source_url ?? null"
+            :license="photos[current]?.attribution_license ?? null"
+            :license-url="photos[current]?.attribution_license_url ?? null"
+            :changes="photos[current]?.attribution_changes ?? null"
+          />
+        </div>
         <span class="counter">{{ current + 1 }} / {{ photos.length }}</span>
       </div>
 
@@ -162,6 +167,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import type { GalleryPhoto } from 'src/lib/supabase'
+import PhotoAttribution from 'src/components/PhotoAttribution.vue'
 
 const props = defineProps<{ photos: GalleryPhoto[]; startIndex: number }>()
 const emit  = defineEmits<{ (e: 'close'): void }>()
@@ -213,10 +219,15 @@ const navLinks = [
 
 .caption-bar {
   position: absolute; bottom: 220px; left: 0; right: 0;
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex; justify-content: space-between; align-items: flex-end;
   padding: 0 32px;
-  font-size: 13px; color: rgba(255,255,255,0.75);
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+.caption-left {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.caption-text {
+  font-size: 13px; color: rgba(255,255,255,0.75);
 }
 .counter { font-size: 11px; color: rgba(255,255,255,0.4); }
 

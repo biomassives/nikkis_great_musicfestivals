@@ -40,10 +40,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
+import { sessionKey } from 'src/lib/instance'
 
 const emit = defineEmits<{ dismissed: [] }>()
 
-const SESSION_KEY = 'ngmf_welcomed_v1'
+const SESSION_KEY = sessionKey('welcomed_v1')
 const visible = ref(false)   // stays hidden until config is loaded
 
 const cfg = reactive({

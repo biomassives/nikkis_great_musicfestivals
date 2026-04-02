@@ -107,6 +107,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { supabase } from 'src/lib/supabase'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { DEFAULT_STORY_CONTENT } from 'instance/lovelight/story-default'
+import { config as instanceConfig } from 'instance/lovelight/config'
+import { storageBucket } from 'src/lib/instance'
 
 const QUILL_OPTIONS = {
   modules: {
@@ -126,15 +129,13 @@ const saved          = ref(false)
 const uploadingImage = ref(false)
 const imageFileInput = ref<HTMLInputElement | null>(null)
 
-const DEFAULT_CONTENT = `<p>We first followed the circus in the summer of 1991, somewhere between Buckeye Lake and Deer Creek, when the corn was high and the highway smelled of rain and burning sage. By the time the boys kicked into the second set, ten thousand souls had abandoned their ordinary selves in the grass — trading the weight of the week for something the setlist could never quite contain. A door swinging open in the middle of a Tuesday in July.</p><p>Nikki's Great Music Festivals grew out of that first lot. Not the parking lot exactly — that particular sacred, chaotic marketplace of grilled cheese and miracles — but the feeling it generated: that community is not a thing you join but a thing you build, stake by stake, set by set, across the geography of a country that reveals itself differently from the back of a tour bus than it does from an office window.</p><p>The mission was never complicated. Get people to the music. Get the music to people who couldn't get to it on their own. Senior communities in rural Tennessee deserve to hear live bluegrass with the same urgency as a festival field in Colorado. The joy is not scarce. It only needs moving.</p><p>We have now logged eleven summers, forty-two states, and more campground friendships than any spreadsheet could hold.</p><p>Every trail we walk and every show we document feeds back into the same current. The photography is evidence. The maps are memory. The newsletter is the letter you write home when home has temporarily relocated to a meadow in the mountains.</p><p>What the calendar does capture is this: we keep going. The road is the purpose. The faces at the front of the stage and the back of the lot are the same faces — wide open, ears out, looking for the note that unlocks whatever needed unlocking.</p>`
-
 const form = reactive({
-  image_url:     'https://picsum.photos/seed/mountain-evening/900/1400',
-  image_caption: 'On the road',
-  eyebrow:       'Our Full Story',
-  title:         'The Music\nNever Stopped',
-  content:       DEFAULT_CONTENT,
-  closing:       'Come with us.',
+  image_url:     instanceConfig.defaults.story_image_url,
+  image_caption: instanceConfig.defaults.story_image_caption,
+  eyebrow:       instanceConfig.defaults.story_eyebrow,
+  title:         instanceConfig.defaults.story_title,
+  content:       DEFAULT_STORY_CONTENT,
+  closing:       instanceConfig.defaults.story_closing,
 })
 
 function triggerImageUpload() {
@@ -147,9 +148,9 @@ async function handleImageUpload(e: Event) {
   uploadingImage.value = true
   const ext  = file.name.split('.').pop() ?? 'jpg'
   const path = `story/story-img-${Date.now()}.${ext}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     form.image_url = data.publicUrl
   }
   uploadingImage.value = false

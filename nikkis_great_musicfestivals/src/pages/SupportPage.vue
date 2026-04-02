@@ -118,7 +118,6 @@
         </div>
       </div>
 
-      <!-- BILLING INTERVAL TOGGLE -->
       <div class="flex flex-center q-mb-xl">
         <div class="interval-toggle">
           <button
@@ -132,7 +131,6 @@
         </div>
       </div>
 
-      <!-- TIER CARDS -->
       <div class="row q-col-gutter-lg justify-center q-mb-xl">
         <div v-for="tier in cfg.tiers" :key="tier.id" class="col-12 col-sm-6 col-md-4" style="max-width:340px">
           <q-card
@@ -271,6 +269,24 @@ import { ref, reactive, onMounted } from 'vue'
 import PageBackground from 'src/components/PageBackground.vue'
 import { supabase } from 'src/lib/supabase'
 import { SPIRO_P1, SPIRO_P2, SPIRO_P3 } from 'src/lib/spirograph'
+import { useQuasar } from 'quasar'
+const $q = useQuasar()
+
+onMounted(() => {
+  // 1. Check for success URL param
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('success') === '1') {
+    $q.notify({
+      type: 'positive',
+      message: 'Thank you for your support! Your membership is being activated.',
+      position: 'top',
+      timeout: 5000
+    })
+    // Clean up the URL
+    window.history.replaceState({}, document.title, window.location.pathname)
+  }
+  })
+
 
 const interval     = ref<'month' | 'year'>('month')
 const customAmount = ref<number | null>(null)
@@ -406,20 +422,32 @@ async function checkoutCustom() {
   checkingOut.value = null
 }
 
+
 async function redirectToStripe(params: Record<string, unknown>) {
   try {
+    // Adding 'await' here satisfies the linter and actually waits for the response
     const res = await fetch('/api/stripe-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
-    })
-    const { url, error } = await res.json() as { url?: string; error?: string }
-    if (error) { console.error(error); return }
-    if (url) window.location.href = url
+    });
+
+    const data = await res.json() as { url?: string; error?: string };
+    
+    if (data.error) { 
+      console.error(data.error); 
+      return; 
+    }
+    
+    if (data.url) {
+      window.location.href = data.url;
+    }
   } catch (e) {
-    console.error('Checkout error', e)
+    console.error('Checkout error', e);
   }
 }
+
+
 </script>
 
 <style lang="scss" scoped>

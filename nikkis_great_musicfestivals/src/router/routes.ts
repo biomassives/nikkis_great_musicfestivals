@@ -15,6 +15,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'blog',          component: () => import('pages/NewsPage.vue') },
       { path: 'artists',      component: () => import('pages/ArtistsPage.vue') },
       { path: 'artists/:id',  component: () => import('pages/ArtistDetailPage.vue') },
+      { path: 'board',        component: () => import('pages/BoardPage.vue') },
+      { path: 'welcome/:list', component: () => import('pages/WelcomePage.vue') },
       { path: ':parentSlug/:childSlug', component: () => import('pages/CustomPage.vue') },
       { path: ':customSlug',           component: () => import('pages/CustomPage.vue') },
     ],

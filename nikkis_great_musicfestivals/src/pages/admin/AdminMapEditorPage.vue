@@ -129,6 +129,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from 'src/lib/supabase'
 import type { MapRegion, MapPoint } from 'src/lib/supabase'
+import { storageBucket } from 'src/lib/instance'
 
 const route    = useRoute()
 const regionId = route.params.regionId as string
@@ -265,9 +266,9 @@ async function handleUpload(e: Event) {
   uploading.value = true
   const ext  = file.name.split('.').pop()
   const path = `map-points/${regionId}/${Date.now()}.${ext}`
-  const { error } = await supabase.storage.from('festival-media').upload(path, file)
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
   if (!error) {
-    const { data } = supabase.storage.from('festival-media').getPublicUrl(path)
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
     form.image_url = data.publicUrl
   }
   uploading.value = false

@@ -1,0 +1,49 @@
+{
+  "_readme": "Git-tracked manifest for all third-party photos in public/photos/. An entry here is required before a file is used anywhere on the site or in the DB. Run 'npm run sync-attribution' after approving entries in the admin to sync approval state into this file, then commit.",
+
+  "_naming_scheme": {
+    "pattern":  "{description}--{author}--{source}--{date}--{license-slug}[--{change}...].ext",
+    "rules": [
+      "Words within a field : single hyphen, e.g. allman-bros-museum",
+      "Field separator      : double hyphen --",
+      "All lowercase",
+      "date                 : YYYY | YYYY-MM | YYYY-MM-DD",
+      "license slugs        : cc-by-sa-4 | cc-by-4 | cc-by-nc-4 | cc0 | pd"
+    ],
+    "examples": [
+      "allman-bros-museum-macon-georgia--infrogmation--wikimedia-commons--2021-09-01--cc-by-sa-4.jpg",
+      "grateful-dead-cornell-1977--unknown--archive-org--1977-05-08--cc-by-nc-4.jpg",
+      "red-rocks-sunrise--nikki-willson--own-work--2024-07--cc-by-sa-4.jpg"
+    ]
+  },
+
+  "_workflow": {
+    "tier_1_prefill":  "Rename the file to the naming scheme → upload via admin → filename is parsed and attribution fields are auto-populated in the DB (attribution_approved = false).",
+    "tier_2_approve":  "Open the Attribution Review panel in admin → edit any fields (especially source_url) → click Approve (sets attribution_approved = true in DB).",
+    "tier_3_sync":     "Run 'npm run sync-attribution' from nikkis_great_musicfestivals/ → script pulls all approved entries from DB and writes approved: true + approved_at into this file → commit."
+  },
+
+  "_fields": {
+    "author":      "Creator name as it appears in the credit line",
+    "source_url":  "Canonical URL of the original work (e.g. Wikimedia Commons file page)",
+    "license":     "Human-readable license identifier, e.g. 'CC BY-SA 4.0'",
+    "license_url": "URL to the license deed",
+    "changes":     "Description of any modifications, or null if unmodified",
+    "added":       "ISO date this file was added to the archive",
+    "used_in":     "Places this file is referenced (filled automatically by sync script)",
+    "approved":    "true once reviewed and approved in the admin Attribution Review panel",
+    "approved_at": "ISO date approval was confirmed (filled automatically by sync script)"
+  },
+
+  "allman-bros-museum-macon-georgia--infrogmation--wikimedia-commons--2021-09-01--cc-by-sa-4.jpg": {
+    "author":      "Infrogmation",
+    "source_url":  "https://commons.wikimedia.org/wiki/File:Allman_Bros_Museum_in_Macon_Georgia_USA_Sept_2021-_14.jpg",
+    "license":     "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "changes":     null,
+    "added":       "2026-04-01",
+    "used_in":     ["map_regions / southeast / image_url"],
+    "approved":    false,
+    "approved_at": null
+  }
+}

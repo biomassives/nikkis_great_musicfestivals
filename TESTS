@@ -1,0 +1,5 @@
+        
+  One remaining open item: if you ever need to test API functions locally       
+  (newsletter send, Stripe), add a proxy in quasar.config.ts and run vercel dev 
+  from root in a second terminal — the manifest has the exact steps.            
+                                                                       

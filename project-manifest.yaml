@@ -1,0 +1,286 @@
+# project-manifest.yaml
+# Machine-readable project manifest for Nikki's Great Music Festivals
+# Used by: AI assistants, automated tooling, onboarding scripts
+# Updated: 2026-03-31
+# Format version: 1
+
+meta:
+  name: "Nikkis Great Music Festivals"
+  domain: "lovelight.cc"
+  github: "git@github.com:biomassives/nikkis_great_musicfestivals.git"
+  branch_main: "main"
+  status: "active"
+
+# ── Directory layout ──────────────────────────────────────────────────────────
+layout:
+  git_root: "."                                 # all git ops from here
+  api_root: "./api"                             # Vercel serverless functions
+  frontend_root: "./nikkis_great_musicfestivals"
+  migrations: "./migrations"                    # all *.sql files live here
+
+  dead_files:
+    - path: "./nikkis_great_musicfestivals/vercel.json"
+      reason: "Vercel reads root vercel.json; this subfolder config is never executed in production. Contains stale API route mappings. Safe to delete."
+
+# ── Stack ─────────────────────────────────────────────────────────────────────
+stack:
+  frontend:
+    framework: "Vue 3"
+    ui: "Quasar 2"
+    build: "Vite via @quasar/app-vite"
+    language: "TypeScript"
+    state: "Pinia"
+    router: "Vue Router 4"
+    maps: "Leaflet.js"
+    rich_text: "@vueup/vue-quill"
+    payments_client: "@stripe/stripe-js"
+
+  backend:
+    database: "Supabase (Postgres)"
+    auth: "Supabase Auth"
+    storage: "Supabase Storage (bucket: festival-media)"
+    api_functions: "Vercel Serverless (TypeScript)"
+    email: "Mailgun"
+    payments: "Stripe"
+
+  hosting:
+    platform: "Vercel"
+    install_cmd: "npm install && cd nikkis_great_musicfestivals && npm install"
+    build_cmd: "cd nikkis_great_musicfestivals && npx quasar build"
+    output_dir: "nikkis_great_musicfestivals/dist/spa"
+    auto_deploy: true
+    trigger: "push to main"
+
+# ── API endpoints ─────────────────────────────────────────────────────────────
+api_endpoints:
+  - path: "/api/stripe-checkout"
+    file: "./api/stripe-checkout.ts"
+    method: "POST"
+    auth: "none (public)"
+    purpose: "Create Stripe Checkout Session; returns redirect URL"
+    env_required: [STRIPE_SECRET_KEY, VITE_SITE_URL]
+
+  - path: "/api/stripe-webhook"
+    file: "./api/stripe-webhook.ts"
+    method: "POST"
+    auth: "Stripe signature header"
+    purpose: "Handle checkout.session.completed, subscription events; update members table"
+    env_required: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY, VITE_SUPABASE_URL]
+
+  - path: "/api/newsletter/subscribe"
+    file: "./api/newsletter/subscribe.ts"
+    method: "POST"
+    auth: "none (public)"
+    purpose: "Email signup with honeypot spam guard; sends welcome email via Mailgun"
+    env_required: [VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM]
+
+  - path: "/api/newsletter/unsubscribe"
+    file: "./api/newsletter/unsubscribe.ts"
+    method: "GET"
+    auth: "token in query param"
+    purpose: "Token-based unsubscribe; returns styled HTML response page"
+    env_required: [VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY]
+
+  - path: "/api/newsletter/send"
+    file: "./api/newsletter/send.ts"
+    method: "POST"
+    auth: "Supabase JWT (admin only)"
+    purpose: "Broadcast newsletter to all active subscribers via Mailgun"
+    env_required: [VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM]
+
+  - path: "/api/newsletter/send-test"
+    file: "./api/newsletter/send-test.ts"
+    method: "POST"
+    auth: "Supabase JWT (admin only)"
+    purpose: "Send rendered preview to admin's own email address"
+    env_required: [VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM]
+
+  - path: "/api/newsletter/send-cuteness"
+    file: "./api/newsletter/send-cuteness.ts"
+    method: "POST"
+    auth: "Supabase JWT (admin only)"
+    purpose: "Alternate newsletter send variant"
+    env_required: [VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM]
+
+# ── Environment variables ─────────────────────────────────────────────────────
+env_vars:
+  committed_to_repo:                           # in .env — safe, public values only
+    - VITE_SUPABASE_URL
+    - VITE_SUPABASE_KEY
+    - VITE_SITE_URL
+    - VITE_YOUTUBE_API_KEY                     # optional — can be empty
+
+  vercel_dashboard_only:                       # NEVER commit these
+    - SUPABASE_SERVICE_ROLE_KEY                # full DB admin access
+    - STRIPE_SECRET_KEY
+    - STRIPE_WEBHOOK_SECRET
+    - MAILGUN_API_KEY
+    - MAILGUN_DOMAIN
+    - MAILGUN_FROM
+    - MAILGUN_REPLY_TO                         # optional
+    - MAILGUN_REGION                           # optional, default "us"
+
+  local_dev_only:                              # in .env.local — gitignored
+    - SUPABASE_SERVICE_ROLE_KEY
+    - STRIPE_SECRET_KEY
+    - STRIPE_WEBHOOK_SECRET
+    - MAILGUN_API_KEY
+    - MAILGUN_DOMAIN
+    - MAILGUN_FROM
+
+  auto_set_by_vercel:
+    - VERCEL_URL                               # used for dynamic return_url in Stripe
+
+  auth_fallback_chain_in_api_auth_ts:          # _auth.ts tries these in order
+    - SUPABASE_SERVICE_ROLE_KEY
+    - VITE_SUPABASE_KEY
+    - VITE_SUPABASE_ANON_KEY
+
+# ── Database tables ───────────────────────────────────────────────────────────
+database:
+  provider: "Supabase"
+  url_env: "VITE_SUPABASE_URL"
+
+  tables:
+    site_settings:
+      purpose: "Key/value jsonb store for all admin-configurable content"
+      key_patterns:
+        - "region_hero_{regionId}        → {images[], mondrian_layout, archive_id, youtube_id}"
+        - "region_segment_{regionId}     → {text: string}"
+        - "nav_config                    → NavItem[]"
+        - "homepage_*                    → various homepage content"
+
+    map_regions:
+      columns: [id, name, description, center_lat, center_lng, zoom, display_order, image_url]
+
+    map_points:
+      columns: [id, region_id, category(show|senior|nature), name, lat, lng, date, description, image_url]
+
+    show_stars:
+      columns: [id, show_id(text), created_at]
+      notes: "show_id references map_points.id as text (no FK constraint for flexibility)"
+
+    show_boosts:
+      columns: [id, show_id(text), created_at]
+
+    show_comments:
+      columns: [id, show_id(text), author_name, message, created_at]
+      rls: "public read+insert; message length enforced in policy (1–500 chars)"
+
+    custom_pages:
+      columns: [id, slug, title, content, blocks(jsonb), published, nav_parent]
+      notes: "nav_parent is a path string like '/support'. URL is {nav_parent}/{slug}."
+
+    newsletter_subscribers:
+      columns: [id, email, status(active|unsubscribed), unsubscribe_token, created_at]
+
+    newsletters:
+      columns: [id, title, subject, body, blocks(jsonb), sent_at, created_at]
+
+    news_articles:
+      columns: [id, title, date, icon, color, body, tags, image_url, published, created_at]
+
+    members:
+      columns: [id, email, stripe_customer_id, stripe_subscription_id, status, created_at]
+      notes: "Updated by stripe-webhook.ts on payment events"
+
+# ── Frontend routes ───────────────────────────────────────────────────────────
+routes:
+  public:
+    - path: "/"                         component: "IndexPage.vue"
+    - path: "/maps"                     component: "MapsPage.vue"
+    - path: "/maps/:regionId"           component: "MapDetailPage.vue"
+    - path: "/maps/:regionId/shows/:showId"  component: "ShowDetailPage.vue"
+    - path: "/photography"              component: "PhotographyPage.vue"
+    - path: "/support"                  component: "SupportPage.vue"
+    - path: "/merch"                    component: "MerchPage.vue"
+    - path: "/blog"                     component: "NewsPage.vue"
+    - path: "/artists"                  component: "ArtistsPage.vue"
+    - path: "/artists/:id"              component: "ArtistDetailPage.vue"
+    - path: "/:parentSlug/:childSlug"   component: "CustomPage.vue"  # nav_parent pages
+    - path: "/:customSlug"              component: "CustomPage.vue"  # top-level pages
+
+  admin:                                # all require Supabase auth session
+    - path: "/admin"
+    - path: "/admin/home"
+    - path: "/admin/story"
+    - path: "/admin/maps"
+    - path: "/admin/maps/:regionId"
+    - path: "/admin/blog"
+    - path: "/admin/gallery"
+    - path: "/admin/merch"
+    - path: "/admin/newsletter"
+    - path: "/admin/pages"
+    - path: "/admin/nav"
+    - path: "/admin/support"
+    - path: "/admin/archive"
+
+# ── Development workflow ──────────────────────────────────────────────────────
+dev:
+  frontend_only:
+    working_dir: "./nikkis_great_musicfestivals"
+    command: "quasar dev"
+    url: "http://localhost:9000"
+    notes: "Supabase calls go to cloud. /api/* endpoints return 404 — fine for most UI work."
+
+  full_stack:
+    step_1:
+      working_dir: "."                  # repo root
+      command: "npm install && vercel dev"
+      notes: "Starts Vercel dev server on port 3000 (API functions + static file serving)"
+    step_2:
+      working_dir: "./nikkis_great_musicfestivals"
+      command: "quasar dev --port 9000"
+      notes: "Quasar dev server. Add proxy in quasar.config.ts to forward /api to port 3000."
+    proxy_config_needed: true           # not currently set in quasar.config.ts
+
+  production_deploy:
+    working_dir: "."                    # always commit from repo root
+    commands:
+      - "git add -A"
+      - "git commit -m 'your message'"
+      - "git push origin main"
+    trigger: "Vercel auto-deploys on push to main"
+    build_time_approx: "90 seconds"
+
+# ── Sibling projects (same /art/ parent dir — independent repos) ──────────────
+sibling_projects:
+  - name: "FoodBank"
+    path: "/home/solstice/Desktop/art/FoodBank"
+    github: "git@github.com:biomassives/foodbank.git"
+    stack: "Vue 3 + Quasar + Supabase"
+    hosting: "Netlify + Vercel"
+    shared_code: false
+    notes: "Independent project, same architectural pattern. No shared packages or DB."
+
+  - name: "BioMassives Signal Station"
+    path: "/home/solstice/Desktop/art/biomassives.site"
+    github: "none configured"
+    stack: "Vue 3 + Quasar + Three.js + Supabase"
+    hosting: "unknown"
+    shared_code: false
+    notes: "Independent project, no remote configured. Quasar + Three.js variant."
+
+# ── Pending housekeeping ──────────────────────────────────────────────────────
+housekeeping:
+  - id: "migrate-sql-files"
+    priority: "done"
+    action: "All *.sql files moved to /migrations/ on 2026-03-31"
+
+  - id: "remove-dead-vercel-json"
+    priority: "done"
+    action: "nikkis_great_musicfestivals/vercel.json replaced with warning comment on 2026-03-31"
+
+  - id: "add-dev-proxy"
+    priority: "low"
+    action: "Add /api proxy in quasar.config.ts devServer for full-stack local dev"
+    target_file: "nikkis_great_musicfestivals/quasar.config.ts"
+
+  - id: "git-workflow-normalise"
+    priority: "low"
+    action: "Always run git from repo root. Consider a root-level Makefile with dev/build/deploy targets."
+
+  - id: "stripe-routes-in-vercel-json"
+    priority: "low"
+    action: "Vercel auto-discovers /api/*.ts so no explicit routes needed. Current root vercel.json is correct."
+    notes: "Stripe endpoints (/api/stripe-checkout, /api/stripe-webhook) work without explicit listing."

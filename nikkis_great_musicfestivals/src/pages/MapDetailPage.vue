@@ -64,7 +64,17 @@
       <transition name="m-pop">
         <div v-if="photoOpen && region?.image_url" class="m-photo-overlay border-all">
            <img :src="region.image_url" class="fit object-cover" />
-           <div class="absolute-bottom bg-black text-white q-pa-xs text-center text-caption">{{ region.name }}</div>
+           <div class="absolute-bottom bg-black text-white q-pa-xs q-px-sm">
+             <div class="text-caption text-center">{{ region.name }}</div>
+             <PhotoAttribution
+               :author="region.attribution_author ?? null"
+               :source-url="region.attribution_source_url ?? null"
+               :license="region.attribution_license ?? null"
+               :license-url="region.attribution_license_url ?? null"
+               :changes="region.attribution_changes ?? null"
+               class="q-mt-xs"
+             />
+           </div>
         </div>
       </transition>
 
@@ -139,6 +149,7 @@ import 'leaflet/dist/leaflet.css'
 import { supabase } from 'src/lib/supabase'
 import type { MapRegion, MapPoint } from 'src/lib/supabase'
 import { ARCHIVE_SHOWS } from 'src/lib/archiveShows'
+import PhotoAttribution from 'src/components/PhotoAttribution.vue'
 
 const route = useRoute()
 const $q = useQuasar()

@@ -108,6 +108,7 @@
          ARTISTS  —  card grid
     ═══════════════════════════════════════════════════════════ -->
     <section class="artists-section q-pa-lg">
+      <canvas ref="artistSpiroCanvas" class="artist-spiro-bg" aria-hidden="true" />
       <div class="section-header text-center q-mb-xl">
         <div class="section-eyebrow reveal">{{ content.artists_label }}</div>
         <h2 class="section-title reveal stagger-1">{{ content.artists_title }}</h2>
@@ -170,6 +171,9 @@
       </div>
     </section>
 
+    <!-- fade the page floor down into the footer -->
+    <div class="page-fade-runway" aria-hidden="true" />
+
   </q-page>
 
   <!-- Home gate (blocks until welcome overlay dismissed) -->
@@ -184,6 +188,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useMeta } from 'quasar'
 import { supabase } from 'src/lib/supabase'
+import { sessionKey } from 'src/lib/instance'
 import type { MapRegion } from 'src/lib/supabase'
 import { mondrianSvg } from 'src/lib/mondrian'
 import type { MondrianOpts } from 'src/lib/mondrian'
@@ -197,7 +202,7 @@ import NewsletterSignup  from 'src/components/NewsletterSignup.vue'
 import ArchivePlayerSection from 'src/components/ArchivePlayerSection.vue'
 
 const showStory = ref(false)
-const SESSION_KEY = 'ngmf_welcomed_v1'
+const SESSION_KEY = sessionKey('welcomed_v1')
 const welcomed = ref<boolean>(!!sessionStorage.getItem(SESSION_KEY))
 function onWelcomeDismissed() { welcomed.value = true }
 
@@ -353,7 +358,106 @@ async function loadSettings() {
   initReveal()
 }
 
-onMounted(() => { void loadSettings() })
+// ── Artist spirograph canvas ──────────────────────────────────────────────────
+const artistSpiroCanvas = ref<HTMLCanvasElement | null>(null)
+
+function startArtistSpiro() {
+  const canvas = artistSpiroCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const dpr = window.devicePixelRatio || 1
+
+  const resize = () => {
+    const r = (canvas.parentElement ?? canvas).getBoundingClientRect()
+    canvas.width  = r.width  * dpr
+    canvas.height = r.height * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  }
+  resize()
+  window.addEventListener('resize', resize)
+
+  const w = () => canvas.width  / dpr
+  const h = () => canvas.height / dpr
+
+  const NEON = ['#ff6b9d', '#c849ff', '#00e5ff', '#ffe033', '#00ff9f', '#ff9944', '#7b2fff']
+  function gcd2(a: number, b: number): number { return b === 0 ? a : gcd2(b, a % b) }
+
+  const CONFIGS = [
+    { R: 80, r:  8, d: 68, speed: 0.016 },
+    { R: 65, r: 14, d: 52, speed: 0.021 },
+    { R: 90, r:  5, d: 78, speed: 0.013 },
+    { R: 72, r:  9, d: 60, speed: 0.018 },
+    { R: 58, r: 11, d: 46, speed: 0.024 },
+  ]
+
+  type Painter = typeof CONFIGS[0] & { t: number; cx: number; cy: number; color: string; alpha: number }
+  const painters: Painter[] = CONFIGS.map((c, i) => ({
+    ...c, t: 0, cx: 0, cy: 0,
+    color: NEON[i % NEON.length]!,
+    alpha: 0.5,
+  }))
+
+  const reposition = (p: Painter, i: number) => {
+    p.cx    = (w() * (i + 0.5)) / painters.length + (Math.random() - 0.5) * w() * 0.25
+    p.cy    = h() / 2 + (Math.random() - 0.5) * h() * 0.45
+    p.color = NEON[Math.floor(Math.random() * NEON.length)]!
+    p.t     = 0
+    p.alpha = 0.38 + Math.random() * 0.32
+  }
+  painters.forEach(reposition)
+
+  const tick = () => {
+    // Self-terminate when canvas leaves the DOM (component unmounted)
+    if (!canvas.isConnected) return
+
+    // Soft fade trail — clears slowly so curves leave a glowing wake
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.fillStyle = 'rgba(7, 0, 20, 0.018)'
+    ctx.fillRect(0, 0, w(), h())
+
+    ctx.globalCompositeOperation = 'lighter'  // additive light: overlaps glow white
+
+    for (let i = 0; i < painters.length; i++) {
+      const p = painters[i]!
+      const { R, r, d, speed } = p
+      const ratio = (R - r) / r
+      const seg = 8
+
+      for (let s = 0; s < seg; s++) {
+        const t1 = p.t + s * speed
+        const t2 = p.t + (s + 1) * speed
+        const x1 = p.cx + (R - r) * Math.cos(t1) + d * Math.cos(ratio * t1)
+        const y1 = p.cy + (R - r) * Math.sin(t1) - d * Math.sin(ratio * t1)
+        const x2 = p.cx + (R - r) * Math.cos(t2) + d * Math.cos(ratio * t2)
+        const y2 = p.cy + (R - r) * Math.sin(t2) - d * Math.sin(ratio * t2)
+        ctx.beginPath()
+        ctx.moveTo(x1, y1)
+        ctx.lineTo(x2, y2)
+        ctx.strokeStyle = p.color
+        ctx.lineWidth   = 1.5
+        ctx.globalAlpha = p.alpha
+        ctx.stroke()
+      }
+
+      p.t += speed * seg
+      const loops = R / gcd2(R, r)
+      if (p.t > loops * 2 * Math.PI * 2.5) reposition(p, i)
+    }
+
+    ctx.globalAlpha = 1
+    ctx.globalCompositeOperation = 'source-over'
+    requestAnimationFrame(tick)
+  }
+
+  tick()
+}
+
+onMounted(() => {
+  void loadSettings()
+  void nextTick(() => startArtistSpiro())
+})
 </script>
 
 <style lang="scss" scoped>
@@ -481,13 +585,14 @@ onMounted(() => { void loadSettings() })
 }
 .stat-icon { color: #ffd700; margin-bottom: 6px; }
 .stat-num {
-  font-size: 2.2rem; font-weight: 900; color: #fff;
+  font-size: 2.2rem; font-weight: 900; color: #fff !important;
   letter-spacing: -1px; line-height: 1;
 }
 .stat-label {
   font-size: 10px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 6px;
+  text-transform: uppercase; color: rgba(255,255,255,0.65) !important; margin-top: 6px;
 }
+.stat-icon { color: #ffd700 !important; }
 
 // ── SECTION HEADER SHARED ────────────────────────────────────────────────────
 .section-eyebrow {
@@ -509,7 +614,21 @@ onMounted(() => { void loadSettings() })
 }
 
 // ── MONDRIAN REGION MOSAIC ───────────────────────────────────────────────────
-.regions-section { max-width: 1100px; margin: 0 auto; padding-top: 80px; padding-bottom: 80px; }
+.regions-section {
+  max-width: 1100px; margin: 0 auto; padding-top: 80px; padding-bottom: 80px;
+  // Force readable text — section sits on the dark page bg in both themes
+  .section-eyebrow { color: rgba(255,255,255,0.9) !important; }
+  .section-sub      { color: rgba(255,255,255,0.72) !important; }
+  // "Where We're Playing" — neon celebration gradient
+  .section-title {
+    background: linear-gradient(120deg, #ff6b9d 0%, #ffd700 48%, #00e5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    // paint-order trick so outline still works if added later
+    display: inline-block;
+  }
+}
 
 .mondrian-mosaic {
   display: grid;
@@ -566,7 +685,21 @@ onMounted(() => { void loadSettings() })
 .artists-section {
   padding-top: 80px; padding-bottom: 80px;
   background: linear-gradient(180deg, transparent, rgba(124,77,255,0.04), transparent);
+  position: relative;   // contain the canvas
+  overflow: hidden;
 }
+
+// Spirograph canvas — drawn behind the cards
+.artist-spiro-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0.42;
+  z-index: 0;
+}
+
+// Cards sit above the canvas
+.section-header, .artist-grid { position: relative; z-index: 1; }
 .artist-grid {
   max-width: 1100px; margin: 0 auto;
   display: grid;
@@ -577,22 +710,35 @@ onMounted(() => { void loadSettings() })
 }
 .artist-card {
   border-radius: 16px; overflow: hidden;
-  background: rgba(124,77,255,0.10);
-  border: 1px solid rgba(124,77,255,0.22);
-  opacity: 0.27;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s, opacity 0.3s;
+  background: rgba(7, 0, 20, 0.72);
+  border: 1px solid rgba(124,77,255,0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s;
+  // Artist-colour wash fades in on hover via a z-index-0 pseudo layer
+  &::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--ac, #7c4dff);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
   &:hover {
-    opacity: 1;
     transform: translateY(-8px);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 20px rgba(124,77,255,0.15);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 28px rgba(124,77,255,0.22);
     border-color: var(--ac, rgba(124,77,255,0.6));
+    &::before { opacity: 0.13; }
   }
 }
 .artist-card-accent {
   height: 4px;
   background: var(--ac, #7c4dff);
+  position: relative; z-index: 1;
 }
-.artist-card-body { padding: 20px; }
+.artist-card-body { padding: 20px; position: relative; z-index: 1; }
 .artist-card-top {
   display: flex; justify-content: space-between; align-items: flex-start;
   margin-bottom: 14px;
@@ -646,6 +792,20 @@ onMounted(() => { void loadSettings() })
   max-width: 420px; margin: 0 auto;
   opacity: 0.7; line-height: 1.65;
 }
+
+// ── PAGE FADE RUNWAY ─────────────────────────────────────────────────────────
+// 400px bridge that melts the page floor into the footer colour.
+// Night footer SVG top = #070014, day footer SVG top = #f5f0ff (see FooterScene.vue).
+// Use rgba() from the same base so there's no colour-band mid-gradient.
+.page-fade-runway {
+  height: 400px;
+  background: linear-gradient(to bottom,
+    rgba(7, 0, 20, 0)    0%,
+    rgba(7, 0, 20, 0.6) 50%,
+    #070014             100%
+  );
+  pointer-events: none;
+}
 </style>
 
 <style lang="scss">
@@ -670,16 +830,32 @@ body.body--light {
     background: linear-gradient(105deg, #1a0042 0%, #2d006e 55%, #0d1a3a 100%);
   }
   .artist-card {
-    background: rgba(255,255,255,0.82) !important;
-    border-color: rgba(0,0,0,0.08) !important;
-    &:hover { border-color: var(--ac, rgba(124,77,255,0.6)) !important; }
+    background: rgba(255,255,255,0.80) !important;
+    border-color: rgba(124,77,255,0.18) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    &:hover { border-color: var(--ac, rgba(124,77,255,0.55)) !important; }
   }
-  .artist-bio   { color: rgba(26,10,46,0.75) !important; }
-  .artist-subtitle { color: rgba(26,10,46,0.6) !important; }
-  .artist-name  { color: #1a0a2e !important; }
+  .artist-bio      { color: rgba(26,10,46,0.75) !important; }
+  .artist-subtitle { color: rgba(26,10,46,0.6)  !important; }
+  .artist-name     { color: #1a0a2e !important; }
   .artist-songs .q-chip { filter: none !important; }
   .subscribe-inner {
     background: linear-gradient(135deg, rgba(75,0,130,0.07), rgba(255,215,0,0.09), rgba(0,143,57,0.06)) !important;
+  }
+  // Tour Regions section — light page background, use dark readable text
+  .regions-section {
+    .section-eyebrow { color: #ab47bc !important; }
+    .section-sub     { color: rgba(26,10,46,0.65) !important; }
+    // Keep the neon gradient on the title — it reads fine on light too
+  }
+  // Page fade runway — dissolve into the light footer SVG top colour (#f5f0ff)
+  .page-fade-runway {
+    background: linear-gradient(to bottom,
+      rgba(245, 240, 255, 0)    0%,
+      rgba(245, 240, 255, 0.6) 50%,
+      #f5f0ff                  100%
+    ) !important;
   }
   // Hero sits on a dark star-field background regardless of theme —
   // keep all hero text light/warm so it reads on the dark canvas.

@@ -12,7 +12,9 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare",
+    "attribution:check": "node scripts/sync-attribution.mjs --check",
+    "attribution:sync": "node scripts/sync-attribution.mjs"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
@@ -23,6 +25,7 @@
     "leaflet": "^1.9.4",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
+    "stripe": "^21.0.1",
     "vue": "^3.5.22",
     "vue-router": "^5.0.0"
   },

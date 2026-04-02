@@ -29,11 +29,7 @@
                 </div>
               </div>
               <div class="col-12 col-sm-auto">
-                <div v-if="cutenessSub.success" class="row items-center q-gutter-xs text-positive">
-                  <q-icon name="check_circle" size="20px" />
-                  <span class="text-body2 text-weight-bold">You're in! Check your inbox.</span>
-                </div>
-                <div v-else class="row q-gutter-sm items-start">
+                <div class="row q-gutter-sm items-start">
                   <q-input
                     v-model="cutenessSub.email"
                     dense outlined
@@ -102,17 +98,19 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import PageBackground from 'src/components/PageBackground.vue'
 import PhotoSlideshow from 'src/components/PhotoSlideshow.vue'
 import { supabase } from 'src/lib/supabase'
 import type { GalleryPhoto, GallerySection } from 'src/lib/supabase'
+
+const router = useRouter()
 
 const loading = ref(true)
 
 const cutenessSub = reactive({
   email:   '',
   loading: false,
-  success: false,
   error:   '',
 })
 
@@ -129,9 +127,11 @@ async function subscribeCuteness() {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ email: cutenessSub.email, lists: ['cuteness'] }),
     })
-    const data = await res.json() as { ok?: boolean; error?: string }
+    const data = await res.json() as { ok?: boolean; error?: string; alreadySubscribed?: boolean }
     if (data.ok) {
-      cutenessSub.success = true
+      void router.push('/welcome/cuteness')
+    } else if (data.alreadySubscribed) {
+      void router.push('/welcome/cuteness')
     } else {
       cutenessSub.error = data.error ?? 'Something went wrong'
     }

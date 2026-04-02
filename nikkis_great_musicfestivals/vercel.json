@@ -1,20 +1,7 @@
 {
+  "_comment": "THIS FILE IS NOT USED IN PRODUCTION. Vercel reads the vercel.json at the REPO ROOT (one level up). That root config handles install, build, output directory, and SPA fallback routing. API functions in /api/ are auto-discovered by Vercel and do not need explicit route entries. See /MAINTENANCE-NOTES.md for full explanation.",
   "buildCommand": "npx quasar build",
   "outputDirectory": "dist/spa",
   "installCommand": "npm install",
-  "framework": null,
-  "routes": [
-    { "src": "/api/newsletter/subscribe",     "dest": "/api/newsletter/subscribe.ts"     },
-    { "src": "/api/newsletter/unsubscribe",   "dest": "/api/newsletter/unsubscribe.ts"   },
-    { "src": "/api/newsletter/send",          "dest": "/api/newsletter/send.ts"          },
-    { "src": "/api/newsletter/send-test",     "dest": "/api/newsletter/send-test.ts"     },
-    { "src": "/api/newsletter/send-cuteness", "dest": "/api/newsletter/send-cuteness.ts" },
-    { "handle": "filesystem" },
-    { "src": "/assets/(.*)", "status": 404 },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html",
-      "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" }
-    }
-  ]
+  "framework": null
 }
