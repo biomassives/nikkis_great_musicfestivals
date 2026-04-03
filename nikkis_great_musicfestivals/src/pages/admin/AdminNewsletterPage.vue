@@ -108,7 +108,7 @@
         <div class="row q-col-gutter-lg">
 
           <!-- Left: blocks -->
-          <div class="col-12 col-md-8">
+          <div class="col-12 col-md-8" @contextmenu="openBlockMenu">
             <q-card class="nl-panel q-mb-md">
               <q-card-section class="q-gutter-sm">
                 <q-input v-model="nlForm.title" label="Issue title *" dark outlined dense
@@ -122,8 +122,9 @@
             <div class="text-subtitle2 text-teal-4 text-uppercase ls-2 q-mb-sm">Content Blocks</div>
 
             <div v-if="nlForm.blocks.length === 0"
-              class="text-center text-grey-6 q-py-lg nl-panel rounded-borders q-mb-md">
-              No blocks yet — add content using the buttons below.
+              class="text-center text-grey-6 q-py-xl nl-panel rounded-borders q-mb-md nl-empty-drop">
+              <q-icon name="add_box" size="36px" class="q-mb-sm" style="opacity:.25" /><br/>
+              Right-click or use the toolbar below to add your first block
             </div>
 
             <div v-for="(block, bi) in nlForm.blocks" :key="bi" class="nl-block-card q-mb-sm">
@@ -147,6 +148,7 @@
                       theme="snow"
                       :options="NL_QUILL_OPTIONS"
                       placeholder="Write your intro text…"
+                      @ready="(q) => wireImageHandler(q)"
                       @update:content="(v) => { block.body = String(v) }"
                     />
                   </div>
@@ -169,6 +171,7 @@
                       theme="snow"
                       :options="NL_QUILL_OPTIONS"
                       placeholder="Spotlight body text…"
+                      @ready="(q) => wireImageHandler(q)"
                       @update:content="(v) => { block.text = String(v) }"
                     />
                   </div>
@@ -181,11 +184,16 @@
               </q-card-section>
             </div>
 
-            <!-- Add block row -->
-            <div class="row q-gutter-xs q-mt-sm">
-              <q-btn v-for="bt in BLOCK_TYPES" :key="bt.type"
-                :icon="bt.icon" :label="bt.label" flat size="sm" :color="bt.color"
-                class="nl-add-btn" @click="addBlock(bt.type)" />
+            <!-- Word-like block toolbar -->
+            <div class="block-toolbar q-mt-sm">
+              <button v-for="bt in BLOCK_TYPES" :key="bt.type"
+                class="block-tool-btn" @click="addBlock(bt.type)" :title="bt.desc">
+                <q-icon :name="bt.icon" :color="bt.color" size="24px" />
+                <span class="block-tool-label">{{ bt.label }}</span>
+              </button>
+            </div>
+            <div class="text-caption text-grey-7 q-mt-xs q-ml-xs" style="font-size:10px;letter-spacing:.3px">
+              Right-click anywhere above to insert a block at cursor
             </div>
           </div>
 
@@ -203,18 +211,6 @@
                   <q-btn color="deep-orange-7" unelevated icon="send" label="Send Now"
                     :loading="sending" :disable="!nlForm.title || !nlForm.subject"
                     @click="openSendDialog(null)" class="full-width" />
-                </div>
-              </q-card-section>
-            </q-card>
-            <q-card class="nl-panel">
-              <q-card-section>
-                <div class="text-subtitle2 text-teal-3 q-mb-xs">Block Types</div>
-                <div v-for="bt in BLOCK_TYPES" :key="bt.type" class="row items-start q-py-xs">
-                  <q-icon :name="bt.icon" :color="bt.color" size="15px" class="q-mr-sm q-mt-xs" />
-                  <div>
-                    <div class="text-caption text-white text-weight-bold">{{ bt.label }}</div>
-                    <div class="text-caption text-grey-6" style="font-size:10px">{{ bt.desc }}</div>
-                  </div>
                 </div>
               </q-card-section>
             </q-card>
@@ -456,16 +452,97 @@
       </q-card>
     </q-dialog>
 
+    <!-- ══ BLOCK INSERT CONTEXT MENU ════════════════════════════════════════ -->
+    <Teleport to="body">
+      <template v-if="blockMenu.show">
+        <div class="block-ctx-backdrop" @click="blockMenu.show = false" @contextmenu.prevent="blockMenu.show = false" />
+        <div class="block-ctx-menu" :style="{ left: blockMenu.x + 'px', top: blockMenu.y + 'px' }">
+          <div class="block-ctx-title">Insert Block</div>
+          <button v-for="bt in BLOCK_TYPES" :key="bt.type"
+            class="block-ctx-item" @click="addBlockFromMenu(bt.type)">
+            <q-icon :name="bt.icon" :color="bt.color" size="20px" class="block-ctx-icon" />
+            <div>
+              <div class="block-ctx-name">{{ bt.label }}</div>
+              <div class="block-ctx-desc">{{ bt.desc }}</div>
+            </div>
+          </button>
+        </div>
+      </template>
+    </Teleport>
+
+    <!-- ══ IMAGE INSERT DIALOG (Quill blocks) ════════════════════════════════ -->
+    <q-dialog v-model="imgDialog.show" persistent>
+      <q-card dark class="nl-panel" style="min-width:480px;max-width:660px;width:100%">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6 text-teal-3">Insert Image</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-sm q-pb-none q-px-md">
+          <div class="text-caption text-teal-4 text-uppercase ls-1 q-mb-xs">From Gallery</div>
+          <q-input v-model="imgGallerySearch" dense dark outlined color="teal-3" label-color="teal-3"
+            placeholder="Search captions…" clearable class="q-mb-xs">
+            <template #prepend><q-icon name="search" size="14px" color="grey-5" /></template>
+          </q-input>
+          <div class="cuteness-gallery-grid q-mb-md">
+            <div v-for="photo in filteredImgGallery" :key="photo.id"
+              class="cuteness-thumb"
+              :class="{'cuteness-thumb--sel': imgDialog.url === photo.url}"
+              :title="photo.caption || photo.category"
+              @click="imgDialog.url = photo.url; imgDialog.caption = photo.caption || ''">
+              <img :src="photo.url" :alt="photo.caption || ''" loading="lazy" />
+              <q-icon v-if="imgDialog.url === photo.url" name="check_circle" class="thumb-check" />
+            </div>
+            <div v-if="filteredImgGallery.length === 0"
+              class="text-grey-6 text-caption q-py-sm" style="grid-column:1/-1;text-align:center">
+              No photos found
+            </div>
+          </div>
+
+          <q-separator dark class="q-mb-md" />
+
+          <div class="row q-col-gutter-sm items-center q-mb-sm">
+            <div class="col">
+              <q-input v-model="imgDialog.url" label="Image URL" dark outlined dense
+                label-color="teal-3" color="teal-3" placeholder="https://…" clearable />
+            </div>
+            <div class="col-auto">
+              <q-btn color="teal-8" icon="upload" label="Upload" unelevated size="sm"
+                :loading="imgDialog.uploading" @click="triggerNlImgUpload" />
+            </div>
+          </div>
+
+          <div v-if="imgDialog.url" class="img-preview-wrap q-mb-sm">
+            <img :src="imgDialog.url" class="img-preview" />
+          </div>
+
+          <q-input v-model="imgDialog.caption" label="Caption (optional)" dark outlined dense
+            label-color="teal-3" color="teal-3" class="q-mb-md" />
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Cancel" color="grey-5" v-close-popup />
+          <q-btn unelevated label="Insert" color="teal-6" icon="add_photo_alternate"
+            :disable="!imgDialog.url" @click="confirmInsertImage" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Hidden file input for image upload -->
+    <input ref="nlImgFileInput" type="file" accept="image/*" class="hidden" @change="handleNlImgUpload" />
+
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabase'
 import type { GalleryPhoto } from 'src/lib/supabase'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { storageBucket } from 'src/lib/instance'
 
 const $q = useQuasar()
 
@@ -540,6 +617,23 @@ const nlForm = reactive({ title: '', subject: '', blocks: [] as Block[] })
 
 // ── Send dialog ────────────────────────────────────────────────────────────
 const sendDialog = reactive({ show: false, title: '', nlId: null as string | null })
+
+// ── Block insert context menu ──────────────────────────────────────────────
+const blockMenu = reactive({ show: false, x: 0, y: 0 })
+
+function openBlockMenu(e: MouseEvent) {
+  if ((e.target as HTMLElement).closest('.ql-editor')) return // let Quill keep its own context
+  e.preventDefault()
+  const menuW = 268, menuH = 315
+  blockMenu.x = Math.max(8, Math.min(e.clientX, window.innerWidth  - menuW - 8))
+  blockMenu.y = Math.max(8, Math.min(e.clientY, window.innerHeight - menuH - 8))
+  blockMenu.show = true
+}
+
+function addBlockFromMenu(type: BlockType) {
+  addBlock(type)
+  blockMenu.show = false
+}
 
 // ── Subscriber search ──────────────────────────────────────────────────────
 const subSearch  = ref('')
@@ -617,6 +711,60 @@ const cutenessDialog = reactive({
 })
 
 const cutenessGallerySearch = ref('')
+
+// ── Quill image insertion ──────────────────────────────────────────────────
+const nlImgFileInput = ref<HTMLInputElement | null>(null)
+const imgDialog = reactive({ show: false, url: '', caption: '', uploading: false })
+const imgGallerySearch = ref('')
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let pendingQuill: any = null
+
+const filteredImgGallery = computed(() => {
+  const q = imgGallerySearch.value.trim().toLowerCase()
+  let list = galleryPhotos.value
+  if (q) list = list.filter(p => p.caption?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q))
+  return list.slice(0, 42)
+})
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function wireImageHandler(quill: any) {
+  quill.getModule('toolbar').addHandler('image', () => {
+    pendingQuill = quill
+    imgDialog.url = ''
+    imgDialog.caption = ''
+    imgGallerySearch.value = ''
+    imgDialog.show = true
+    void ensureGalleryLoaded()
+  })
+}
+
+function triggerNlImgUpload() { nlImgFileInput.value?.click() }
+
+async function handleNlImgUpload(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  imgDialog.uploading = true
+  const ext  = file.name.split('.').pop() ?? 'jpg'
+  const path = `newsletter/${Date.now()}.${ext}`
+  const { error } = await supabase.storage.from(storageBucket()).upload(path, file)
+  if (!error) {
+    const { data } = supabase.storage.from(storageBucket()).getPublicUrl(path)
+    imgDialog.url = data.publicUrl
+  }
+  imgDialog.uploading = false
+  if (nlImgFileInput.value) nlImgFileInput.value.value = ''
+}
+
+function confirmInsertImage() {
+  if (!pendingQuill || !imgDialog.url) return
+  const range = pendingQuill.getSelection(true) as { index: number } | null
+  const idx   = range ? range.index : (pendingQuill.getLength() as number) - 1
+  const caption = imgDialog.caption
+    ? `<figcaption class="ql-img-caption">${imgDialog.caption}</figcaption>` : ''
+  const html = `<figure class="ql-custom-figure"><img src="${imgDialog.url}" alt="${imgDialog.caption || ''}" />${caption}</figure><p><br></p>`
+  pendingQuill.clipboard.dangerouslyPasteHTML(idx, html)
+  imgDialog.show = false
+}
 
 const filteredCutenessGallery = computed(() => {
   const q = cutenessGallerySearch.value.trim().toLowerCase()
@@ -730,9 +878,11 @@ function blockLabel(t: BlockType) { return BLOCK_TYPES.find(b => b.type === t)?.
 const NL_QUILL_OPTIONS = {
   modules: {
     toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline'],
+      ['blockquote'],
       [{ list: 'ordered' }, { list: 'bullet' }],
-      ['link'],
+      ['link', 'image'],
       ['clean'],
     ],
   },
@@ -1052,9 +1202,16 @@ async function copySetupSql() {
 }
 
 // ── Mount ──────────────────────────────────────────────────────────────────
+function onKeyDown(e: KeyboardEvent) { if (e.key === 'Escape') blockMenu.show = false }
+
 onMounted(async () => {
   await loadNewsletters()
   loading.value = false
+  window.addEventListener('keydown', onKeyDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeyDown)
 })
 </script>
 
@@ -1083,6 +1240,56 @@ onMounted(async () => {
 .nl-add-btn { border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; }
 
 .nl-tabs { border-bottom: 1px solid rgba(77,182,172,0.15); }
+
+.img-preview-wrap { border-radius: 8px; overflow: hidden; }
+.img-preview { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+
+.hidden { display: none; }
+
+/* ── Word-like block toolbar ── */
+.block-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 10px;
+  background: #131325;
+  border: 1px solid rgba(77,182,172,0.14);
+  border-radius: 10px;
+}
+
+.block-tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.13s, border-color 0.13s;
+  user-select: none;
+
+  &:hover {
+    background: rgba(77,182,172,0.09);
+    border-color: rgba(77,182,172,0.22);
+  }
+  &:active { background: rgba(77,182,172,0.18); }
+}
+
+.block-tool-label {
+  font-size: 10px;
+  letter-spacing: .3px;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+.nl-empty-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .stat-card {
   background: #1a1a2e;
@@ -1176,6 +1383,70 @@ onMounted(async () => {
 }
 </style>
 
+<!-- Context menu + Quill overrides — unscoped (Teleport renders outside component scope) -->
+<style lang="scss">
+/* ── Block insert context menu ── */
+.block-ctx-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+}
+
+.block-ctx-menu {
+  position: fixed;
+  z-index: 9001;
+  background: #1e1e38;
+  border: 1px solid rgba(77,182,172,0.35);
+  border-radius: 12px;
+  padding: 5px;
+  min-width: 252px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(77,182,172,0.1);
+}
+
+.block-ctx-title {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  padding: 5px 10px 7px;
+  pointer-events: none;
+}
+
+.block-ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+
+  &:hover { background: rgba(77,182,172,0.12); }
+  &:active { background: rgba(77,182,172,0.22); }
+}
+
+.block-ctx-icon { flex-shrink: 0; }
+
+.block-ctx-name {
+  font-size: 13px;
+  color: rgba(255,255,255,0.88);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.block-ctx-desc {
+  font-size: 10px;
+  color: rgba(255,255,255,0.38);
+  margin-top: 2px;
+  line-height: 1.2;
+}
+</style>
+
 <!-- Quill dark-theme overrides (teal accent) — unscoped to reach injected DOM -->
 <style lang="scss">
 .nl-quill {
@@ -1185,16 +1456,27 @@ onMounted(async () => {
     border-bottom: 1px solid rgba(77,182,172,0.2);
     border-radius: 8px 8px 0 0;
 
-    .ql-stroke              { stroke: rgba(255,255,255,0.55); }
-    .ql-fill                { fill:   rgba(255,255,255,0.55); }
-    .ql-picker-label        { color:  rgba(255,255,255,0.6);  }
+    .ql-stroke               { stroke: rgba(255,255,255,0.55); }
+    .ql-fill                 { fill:   rgba(255,255,255,0.55); }
+    .ql-picker-label         { color:  rgba(255,255,255,0.6);  }
+    .ql-picker-label::before { color:  rgba(255,255,255,0.6);  }
 
     button:hover .ql-stroke,
-    .ql-active  .ql-stroke  { stroke: #4db6ac; }
+    .ql-active  .ql-stroke   { stroke: #4db6ac; }
     button:hover .ql-fill,
-    .ql-active  .ql-fill    { fill:   #4db6ac; }
+    .ql-active  .ql-fill     { fill:   #4db6ac; }
     .ql-picker-label:hover,
     .ql-picker-label.ql-active { color: #4db6ac; }
+
+    // Header picker label overrides
+    .ql-header .ql-picker-item[data-value="1"]::before { content: 'Heading 1'; font-size: 1.3em; font-weight: 700; }
+    .ql-header .ql-picker-item[data-value="2"]::before { content: 'Heading 2'; font-size: 1.15em; font-weight: 600; }
+    .ql-header .ql-picker-item[data-value="3"]::before { content: 'Heading 3'; }
+    .ql-header .ql-picker-item:not([data-value])::before { content: 'Paragraph'; }
+    .ql-header .ql-picker-label[data-value="1"]::before { content: 'H1'; }
+    .ql-header .ql-picker-label[data-value="2"]::before { content: 'H2'; }
+    .ql-header .ql-picker-label[data-value="3"]::before { content: 'H3'; }
+    .ql-header .ql-picker-label:not([data-value])::before { content: 'Para'; }
 
     .ql-picker-options {
       background: #1a1a2e;
@@ -1209,21 +1491,45 @@ onMounted(async () => {
     background: #0d0d22;
     border: none;
     border-radius: 0 0 8px 8px;
-    min-height: 120px;
+    min-height: 160px;
 
     .ql-editor {
       color: #e0f2f1;
       font-size: 14px;
       line-height: 1.75;
-      min-height: 120px;
+      min-height: 160px;
       padding: 14px 16px;
 
       p          { margin-bottom: 0.7em; }
+      h1         { font-size: 1.8em; font-weight: 900; color: #fff; margin: 1em 0 0.3em; }
+      h2         { font-size: 1.4em; font-weight: 700; color: #fff; margin: 0.9em 0 0.25em; }
+      h3         { font-size: 1.15em; font-weight: 600; color: #fff; margin: 0.8em 0 0.2em; }
       ul, ol     { padding-left: 1.4em; margin-bottom: 0.7em; }
+      blockquote {
+        border-left: 3px solid #4db6ac;
+        color: rgba(255,255,255,0.6);
+        padding-left: 12px; margin-left: 0; margin-bottom: 0.7em;
+      }
       a          { color: #4db6ac; }
+      img        { max-width: 100%; border-radius: 6px; display: block; margin: 8px 0; }
 
       &.ql-blank::before { color: rgba(255,255,255,0.35) !important; font-style: italic; }
     }
   }
+}
+
+/* Inline figure from image dialog */
+.ql-custom-figure {
+  margin: 12px 0;
+  display: block;
+  img { max-width: 100%; border-radius: 6px; display: block; }
+}
+
+.ql-img-caption {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  margin-top: 4px;
+  font-style: italic;
 }
 </style>
