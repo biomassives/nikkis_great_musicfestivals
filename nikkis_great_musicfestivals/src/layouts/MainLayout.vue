@@ -9,8 +9,8 @@
         </button>
 
         <div class="header-brand">
-          <span class="header-brand-nikki">NIKKI'S</span>
-          <span class="header-brand-fest">GREAT FESTIVALS</span>
+          <span class="header-brand-nikki">LoveLight</span>
+          <span class="header-brand-fest">Warms the heart</span>
         </div>
 
         <!-- desktop quick-links -->

@@ -5,7 +5,7 @@
       <!-- ── Top bar: brand + utilities ──────────────────────── -->
       <q-toolbar class="admin-top-bar">
         <img src="/icons/mandala.svg" width="26" height="26" class="mandala-icon q-mr-sm" alt=""/>
-        <span class="brand-text">Nikki's Great Music Festivals</span>
+        <span class="brand-text">Lovelight dot cc Admin</span>
         <span class="admin-badge q-ml-sm">ADMIN</span>
         <q-space />
         <q-btn flat round dense :to="'/admin'" exact icon="dashboard" title="Dashboard" size="sm" class="top-btn" />
