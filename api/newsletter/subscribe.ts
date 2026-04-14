@@ -26,11 +26,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { email, name, website, lists = ['newsletter'] } = (req.body ?? {}) as {
+  const { email, name, website, lists = ['newsletter'], source } = (req.body ?? {}) as {
     email?:   string
     name?:    string
     website?: string    // honeypot — must be empty for real users
     lists?:   ('newsletter' | 'cuteness')[]
+    source?:  string    // e.g. 'coming_soon' — triggers admin notification
   }
 
   // Server-side honeypot check: if the field is populated it's a bot;
@@ -96,6 +97,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .replace(/\{\{email\}\}/g,           email)
         .replace(/\{\{unsubscribe_url\}\}/g, unsubUrl)
       await sendMail({ to: email, subject: tmpl.subject, html, ...(name ? { toName: name } : {}) })
+    }
+  }
+
+  // Admin notification for coming-soon sign-ups
+  if (source === 'coming_soon' && process.env.MAILGUN_API_KEY) {
+    const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || process.env.MAILGUN_REPLY_TO
+    if (adminEmail) {
+      const nameLabel = name ? `<br><strong>Name:</strong> ${name}` : ''
+      await sendMail({
+        to:      adminEmail,
+        subject: `New coming soon sign-up: ${email}`,
+        html:    `<p>Someone signed up on the coming soon page.</p><p><strong>Email:</strong> ${email}${nameLabel}</p>`,
+      })
     }
   }
 

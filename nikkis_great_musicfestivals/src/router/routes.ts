@@ -45,6 +45,11 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    path: '/coming-soon',
+    component: () => import('pages/ComingSoonPage.vue'),
+  },
+
+  {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
   },

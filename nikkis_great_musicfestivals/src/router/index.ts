@@ -34,9 +34,16 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  const ADMIN_PUBLIC = ['/admin/login', '/admin/reset-password'];
+  const ADMIN_PUBLIC  = ['/admin/login', '/admin/reset-password'];
+  const COMING_SOON   = import.meta.env.VITE_COMING_SOON === 'true';
 
   Router.beforeEach(async (to) => {
+    // Coming soon mode — gate all public routes, let admin through
+    if (COMING_SOON && !to.path.startsWith('/admin') && to.path !== '/coming-soon') {
+      return '/coming-soon';
+    }
+
+    // Admin auth guard
     if (!to.path.startsWith('/admin')) return;
     if (ADMIN_PUBLIC.includes(to.path)) return;
     const { data } = await supabase.auth.getSession();
