@@ -11,7 +11,7 @@
       <div class="cs-eyebrow">COMING SOON</div>
 
       <h1 class="cs-title">
-        Nikki's Great<br>Music Festivals
+        Lovelight<br>dot cc
       </h1>
 
       <p class="cs-tagline">
